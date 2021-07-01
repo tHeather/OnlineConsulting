@@ -14,12 +14,15 @@ namespace OnlineConsulting.Areas.Identity.Pages.Account
     public class RegisterConfirmationModel : PageModel
     {
         private readonly UserManager<User> _userManager;
-        private readonly IEmailSender _sender;
+       // private readonly IEmailSender _sender;
 
-        public RegisterConfirmationModel(UserManager<User> userManager, IEmailSender sender)
+        public RegisterConfirmationModel(
+            UserManager<User> userManager
+           //, IEmailSender sender
+            )
         {
             _userManager = userManager;
-            _sender = sender;
+           // _sender = sender;
         }
 
         public string Email { get; set; }
