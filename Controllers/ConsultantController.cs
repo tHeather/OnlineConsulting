@@ -4,20 +4,27 @@ using Microsoft.AspNetCore.Mvc;
 using OnlineConsulting.Models.Entities;
 using OnlineConsulting.Models.Enums;
 using OnlineConsulting.Models.ViewModels.Consultant;
+using OnlineConsulting.Services.Repositories.Interfaces;
+using OnlineConsulting.Tools;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace OnlineConsulting.Controllers
 {
+    [Route("consultants")]
+
     public class ConsultantController : Controller
     {
         private readonly UserManager<User> _userManager;
+        private readonly IUserRepository _userRepository;
 
-        public ConsultantController(UserManager<User> userManager)
+        public ConsultantController(UserManager<User> userManager, IUserRepository userRepository)
         {
             _userManager = userManager;
+            _userRepository = userRepository;
         }
 
-
+        [HttpGet("create")]
         public ActionResult AddConsultant()
         {
             return View(new AddConsultantViewModel { IsAdded = false });
@@ -55,6 +62,19 @@ namespace OnlineConsulting.Controllers
             }
 
             return View(addConsultantViewModel);
+        }
+
+        [HttpGet("list")]
+        public async Task<ActionResult> GetAllConsultants(int pageIndex = 1)
+        {
+            var employerId = _userManager.GetUserId(User);
+
+            return View(
+                await PaginatedList<User>.CreateAsync(
+                    _userRepository.GetAllConsultantsForEmployer(employerId),
+                    pageIndex, 
+                    10)
+                );
         }
 
     }

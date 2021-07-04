@@ -1,0 +1,44 @@
+﻿@model OnlineConsulting.Tools.PaginatedList<OnlineConsulting.Models.Entities.User>;
+
+    <h1>Consultant List</h1>
+
+    <div class="table-responsive">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th scope="col">First name </th>
+                    <th scope="col">Surname</th>
+                    <th scope="col">E-mail</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var consultant in Model)
+                {
+                    <tr>
+                        <td>@consultant.FirstName</td>
+                        <td>@consultant.Surname</td>
+                        <td>@consultant.Email</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+       </div>
+
+        @{
+            var prevDisabled = !Model.HasPreviousPage ? "disabled" : "";
+            var nextDisabled = !Model.HasNextPage ? "disabled" : "";
+        }
+
+        <div class="d-flex">
+            <a asp-action="GetAllConsultants"
+               asp-route-pageIndex="@(Model.PageIndex - 1)"
+               class="btn btn-default @prevDisabled">
+                Prev
+            </a>
+            <div>@Model.PageIndex / @Model.TotalPages</div>
+            <a asp-action="GetAllConsultants"
+               asp-route-pageIndex="@(Model.PageIndex + 1)"
+               class="btn btn-default @nextDisabled ">
+                Next
+            </a>
+        </div>
