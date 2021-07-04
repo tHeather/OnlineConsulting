@@ -7,6 +7,7 @@ using OnlineConsulting.Models.ViewModels.Consultant;
 using OnlineConsulting.Services.Repositories.Interfaces;
 using OnlineConsulting.Tools;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace OnlineConsulting.Controllers
@@ -15,12 +16,10 @@ namespace OnlineConsulting.Controllers
 
     public class ConsultantController : Controller
     {
-        private readonly UserManager<User> _userManager;
         private readonly IUserRepository _userRepository;
 
-        public ConsultantController(UserManager<User> userManager, IUserRepository userRepository)
+        public ConsultantController(IUserRepository userRepository)
         {
-            _userManager = userManager;
             _userRepository = userRepository;
         }
 
@@ -30,27 +29,18 @@ namespace OnlineConsulting.Controllers
             return View(new AddConsultantViewModel { IsAdded = false });
         }
 
-        [HttpPost]
+        [HttpPost("create")]
         [AutoValidateAntiforgeryToken]
         public async Task<ActionResult> AddConsultant(AddConsultantViewModel addConsultantViewModel)
         {
             if (ModelState.IsValid) {
 
-                var user = new User
-                {
-                    UserName = addConsultantViewModel.Email,
-                    Email = addConsultantViewModel.Email,
-                    FirstName = addConsultantViewModel.FirstName,
-                    Surname = addConsultantViewModel.Surname,
-                    EmployerId = _userManager.GetUserId(User)
-                };
+                var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
 
-                var result = await _userManager.CreateAsync(user, addConsultantViewModel.Password);
+                var result = await _userRepository.CreateConsultantAsync(addConsultantViewModel, userIdClaim.Value);
 
                 if (result.Succeeded) 
                 {
-                    await _userManager.AddToRoleAsync(user, UserRoleEnum.Consultant.ToString());
-                    await _userManager.UpdateAsync(user);
                     ModelState.Clear();
                     return View(new AddConsultantViewModel { IsAdded = true });
                 }
@@ -67,11 +57,11 @@ namespace OnlineConsulting.Controllers
         [HttpGet("list")]
         public async Task<ActionResult> GetAllConsultants(int pageIndex = 1)
         {
-            var employerId = _userManager.GetUserId(User);
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
 
             return View(
                 await PaginatedList<User>.CreateAsync(
-                    _userRepository.GetAllConsultantsForEmployer(employerId),
+                    _userRepository.GetAllConsultantsForEmployer(userIdClaim.Value),
                     pageIndex, 
                     10)
                 );
