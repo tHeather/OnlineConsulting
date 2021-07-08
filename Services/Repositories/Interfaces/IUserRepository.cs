@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using OnlineConsulting.Models.Entities;
+using OnlineConsulting.Models.ValueObjects.User;
 using OnlineConsulting.Models.ViewModels.Consultant;
 using System;
 using System.Collections.Generic;
@@ -12,6 +13,6 @@ namespace OnlineConsulting.Services.Repositories.Interfaces
     {
         public IQueryable<User> GetAllConsultantsForEmployer(string employerId);
 
-        public Task<IdentityResult> CreateConsultantAsync(AddConsultantViewModel addConsultantViewModel, string employerId);
+        public Task<CreateConsultantValueObject> CreateConsultantAsync(AddConsultantViewModel addConsultantViewModel, string employerId);
     }
 }

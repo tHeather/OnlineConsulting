@@ -26,7 +26,7 @@ namespace OnlineConsulting.Controllers
         [HttpGet("create")]
         public ActionResult AddConsultant()
         {
-            return View(new AddConsultantViewModel { IsAdded = false });
+            return View(new AddConsultantViewModel());
         }
 
         [HttpPost("create")]
@@ -37,15 +37,18 @@ namespace OnlineConsulting.Controllers
 
                 var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
 
-                var result = await _userRepository.CreateConsultantAsync(addConsultantViewModel, userIdClaim.Value);
+                var createConsultantValueObject = await _userRepository.CreateConsultantAsync(addConsultantViewModel, userIdClaim.Value);
 
-                if (result.Succeeded) 
+                if (createConsultantValueObject.IdentityResult.Succeeded) 
                 {
                     ModelState.Clear();
-                    return View(new AddConsultantViewModel { IsAdded = true });
+                    return View(new AddConsultantViewModel {
+                        GeneratedPassword = createConsultantValueObject.GeneratedPassword,
+                        Login = addConsultantViewModel.Email
+                    });
                 }
 
-                foreach (var error in result.Errors)
+                foreach (var error in createConsultantValueObject.IdentityResult.Errors)
                 {
                     ModelState.AddModelError("userManager", error.Description);
                 }

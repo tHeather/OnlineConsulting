@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Options;
 using OnlineConsulting.Models.Entities;
 using OnlineConsulting.Models.Enums;
 using OnlineConsulting.Models.ViewModels.Consultant;
@@ -7,23 +8,28 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using OnlineConsulting.Tools;
+using OnlineConsulting.Models.ValueObjects.User;
 
 namespace OnlineConsulting.Services.Repositories
 {
     public class UserRepository:IUserRepository
     {    
         private readonly UserManager<User> _userManager;
+        private readonly IOptions<IdentityOptions> _identityOptions;
 
-        public UserRepository(UserManager<User> userManager)
+        public UserRepository(UserManager<User> userManager,
+            IOptions<IdentityOptions> identityOptions)
         {
             _userManager = userManager;
+            _identityOptions = identityOptions;
         }
 
         public IQueryable<User> GetAllConsultantsForEmployer(string employerId) {
             return _userManager.Users.Where(u => u.EmployerId == employerId);
         }
 
-        public async Task<IdentityResult> CreateConsultantAsync(
+        public async Task<CreateConsultantValueObject> CreateConsultantAsync(
             AddConsultantViewModel addConsultantViewModel,
             string employerId)
         {
@@ -37,7 +43,11 @@ namespace OnlineConsulting.Services.Repositories
                 EmployerId = employerId
             };
 
-            var result = await _userManager.CreateAsync(user, addConsultantViewModel.Password);
+            var passwordOptions = _identityOptions.Value.Password;
+            using var randomPasswordGenerator = new RandomPasswordGenerator(passwordOptions);
+            var generatedPassword = randomPasswordGenerator.Generate();
+
+            var result = await _userManager.CreateAsync(user, generatedPassword);
 
             if (result.Succeeded)
             {
@@ -45,7 +55,8 @@ namespace OnlineConsulting.Services.Repositories
                 await _userManager.UpdateAsync(user);
             }
 
-            return result;
+
+            return new CreateConsultantValueObject { IdentityResult = result , GeneratedPassword = generatedPassword };
         }
     }
 }
