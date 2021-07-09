@@ -1,4 +1,6 @@
-﻿@model OnlineConsulting.Tools.PaginatedList<OnlineConsulting.Models.Entities.User>;
+﻿@using OnlineConsulting.Models.ViewModels.Modals;
+@model OnlineConsulting.Tools.PaginatedList<OnlineConsulting.Models.Entities.User>;
+
 
     <h1>Consultant List</h1>
 
@@ -9,6 +11,7 @@
                     <th scope="col">First name </th>
                     <th scope="col">Surname</th>
                     <th scope="col">E-mail</th>
+                    <th></th>
                 </tr>
             </thead>
             <tbody>
@@ -18,27 +21,47 @@
                         <td>@consultant.FirstName</td>
                         <td>@consultant.Surname</td>
                         <td>@consultant.Email</td>
+                        <td>
+                            <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#Modal-@consultant.Id">
+                                Delete
+                            </button>
+                          
+                              @await  Html.PartialAsync(
+                             "/Views/Shared/Modals/_ConfirmationModal.cshtml",
+                             new ConfirmationModalViewModel
+                             {
+                                 Id = $"Modal-{consultant.Id}",
+                                 ModalLabel = "Delete Confirmation",
+                                 ModalText = "Are you sure want to delete this consultant?",
+                                 ConfirmController="test",
+                                 ConfirmAction="test",
+                                 ConfrimText="Yes",
+                                 ConfirmParams= new Dictionary<string, string> { { "id", consultant.Id } },
+                                 RejectText="No"
+                             })
+                            
+                        </td>
                     </tr>
                 }
             </tbody>
         </table>
-       </div>
+    </div>
 
-        @{
-            var prevDisabled = !Model.HasPreviousPage ? "disabled" : "";
-            var nextDisabled = !Model.HasNextPage ? "disabled" : "";
-        }
+    @{
+        var prevDisabled = !Model.HasPreviousPage ? "disabled" : "";
+        var nextDisabled = !Model.HasNextPage ? "disabled" : "";
+    }
 
-        <div class="d-flex">
-            <a asp-action="GetAllConsultants"
-               asp-route-pageIndex="@(Model.PageIndex - 1)"
-               class="btn btn-default @prevDisabled">
-                Prev
-            </a>
-            <div>@Model.PageIndex / @Model.TotalPages</div>
-            <a asp-action="GetAllConsultants"
-               asp-route-pageIndex="@(Model.PageIndex + 1)"
-               class="btn btn-default @nextDisabled ">
-                Next
-            </a>
-        </div>
+    <div class="d-flex">
+        <a asp-action="GetAllConsultants"
+           asp-route-pageIndex="@(Model.PageIndex - 1)"
+           class="btn btn-default @prevDisabled">
+            Prev
+        </a>
+        <div>@Model.PageIndex / @Model.TotalPages</div>
+        <a asp-action="GetAllConsultants"
+           asp-route-pageIndex="@(Model.PageIndex + 1)"
+           class="btn btn-default @nextDisabled ">
+            Next
+        </a>
+    </div>
