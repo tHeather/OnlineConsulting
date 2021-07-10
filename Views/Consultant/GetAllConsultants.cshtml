@@ -1,67 +1,70 @@
 ﻿@using OnlineConsulting.Models.ViewModels.Modals;
-@model OnlineConsulting.Tools.PaginatedList<OnlineConsulting.Models.Entities.User>;
+@model OnlineConsulting.Models.ViewModels.Consultant.GetAllConsultantViewModel;
 
 
-    <h1>Consultant List</h1>
+<h1>Consultant List</h1>
 
-    <div class="table-responsive">
-        <table class="table">
-            <thead>
+<div class="table-responsive">
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col">First name </th>
+                <th scope="col">Surname</th>
+                <th scope="col">E-mail</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var consultant in Model.ConsultantList)
+            {
                 <tr>
-                    <th scope="col">First name </th>
-                    <th scope="col">Surname</th>
-                    <th scope="col">E-mail</th>
-                    <th></th>
+                    <td>@consultant.FirstName</td>
+                    <td>@consultant.Surname</td>
+                    <td>@consultant.Email</td>
+                    <td>
+                        <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#Modal-@consultant.Id">
+                            Delete
+                        </button>
+
+                        @await Html.PartialAsync(
+                       "/Views/Shared/Modals/_ConfirmationModal.cshtml",
+                       new ConfirmationModalViewModel
+                       {
+                           Id = $"Modal-{consultant.Id}",
+                           ModalLabel = "Delete Confirmation",
+                           ModalText = $"Are you sure want to delete {consultant.Email} consultant?",
+                           ConfirmController = "Consultant",
+                           ConfirmAction = "DeleteConsultant",
+                           ConfirmText = "Yes",
+                           ConfirmParams = new Dictionary<string, string> { { "id", consultant.Id } },
+                           RejectText = "No"
+                       })
+
+                    </td>
                 </tr>
-            </thead>
-            <tbody>
-                @foreach (var consultant in Model)
-                {
-                    <tr>
-                        <td>@consultant.FirstName</td>
-                        <td>@consultant.Surname</td>
-                        <td>@consultant.Email</td>
-                        <td>
-                            <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#Modal-@consultant.Id">
-                                Delete
-                            </button>
-                          
-                              @await  Html.PartialAsync(
-                             "/Views/Shared/Modals/_ConfirmationModal.cshtml",
-                             new ConfirmationModalViewModel
-                             {
-                                 Id = $"Modal-{consultant.Id}",
-                                 ModalLabel = "Delete Confirmation",
-                                 ModalText = "Are you sure want to delete this consultant?",
-                                 ConfirmController="test",
-                                 ConfirmAction="test",
-                                 ConfrimText="Yes",
-                                 ConfirmParams= new Dictionary<string, string> { { "id", consultant.Id } },
-                                 RejectText="No"
-                             })
-                            
-                        </td>
-                    </tr>
-                }
-            </tbody>
-        </table>
-    </div>
+            }
+        </tbody>
+    </table>
+</div>
 
-    @{
-        var prevDisabled = !Model.HasPreviousPage ? "disabled" : "";
-        var nextDisabled = !Model.HasNextPage ? "disabled" : "";
-    }
+@if (Model.Modal.ModalText != null) { @await Html.PartialAsync("/Views/Shared/Modals/_Modal.cshtml", Model.Modal); }
 
-    <div class="d-flex">
-        <a asp-action="GetAllConsultants"
-           asp-route-pageIndex="@(Model.PageIndex - 1)"
-           class="btn btn-default @prevDisabled">
-            Prev
-        </a>
-        <div>@Model.PageIndex / @Model.TotalPages</div>
-        <a asp-action="GetAllConsultants"
-           asp-route-pageIndex="@(Model.PageIndex + 1)"
-           class="btn btn-default @nextDisabled ">
-            Next
-        </a>
-    </div>
+
+@{
+    var prevDisabled = !Model.ConsultantList.HasPreviousPage ? "disabled" : "";
+    var nextDisabled = !Model.ConsultantList.HasNextPage ? "disabled" : "";
+}
+
+<div class="d-flex">
+    <a asp-action="GetAllConsultants"
+       asp-route-pageIndex="@(Model.ConsultantList.PageIndex - 1)"
+       class="btn btn-default @prevDisabled">
+        Prev
+    </a>
+    <div>@Model.ConsultantList.PageIndex / @Model.ConsultantList.TotalPages</div>
+    <a asp-action="GetAllConsultants"
+       asp-route-pageIndex="@(Model.ConsultantList.PageIndex + 1)"
+       class="btn btn-default @nextDisabled ">
+        Next
+    </a>
+</div>

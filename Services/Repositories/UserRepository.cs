@@ -25,6 +25,11 @@ namespace OnlineConsulting.Services.Repositories
             _identityOptions = identityOptions;
         }
 
+        public User GetUserById(string id)
+        {
+           return _userManager.Users.FirstOrDefault(u => u.Id == id);
+        }
+
         public IQueryable<User> GetAllConsultantsForEmployer(string employerId) {
             return _userManager.Users.Where(u => u.EmployerId == employerId);
         }
@@ -57,6 +62,10 @@ namespace OnlineConsulting.Services.Repositories
 
 
             return new CreateConsultantValueObject { IdentityResult = result , GeneratedPassword = generatedPassword };
+        }
+
+        public async Task<IdentityResult>  DeleteConsultant(User user) {
+            return   await _userManager.DeleteAsync(user);
         }
     }
 }

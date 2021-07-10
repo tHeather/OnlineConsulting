@@ -1,11 +1,14 @@
 ﻿
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using OnlineConsulting.Models.Constants;
 using OnlineConsulting.Models.Entities;
 using OnlineConsulting.Models.Enums;
 using OnlineConsulting.Models.ViewModels.Consultant;
+using OnlineConsulting.Models.ViewModels.Modals;
 using OnlineConsulting.Services.Repositories.Interfaces;
 using OnlineConsulting.Tools;
+using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -58,16 +61,54 @@ namespace OnlineConsulting.Controllers
         }
 
         [HttpGet("list")]
-        public async Task<ActionResult> GetAllConsultants(int pageIndex = 1)
+        public async Task<ActionResult> GetAllConsultants(int pageIndex = 1, ModalViewModel modalViewModel = null)
         {
             var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
 
-            return View(
-                await PaginatedList<User>.CreateAsync(
+            var consultantList = await PaginatedList<User>.CreateAsync(
                     _userRepository.GetAllConsultantsForEmployer(userIdClaim.Value),
-                    pageIndex, 
-                    10)
+                    pageIndex,
+                    10);
+
+            return View(
+                    new GetAllConsultantViewModel() { 
+                        ConsultantList = consultantList,
+                        Modal =  modalViewModel
+                    }
                 );
+        }
+
+        [HttpGet("delete")]
+        public async Task<ActionResult> DeleteConsultant(string id) {
+
+            var user = _userRepository.GetUserById(id);
+
+            if(user == null) return RedirectToAction("GetAllConsultants", new ModalViewModel
+            {
+                ModalLabel = "Delete consultant",
+                ModalText = new List<string>() { "Selected consultant does not exist." },
+                IsVisible = true,
+                ModalType = ModalStyles.ERROR
+            });
+
+            var result = await _userRepository.DeleteConsultant(user);
+
+            if(!result.Succeeded) RedirectToAction("GetAllConsultants", new ModalViewModel
+            {
+                ModalLabel = "Delete consultant",
+                ModalText = (List<string>)result.Errors,
+                IsVisible = true,
+                ModalType = ModalStyles.ERROR
+            });
+
+            return RedirectToAction("GetAllConsultants", new ModalViewModel
+            {
+                ModalLabel = "Delete consultant",
+                ModalText = new List<string>() { "Selected consultant deleted successfully" },
+                IsVisible = true,
+                ModalType = ModalStyles.SUCCESS
+            });
+
         }
 
     }

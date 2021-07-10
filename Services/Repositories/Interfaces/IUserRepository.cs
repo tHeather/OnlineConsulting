@@ -11,8 +11,11 @@ namespace OnlineConsulting.Services.Repositories.Interfaces
 {
    public interface IUserRepository
     {
+        public User GetUserById(string id);
         public IQueryable<User> GetAllConsultantsForEmployer(string employerId);
 
         public Task<CreateConsultantValueObject> CreateConsultantAsync(AddConsultantViewModel addConsultantViewModel, string employerId);
+
+        public Task<IdentityResult> DeleteConsultant(User user);
     }
 }
