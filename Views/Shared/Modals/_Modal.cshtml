@@ -1,0 +1,28 @@
+﻿@using OnlineConsulting.Models.Constants;
+@model OnlineConsulting.Models.ViewModels.Modals.ModalViewModel;
+
+@{ 
+    var modalId = Model.ModalId != null && Model.ModalId.Length > 0 ? Model.ModalId: "infoModal";
+}
+
+<div id="@modalId"  class="modal fade" tabindex="-1" role="dialog" aria-labelledby="ModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header text-white @ModalStyles.CLASSES[$"{@Model.ModalType}Header"]">
+                <h4 class="modal-title" id="ModalLabel">@Model.ModalLabel</h4>
+            </div>
+            <div class="modal-body @ModalStyles.CLASSES[$"{@Model.ModalType}Background"]">
+                @foreach (var text in Model.ModalText)
+                {
+                    <p>@text</p>
+                }
+            </div>
+            <div class="modal-footer border-0 @ModalStyles.CLASSES[$"{@Model.ModalType}Background"]">
+                <button type="button" class="btn @ModalStyles.CLASSES[$"{@Model.ModalType}Btn"]" data-dismiss="modal">OK</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $('#@modalId').modal({ show: @Model.IsVisible.ToString().ToLower() })
+</script>

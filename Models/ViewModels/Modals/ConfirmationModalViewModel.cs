@@ -17,7 +17,7 @@ namespace OnlineConsulting.Models.ViewModels.Modals
 
         public Dictionary<string,string> ConfirmParams { get; set; }
 
-        public string ConfrimText { get; set; }
+        public string ConfirmText { get; set; }
 
         public string  RejectText { get; set; }
     }
