@@ -36,13 +36,13 @@ namespace OnlineConsulting.Tools
             }
         }
 
-        public List<int> GetSurroundingIndexes(int maxSideRange)
+        public IEnumerable<int> GetSurroundingIndexes(int maxSideRange)
         {
 
            var nextRangeEndIndex = TotalPages >= PageIndex + maxSideRange ? PageIndex + maxSideRange : TotalPages;
            var prevRangeEndIndex = PageIndex - maxSideRange > 1 ? PageIndex - maxSideRange : 1;
 
-           return Enumerable.Range(prevRangeEndIndex, nextRangeEndIndex - prevRangeEndIndex + 1).ToList();
+           return Enumerable.Range(prevRangeEndIndex, nextRangeEndIndex - prevRangeEndIndex + 1);
         }
 
         public static async Task<PaginatedList<T>> CreateAsync(IQueryable<T> source, int pageIndex, int pageSize)

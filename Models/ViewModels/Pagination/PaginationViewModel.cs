@@ -14,6 +14,6 @@ namespace OnlineConsulting.Models.ViewModels.Pagination
 
         public bool HasNextPage { get; set; }
 
-        public List<int> SurroundingIndexes { get; set; }
+        public IEnumerable<int> SurroundingIndexes { get; set; }
     }
 }
