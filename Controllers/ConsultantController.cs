@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using OnlineConsulting.Constants;
 using OnlineConsulting.Models.Constants;
 using OnlineConsulting.Models.Entities;
 using OnlineConsulting.Models.ViewModels.Consultant;
@@ -15,7 +16,7 @@ using System.Threading.Tasks;
 
 namespace OnlineConsulting.Controllers
 {
-
+    [Authorize(Roles = UserRoleValue.EMPLOYER)]
     [Route("consultants")]
 
     public class ConsultantController : Controller
