@@ -1,9 +1,9 @@
 ﻿
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using OnlineConsulting.Models.Constants;
 using OnlineConsulting.Models.Entities;
-using OnlineConsulting.Models.Enums;
 using OnlineConsulting.Models.ViewModels.Consultant;
 using OnlineConsulting.Models.ViewModels.Modals;
 using OnlineConsulting.Services.Repositories.Interfaces;
@@ -15,6 +15,7 @@ using System.Threading.Tasks;
 
 namespace OnlineConsulting.Controllers
 {
+
     [Route("consultants")]
 
     public class ConsultantController : Controller

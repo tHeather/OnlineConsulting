@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 using OnlineConsulting.Models.Entities;
-using OnlineConsulting.Models.Enums;
 using OnlineConsulting.Models.ViewModels.Consultant;
 using OnlineConsulting.Services.Repositories.Interfaces;
 using System;
@@ -10,6 +9,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using OnlineConsulting.Tools;
 using OnlineConsulting.Models.ValueObjects.User;
+using OnlineConsulting.Constants;
 
 namespace OnlineConsulting.Services.Repositories
 {
@@ -56,7 +56,7 @@ namespace OnlineConsulting.Services.Repositories
 
             if (result.Succeeded)
             {
-                await _userManager.AddToRoleAsync(user, UserRoleEnum.Consultant.ToString());
+                await _userManager.AddToRoleAsync(user, UserRoleValue.CONSULTANT);
                 await _userManager.UpdateAsync(user);
             }
 

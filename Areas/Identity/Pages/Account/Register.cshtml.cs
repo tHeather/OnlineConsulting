@@ -13,8 +13,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
+using OnlineConsulting.Constants;
 using OnlineConsulting.Models.Entities;
-using OnlineConsulting.Models.Enums;
 using OnlineConsulting.Services.Repositories.Interfaces;
 
 namespace OnlineConsulting.Areas.Identity.Pages.Account
@@ -104,7 +104,7 @@ namespace OnlineConsulting.Areas.Identity.Pages.Account
                 if (result.Succeeded)
                 {
 
-                    await _userManager.AddToRoleAsync(user,UserRoleEnum.Employer.ToString());
+                    await _userManager.AddToRoleAsync(user,UserRoleValue.EMPLOYER);
 
                     var settings = await _employerSettingsRepository.CreateSettingsAsync(user.Id);
 
