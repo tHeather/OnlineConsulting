@@ -20,21 +20,10 @@ namespace OnlineConsulting.Tools
             this.AddRange(items);
         }
 
-        public bool HasPreviousPage
-        {
-            get
-            {
-                return (PageIndex > 1);
-            }
-        }
+        public bool HasPreviousPage => PageIndex > 1;
 
-        public bool HasNextPage
-        {
-            get
-            {
-                return (PageIndex < TotalPages);
-            }
-        }
+        public bool HasNextPage => PageIndex < TotalPages;
+
 
         public IEnumerable<int> GetSurroundingIndexes(int maxSideRange)
         {
