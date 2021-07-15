@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace OnlineConsulting.Models.ValueObjects.User
 {
-    public class CreateConsultantValueObject
+    public class CreateConsultant
     {
       public  IdentityResult IdentityResult { get; set; }
          

@@ -34,7 +34,7 @@ namespace OnlineConsulting.Services.Repositories
             return _userManager.Users.Where(u => u.EmployerId == employerId);
         }
 
-        public async Task<CreateConsultantValueObject> CreateConsultantAsync(
+        public async Task<CreateConsultant> CreateConsultantAsync(
             AddConsultantViewModel addConsultantViewModel,
             string employerId)
         {
@@ -61,7 +61,7 @@ namespace OnlineConsulting.Services.Repositories
             }
 
 
-            return new CreateConsultantValueObject { IdentityResult = result , GeneratedPassword = generatedPassword };
+            return new CreateConsultant { IdentityResult = result , GeneratedPassword = generatedPassword };
         }
 
         public async Task<IdentityResult>  DeleteConsultant(User user) {
