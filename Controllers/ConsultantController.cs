@@ -68,7 +68,7 @@ namespace OnlineConsulting.Controllers
             var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
 
             var consultantList = await PaginatedList<User>.CreateAsync(
-                    _userRepository.GetAllConsultantsForEmployer(userIdClaim.Value),
+                    _userRepository.GetAllConsultantsForEmployerQuery(userIdClaim.Value),
                     pageIndex,
                     10);
 

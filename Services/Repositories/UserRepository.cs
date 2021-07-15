@@ -30,7 +30,7 @@ namespace OnlineConsulting.Services.Repositories
            return _userManager.Users.SingleOrDefault(u => u.Id == id);
         }
 
-        public IQueryable<User> GetAllConsultantsForEmployer(string employerId) {
+        public IQueryable<User> GetAllConsultantsForEmployerQuery(string employerId) {
             return _userManager.Users.Where(u => u.EmployerId == employerId);
         }
 
