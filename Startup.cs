@@ -59,7 +59,8 @@ namespace OnlineConsulting
             services.AddRazorPages();
             services.AddControllersWithViews();
 
-            services.AddTransient<IEmployerSettingsRepository, EmployerSettingsRepository>();
+            services.AddScoped<IEmployerSettingsRepository, EmployerSettingsRepository>();
+            services.AddScoped<IUserRepository, UserRepository>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

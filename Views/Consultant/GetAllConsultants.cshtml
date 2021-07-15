@@ -1,0 +1,64 @@
+﻿@using OnlineConsulting.Models.ViewModels.Modals;
+@using OnlineConsulting.Models.ViewModels.Pagination;
+@model OnlineConsulting.Models.ViewModels.Consultant.GetAllConsultantsViewModel;
+
+
+<h1>Consultant List</h1>
+
+<div class="table-responsive">
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col">First name </th>
+                <th scope="col">Surname</th>
+                <th scope="col">E-mail</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var consultant in Model.ConsultantList)
+            {
+                <tr>
+                    <td>@consultant.FirstName</td>
+                    <td>@consultant.Surname</td>
+                    <td>@consultant.Email</td>
+                    <td>
+                        <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#Modal-@consultant.Id">
+                            Delete
+                        </button>
+
+                        @await Html.PartialAsync(
+                       "/Views/Shared/Modals/_ConfirmationModal.cshtml",
+                       new ConfirmationModalViewModel
+                       {
+                           Id = $"Modal-{consultant.Id}",
+                           ModalLabel = "Delete Confirmation",
+                           ModalText = $"Are you sure want to delete {consultant.Email} consultant?",
+                           ConfirmController = "Consultant",
+                           ConfirmAction = "DeleteConsultant",
+                           ConfirmText = "Yes",
+                           ConfirmParams = new Dictionary<string, string> { { "id", consultant.Id } },
+                           RejectText = "No"
+                       })
+
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+@if (Model.Modal.ModalText != null)
+{@await Html.PartialAsync("/Views/Shared/Modals/_Modal.cshtml", Model.Modal);
+}
+
+@await Html.PartialAsync(
+    "/Views/Shared/Pagination/_Pagination.cshtml",
+    new PaginationViewModel
+    {
+        PageIndex = Model.ConsultantList.PageIndex,
+        TotalPages = Model.ConsultantList.TotalPages,
+        HasPreviousPage = Model.ConsultantList.HasPreviousPage,
+        HasNextPage = Model.ConsultantList.HasNextPage,
+        SurroundingIndexes = Model.ConsultantList.GetSurroundingIndexes(2)
+    })

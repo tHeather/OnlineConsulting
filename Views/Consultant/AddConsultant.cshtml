@@ -2,10 +2,21 @@
 
 <h1>Create a new consultant account.</h1>
 
-@if (@Model.IsAdded)
+@if (@Model.GeneratedPassword != null )
 {
 <div class="alert alert-success" role="alert">
-    Consultant added successfully.
+    <p>Consultant added successfully.</p>
+    <hr>
+    <table>
+        <tr>
+            <th>Login</th>
+            <td class="pl-3" >@Model.Login</td>
+        </tr>
+        <tr>
+            <th>Password</th>
+            <td  class="pl-3" >@Model.GeneratedPassword</td>
+        </tr>
+    </table>
 </div>
 }
 <form method="post" asp-controller="Consultant" asp-action="AddConsultant">
@@ -25,16 +36,6 @@
         <label asp-for="Email"></label>
         <input asp-for="Email" class="form-control" />
         <span asp-validation-for="Email" class="text-danger"></span>
-    </div>
-    <div class="form-group">
-        <label asp-for="Password"></label>
-        <input asp-for="Password" class="form-control" />
-        <span asp-validation-for="Password" class="text-danger"></span>
-    </div>
-    <div class="form-group">
-        <label asp-for="ConfirmPassword"></label>
-        <input asp-for="ConfirmPassword" class="form-control" />
-        <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
     </div>
     <button type="submit" class="btn btn-primary">Register</button>
 </form>

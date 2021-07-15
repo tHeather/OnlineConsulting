@@ -1,0 +1,22 @@
+﻿@model OnlineConsulting.Models.ViewModels.Modals.ConfirmationModalViewModel;
+
+<div class="modal fade" id="@Model.Id" tabindex="-1" role="dialog" aria-labelledby="ModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="ModalLabel">@Model.ModalLabel</h4>
+            </div>
+            <div class="modal-body">
+                @Model.ModalText
+            </div>
+            <div class="modal-footer">
+                <a 
+                   asp-all-route-data="@Model.ConfirmParams"
+                   asp-controller="@Model.ConfirmController"  
+                   asp-action="@Model.ConfirmAction"
+                   id="deleteBtn" class="btn bg-success mr-1 text-white">@Model.ConfirmText</a>
+                <button type="button" class="btn btn-danger" data-dismiss="modal">@Model.RejectText</button>
+            </div>
+        </div>
+    </div>
+</div>

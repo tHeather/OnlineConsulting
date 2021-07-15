@@ -1,5 +1,5 @@
 ﻿@using Microsoft.AspNetCore.Identity
-@using OnlineConsulting.Models.Enums
+@using OnlineConsulting.Constants;
 @inject SignInManager<OnlineConsulting.Models.Entities.User> SignInManager
 @inject UserManager<OnlineConsulting.Models.Entities.User> UserManager
 
@@ -9,15 +9,15 @@
     @if (SignInManager.IsSignedIn(User))
     {
 
-        if (User.IsInRole(UserRoleEnum.Employer.ToString()))
+        if (User.IsInRole(UserRoleValue.EMPLOYER))
         {
             <partial name="/Views/Shared/Navbar/_EmployerNavbar.cshtml" />
         }
-        else if (User.IsInRole(UserRoleEnum.Consultant.ToString()))
+        else if (User.IsInRole(UserRoleValue.CONSULTANT))
         {
             <div>Consultant</div>
         }
-        else if (User.IsInRole(UserRoleEnum.Admin.ToString()))
+        else if (User.IsInRole(UserRoleValue.ADMIN))
         {
             <div>Admin</div>
         }

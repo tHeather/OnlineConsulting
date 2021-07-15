@@ -1,0 +1,37 @@
+﻿@model OnlineConsulting.Models.ViewModels.Pagination.PaginationViewModel;
+
+@{
+    var prevDisabled = !Model.HasPreviousPage ? "disabled" : "";
+    var nextDisabled = !Model.HasNextPage ? "disabled" : "";
+}
+
+<nav>
+    <ul class="pagination">
+        <li class="page-item   @prevDisabled">
+            <a class="page-link"
+               aria-label="Previous"
+               asp-action="GetAllConsultants"
+               asp-route-pageIndex="@(Model.PageIndex - 1)">
+                <span aria-hidden="true">&laquo;</span>
+            </a>
+        </li>
+        @foreach (var index in Model.SurroundingIndexes)
+        {
+            var activeClass = index == Model.PageIndex ? "active" : "";
+
+            <li class="page-item @activeClass">
+                <a class="page-link "
+                   asp-action="GetAllConsultants"
+                   asp-route-pageIndex="@index">@index</a>
+            </li>
+        }
+        <li class="page-item  @nextDisabled">
+            <a class="page-link"
+               aria-label="Next"
+               asp-action="GetAllConsultants"
+               asp-route-pageIndex="@(Model.PageIndex + 1)">
+                <span aria-hidden="true">&raquo;</span>
+            </a>
+        </li>
+    </ul>
+</nav>

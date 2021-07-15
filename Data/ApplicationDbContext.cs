@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using OnlineConsulting.Constants;
 using OnlineConsulting.Models.Entities;
-using OnlineConsulting.Models.Enums;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -25,8 +25,8 @@ namespace OnlineConsulting.Data
             builder.Entity<IdentityRole>().HasData(
                     new IdentityRole {
                         Id = Guid.NewGuid().ToString(),
-                        Name = UserRoleEnum.Admin.ToString(), 
-                        NormalizedName = UserRoleEnum.Admin.ToString().ToUpper() 
+                        Name = UserRoleValue.ADMIN, 
+                        NormalizedName = UserRoleValue.ADMIN.ToUpper() 
                     }
                 );
 
@@ -34,8 +34,8 @@ namespace OnlineConsulting.Data
                     new IdentityRole
                     {
                         Id = Guid.NewGuid().ToString(),
-                        Name = UserRoleEnum.Employer.ToString(),
-                        NormalizedName = UserRoleEnum.Employer.ToString().ToUpper()
+                        Name = UserRoleValue.EMPLOYER,
+                        NormalizedName = UserRoleValue.EMPLOYER.ToUpper()
                     }
                 );
 
@@ -43,8 +43,8 @@ namespace OnlineConsulting.Data
                     new IdentityRole
                     {
                         Id = Guid.NewGuid().ToString(),
-                        Name = UserRoleEnum.Consultant.ToString(),
-                        NormalizedName = UserRoleEnum.Consultant.ToString().ToUpper()
+                        Name = UserRoleValue.CONSULTANT,
+                        NormalizedName = UserRoleValue.CONSULTANT.ToUpper()
                     }
                 );
 
