@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace OnlineConsulting.Models.ViewModels.Consultant
 {
-    public class GetAllConsultantViewModel
+    public class GetAllConsultantsViewModel
     {
         public PaginatedList<User> ConsultantList { get; set; }
 

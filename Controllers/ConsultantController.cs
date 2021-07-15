@@ -73,7 +73,7 @@ namespace OnlineConsulting.Controllers
                     10);
 
             return View(
-                    new GetAllConsultantViewModel() { 
+                    new GetAllConsultantsViewModel() { 
                         ConsultantList = consultantList,
                         Modal =  modalViewModel
                     }
