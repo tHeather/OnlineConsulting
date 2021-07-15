@@ -27,7 +27,7 @@ namespace OnlineConsulting.Services.Repositories
 
         public User GetUserById(string id)
         {
-           return _userManager.Users.FirstOrDefault(u => u.Id == id);
+           return _userManager.Users.SingleOrDefault(u => u.Id == id);
         }
 
         public IQueryable<User> GetAllConsultantsForEmployer(string employerId) {
