@@ -48,22 +48,22 @@ namespace OnlineConsulting.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "1a5f5b38-1cc0-486c-bea3-e55d6fd84c36",
-                            ConcurrencyStamp = "d8944bce-8288-4c1d-b41e-8670ff29214c",
+                            Id = "c319ab1e-f914-4ebb-8ac9-d6da40d88419",
+                            ConcurrencyStamp = "82d97ba8-6dc4-4035-b128-486361f5faa3",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
-                            Id = "ce0b74f1-2af9-445b-961f-345b93c787e9",
-                            ConcurrencyStamp = "5af06007-62bf-4c8e-9b4f-808534d9be30",
+                            Id = "51802d91-7fa7-436c-9873-a201c8a35bfb",
+                            ConcurrencyStamp = "77bdb44b-6927-4901-9f66-fa679d093453",
                             Name = "Employer",
                             NormalizedName = "EMPLOYER"
                         },
                         new
                         {
-                            Id = "59f7de6c-e749-4c53-b7c8-96cdb3d703c7",
-                            ConcurrencyStamp = "622a6bcc-bd20-4fbe-99b2-2c01c1ec9649",
+                            Id = "e1dbd6ec-4d0e-4f0a-bd9f-125cb168ff42",
+                            ConcurrencyStamp = "3bbefe73-1895-467e-9c26-0d73e6feef9a",
                             Name = "Consultant",
                             NormalizedName = "CONSULTANT"
                         });
@@ -171,6 +171,72 @@ namespace OnlineConsulting.Migrations
                     b.HasKey("UserId", "LoginProvider", "Name");
 
                     b.ToTable("AspNetUserTokens");
+                });
+
+            modelBuilder.Entity("OnlineConsulting.Models.Entities.ChatMessage", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("ConsultantId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("Content")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("ConversationId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreateDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Origin")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ConsultantId");
+
+                    b.HasIndex("ConversationId");
+
+                    b.ToTable("ChatMessages");
+                });
+
+            modelBuilder.Entity("OnlineConsulting.Models.Entities.Conversation", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("ConsultantId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateTime>("CreateDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("EndDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("LastMessageId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("LastMessageId1")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("StartDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ConsultantId");
+
+                    b.HasIndex("LastMessageId1");
+
+                    b.ToTable("Conversations");
                 });
 
             modelBuilder.Entity("OnlineConsulting.Models.Entities.EmployerSetting", b =>
@@ -332,6 +398,36 @@ namespace OnlineConsulting.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("OnlineConsulting.Models.Entities.ChatMessage", b =>
+                {
+                    b.HasOne("OnlineConsulting.Models.Entities.User", "Consultant")
+                        .WithMany()
+                        .HasForeignKey("ConsultantId");
+
+                    b.HasOne("OnlineConsulting.Models.Entities.Conversation", null)
+                        .WithMany("ChatMessages")
+                        .HasForeignKey("ConversationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Consultant");
+                });
+
+            modelBuilder.Entity("OnlineConsulting.Models.Entities.Conversation", b =>
+                {
+                    b.HasOne("OnlineConsulting.Models.Entities.User", "Consultant")
+                        .WithMany()
+                        .HasForeignKey("ConsultantId");
+
+                    b.HasOne("OnlineConsulting.Models.Entities.ChatMessage", "LastMessage")
+                        .WithMany()
+                        .HasForeignKey("LastMessageId1");
+
+                    b.Navigation("Consultant");
+
+                    b.Navigation("LastMessage");
+                });
+
             modelBuilder.Entity("OnlineConsulting.Models.Entities.User", b =>
                 {
                     b.HasOne("OnlineConsulting.Models.Entities.EmployerSetting", "EmployerSetting")
@@ -339,6 +435,11 @@ namespace OnlineConsulting.Migrations
                         .HasForeignKey("OnlineConsulting.Models.Entities.User", "EmployerSettingId");
 
                     b.Navigation("EmployerSetting");
+                });
+
+            modelBuilder.Entity("OnlineConsulting.Models.Entities.Conversation", b =>
+                {
+                    b.Navigation("ChatMessages");
                 });
 
             modelBuilder.Entity("OnlineConsulting.Models.Entities.EmployerSetting", b =>

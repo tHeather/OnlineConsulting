@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace OnlineConsulting.Migrations
 {
-    public partial class AddEmployerSettingsTable : Migration
+    public partial class initial : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -28,7 +28,7 @@ namespace OnlineConsulting.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     UserId = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    SubscriptionEndDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    SubscriptionEndDate = table.Column<DateTime>(type: "datetime2", nullable: true),
                     Domain = table.Column<string>(type: "nvarchar(260)", maxLength: 260, nullable: true)
                 },
                 constraints: table =>
@@ -63,7 +63,7 @@ namespace OnlineConsulting.Migrations
                 {
                     Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     EmployerId = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    EmployerSettingId = table.Column<int>(type: "int", nullable: false),
+                    EmployerSettingId = table.Column<int>(type: "int", nullable: true),
                     FirstName = table.Column<string>(type: "nvarchar(60)", maxLength: 60, nullable: false),
                     Surname = table.Column<string>(type: "nvarchar(60)", maxLength: 60, nullable: false),
                     UserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
@@ -89,7 +89,7 @@ namespace OnlineConsulting.Migrations
                         column: x => x.EmployerSettingId,
                         principalTable: "EmployerSettings",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -177,20 +177,72 @@ namespace OnlineConsulting.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
-            migrationBuilder.InsertData(
-                table: "AspNetRoles",
-                columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
-                values: new object[] { "73c84071-a08e-4563-b7ad-92a713339820", "92f25887-1864-418f-9a62-76aff23b519d", "Admin", "ADMIN" });
+            migrationBuilder.CreateTable(
+                name: "ChatMessages",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    ConversationId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    ConsultantId = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    Origin = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Content = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    CreateDate = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ChatMessages", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ChatMessages_AspNetUsers_ConsultantId",
+                        column: x => x.ConsultantId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Conversations",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    LastMessageId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    ConsultantId = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    CreateDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    StartDate = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    EndDate = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    Status = table.Column<int>(type: "int", nullable: false),
+                    LastMessageId1 = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Conversations", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Conversations_AspNetUsers_ConsultantId",
+                        column: x => x.ConsultantId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Conversations_ChatMessages_LastMessageId1",
+                        column: x => x.LastMessageId1,
+                        principalTable: "ChatMessages",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
 
             migrationBuilder.InsertData(
                 table: "AspNetRoles",
                 columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
-                values: new object[] { "0911eb8e-d149-46f2-b719-5717be975bd6", "7a404982-4756-4244-8493-e5df6390b8b6", "Employer", "EMPLOYER" });
+                values: new object[] { "c319ab1e-f914-4ebb-8ac9-d6da40d88419", "82d97ba8-6dc4-4035-b128-486361f5faa3", "Admin", "ADMIN" });
 
             migrationBuilder.InsertData(
                 table: "AspNetRoles",
                 columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
-                values: new object[] { "d4e12306-e927-4c14-b214-31244fe7a609", "7726b3f6-530c-4b8b-afc6-ad806d7f7e34", "Consultant", "CONSULTANT" });
+                values: new object[] { "51802d91-7fa7-436c-9873-a201c8a35bfb", "77bdb44b-6927-4901-9f66-fa679d093453", "Employer", "EMPLOYER" });
+
+            migrationBuilder.InsertData(
+                table: "AspNetRoles",
+                columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
+                values: new object[] { "e1dbd6ec-4d0e-4f0a-bd9f-125cb168ff42", "3bbefe73-1895-467e-9c26-0d73e6feef9a", "Consultant", "CONSULTANT" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
@@ -228,7 +280,8 @@ namespace OnlineConsulting.Migrations
                 name: "IX_AspNetUsers_EmployerSettingId",
                 table: "AspNetUsers",
                 column: "EmployerSettingId",
-                unique: true);
+                unique: true,
+                filter: "[EmployerSettingId] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
                 name: "UserNameIndex",
@@ -236,10 +289,50 @@ namespace OnlineConsulting.Migrations
                 column: "NormalizedUserName",
                 unique: true,
                 filter: "[NormalizedUserName] IS NOT NULL");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ChatMessages_ConsultantId",
+                table: "ChatMessages",
+                column: "ConsultantId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ChatMessages_ConversationId",
+                table: "ChatMessages",
+                column: "ConversationId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Conversations_ConsultantId",
+                table: "Conversations",
+                column: "ConsultantId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Conversations_LastMessageId1",
+                table: "Conversations",
+                column: "LastMessageId1");
+
+            migrationBuilder.AddForeignKey(
+                name: "FK_ChatMessages_Conversations_ConversationId",
+                table: "ChatMessages",
+                column: "ConversationId",
+                principalTable: "Conversations",
+                principalColumn: "Id",
+                onDelete: ReferentialAction.Cascade);
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropForeignKey(
+                name: "FK_ChatMessages_AspNetUsers_ConsultantId",
+                table: "ChatMessages");
+
+            migrationBuilder.DropForeignKey(
+                name: "FK_Conversations_AspNetUsers_ConsultantId",
+                table: "Conversations");
+
+            migrationBuilder.DropForeignKey(
+                name: "FK_ChatMessages_Conversations_ConversationId",
+                table: "ChatMessages");
+
             migrationBuilder.DropTable(
                 name: "AspNetRoleClaims");
 
@@ -263,6 +356,12 @@ namespace OnlineConsulting.Migrations
 
             migrationBuilder.DropTable(
                 name: "EmployerSettings");
+
+            migrationBuilder.DropTable(
+                name: "Conversations");
+
+            migrationBuilder.DropTable(
+                name: "ChatMessages");
         }
     }
 }
