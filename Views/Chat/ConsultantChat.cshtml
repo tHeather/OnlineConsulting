@@ -1,0 +1,59 @@
+﻿@model string;
+
+<div class="container">
+    <div class="row">&nbsp;</div>
+    <div class="row">
+        <div class="col-2">Message</div>
+        <div class="col-4"><input type="text" id="messageInput" /></div>
+    </div>
+    <div class="row">&nbsp;</div>
+    <div class="row">
+        <div class="col-6">
+            <input type="button" id="sendButton" value="Send Message" />
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-12">
+        <hr />
+    </div>
+</div>
+<div class="row">
+    <div class="col-6">
+        <ul id="messagesList"></ul>
+    </div>
+</div>
+<script src="~/js/signalr/dist/browser/signalr.js"></script>
+<script>
+    "use strict";
+
+    var connection = new signalR.HubConnectionBuilder().withUrl("/chatHub").build();
+
+    document.getElementById("sendButton").disabled = true;
+
+    connection.on("ReceiveMessageAsync", function (message) {
+        var li = document.createElement("li");
+        document.getElementById("messagesList").appendChild(li);
+        li.textContent = message;
+    });
+
+    connection.start().then(function () {
+        document.getElementById("sendButton").disabled = false;
+
+        connection.invoke("JoinToGroupAsync", "@Model").catch(function (err) {
+        return console.error(err.toString());
+    });
+    }).catch(function (err) {
+        return console.error(err.toString());
+    });
+
+    document.getElementById("sendButton").addEventListener("click", async function (event) {
+        var origin = window.location.href;
+        var message = document.getElementById("messageInput").value;
+
+        connection.invoke("SendMessageAsync", origin, message, "@Model").catch(function (err) {
+            return console.error(err.toString());
+        });
+        event.preventDefault();
+    });
+</script>

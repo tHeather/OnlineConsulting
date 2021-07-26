@@ -49,21 +49,21 @@ namespace OnlineConsulting.Migrations
                         new
                         {
                             Id = "c319ab1e-f914-4ebb-8ac9-d6da40d88419",
-                            ConcurrencyStamp = "82d97ba8-6dc4-4035-b128-486361f5faa3",
+                            ConcurrencyStamp = "c031a7af-f9e1-45c7-ab3a-8d6a5aea04e9",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
                             Id = "51802d91-7fa7-436c-9873-a201c8a35bfb",
-                            ConcurrencyStamp = "77bdb44b-6927-4901-9f66-fa679d093453",
+                            ConcurrencyStamp = "ad742293-7f72-476a-82e8-2c454fce1d40",
                             Name = "Employer",
                             NormalizedName = "EMPLOYER"
                         },
                         new
                         {
                             Id = "e1dbd6ec-4d0e-4f0a-bd9f-125cb168ff42",
-                            ConcurrencyStamp = "3bbefe73-1895-467e-9c26-0d73e6feef9a",
+                            ConcurrencyStamp = "a857f330-d993-458c-9a2b-4e92e57f46f0",
                             Name = "Consultant",
                             NormalizedName = "CONSULTANT"
                         });
@@ -218,7 +218,7 @@ namespace OnlineConsulting.Migrations
                     b.Property<DateTime?>("EndDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<Guid>("LastMessageId")
+                    b.Property<Guid?>("LastMessageId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid?>("LastMessageId1")

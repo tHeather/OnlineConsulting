@@ -8,7 +8,7 @@ namespace OnlineConsulting.Models.Entities
     public class Conversation
     {
         public Guid Id { get; set; }
-        public Guid LastMessageId { get; set; }
+        public Guid? LastMessageId { get; set; }
         public string ConsultantId { get; set; }
         public DateTime CreateDate { get; set; }
         public DateTime? StartDate { get; set; }
