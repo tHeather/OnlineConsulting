@@ -29,12 +29,12 @@ namespace OnlineConsulting.Controllers
         }
 
         [Authorize(Roles = UserRoleValue.CONSULTANT)]
-        [HttpGet("active-conversation-list")]
-        public async Task<IActionResult> ActiveConversationList()
+        [HttpGet("new-conversation-list")]
+        public async Task<IActionResult> NewConversationList()
         {
-            var connectionsHashEntry = await _chatRepository.GetAllConnectionsAsync();
+            var newConversationsWithConnections = await _chatRepository.GetNewConversationsWithConnectionsAsync();
 
-            return View("ActiveConversationList", connectionsHashEntry);
+            return View("NewConversationList", newConversationsWithConnections);
         }
 
     }

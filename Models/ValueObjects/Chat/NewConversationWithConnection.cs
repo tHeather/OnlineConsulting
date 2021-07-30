@@ -2,9 +2,9 @@
 
 namespace OnlineConsulting.Models.ValueObjects.Chat
 {
-    public class CreateMessage
+    public class NewConversationWithConnection
     {
-        public string Content { get; set; }
+        public string ConnectionId { get; set; }
         public Conversation Conversation { get; set; }
     }
 }

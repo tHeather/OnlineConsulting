@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.SignalR;
+using OnlineConsulting.Enums;
 using OnlineConsulting.Models.ValueObjects.Chat;
 using OnlineConsulting.Services.Repositories.Interfaces;
 using System;
@@ -22,7 +23,14 @@ namespace OnlineConsulting.Hubs
 
             if (!Context.User.Identity.IsAuthenticated)
             {
-                var conversation = await _chatRepository.CreateConversationAsync();
+
+                var createConversation = new CreateConversation
+                {
+                    Host = Context.GetHttpContext().Request.Host.ToString(),
+                    Path = Context.GetHttpContext().Request.Path.ToString()
+                };
+
+                var conversation = await _chatRepository.CreateConversationAsync(createConversation);
                 await Groups.AddToGroupAsync(Context.ConnectionId, Context.ConnectionId);
                 await _chatRepository.AddConnectionAsync(Context.ConnectionId, conversation.Id.ToString());
             }
@@ -36,6 +44,8 @@ namespace OnlineConsulting.Hubs
             if (!Context.User.Identity.IsAuthenticated)
             {
                 await Groups.RemoveFromGroupAsync(Context.ConnectionId, Context.ConnectionId);
+                var conversation = await _chatRepository.GetConversationByConnectionIdAsync(Context.ConnectionId);
+                await _chatRepository.UpdateConversationAsync(conversation, ConversationStatus.DONE);
                 await _chatRepository.RemoveConnectionAsync(Context.ConnectionId);
             }
 
@@ -55,7 +65,6 @@ namespace OnlineConsulting.Hubs
 
             var createMessage = new CreateMessage
             {
-                Origin = origin,
                 Content = message,
                 Conversation = conversation
             };

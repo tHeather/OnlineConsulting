@@ -184,7 +184,6 @@ namespace OnlineConsulting.Migrations
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     ConversationId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     ConsultantId = table.Column<string>(type: "nvarchar(450)", nullable: true),
-                    Origin = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Content = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     CreateDate = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
@@ -209,8 +208,9 @@ namespace OnlineConsulting.Migrations
                     CreateDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     StartDate = table.Column<DateTime>(type: "datetime2", nullable: true),
                     EndDate = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    Status = table.Column<int>(type: "int", nullable: false),
-                    LastMessageId1 = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
+                    Host = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Path = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Status = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -222,8 +222,8 @@ namespace OnlineConsulting.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_Conversations_ChatMessages_LastMessageId1",
-                        column: x => x.LastMessageId1,
+                        name: "FK_Conversations_ChatMessages_LastMessageId",
+                        column: x => x.LastMessageId,
                         principalTable: "ChatMessages",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
@@ -232,17 +232,17 @@ namespace OnlineConsulting.Migrations
             migrationBuilder.InsertData(
                 table: "AspNetRoles",
                 columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
-                values: new object[] { "c319ab1e-f914-4ebb-8ac9-d6da40d88419", "c031a7af-f9e1-45c7-ab3a-8d6a5aea04e9", "Admin", "ADMIN" });
+                values: new object[] { "c319ab1e-f914-4ebb-8ac9-d6da40d88419", "70f5cedf-9818-459a-a2bd-1a7d3c816c59", "Admin", "ADMIN" });
 
             migrationBuilder.InsertData(
                 table: "AspNetRoles",
                 columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
-                values: new object[] { "51802d91-7fa7-436c-9873-a201c8a35bfb", "ad742293-7f72-476a-82e8-2c454fce1d40", "Employer", "EMPLOYER" });
+                values: new object[] { "51802d91-7fa7-436c-9873-a201c8a35bfb", "df5e56e4-3dbf-43f5-941c-ee23916fd252", "Employer", "EMPLOYER" });
 
             migrationBuilder.InsertData(
                 table: "AspNetRoles",
                 columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
-                values: new object[] { "e1dbd6ec-4d0e-4f0a-bd9f-125cb168ff42", "a857f330-d993-458c-9a2b-4e92e57f46f0", "Consultant", "CONSULTANT" });
+                values: new object[] { "e1dbd6ec-4d0e-4f0a-bd9f-125cb168ff42", "9a69bd44-bf95-4dd1-ae1c-66c4dc7cc6cb", "Consultant", "CONSULTANT" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
@@ -306,9 +306,9 @@ namespace OnlineConsulting.Migrations
                 column: "ConsultantId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Conversations_LastMessageId1",
+                name: "IX_Conversations_LastMessageId",
                 table: "Conversations",
-                column: "LastMessageId1");
+                column: "LastMessageId");
 
             migrationBuilder.AddForeignKey(
                 name: "FK_ChatMessages_Conversations_ConversationId",

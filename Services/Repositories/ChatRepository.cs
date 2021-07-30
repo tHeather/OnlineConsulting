@@ -1,10 +1,12 @@
-﻿using OnlineConsulting.Data;
+﻿using Microsoft.EntityFrameworkCore;
+using OnlineConsulting.Data;
 using OnlineConsulting.Enums;
 using OnlineConsulting.Models.Entities;
 using OnlineConsulting.Models.ValueObjects.Chat;
 using OnlineConsulting.Services.Repositories.Interfaces;
 using StackExchange.Redis;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -27,7 +29,6 @@ namespace OnlineConsulting.Services.Repositories
             var message = new ChatMessage
             {
                 ConversationId = createMessage.Conversation.Id,
-                Origin = createMessage.Origin,
                 Content = createMessage.Content,
                 CreateDate = DateTime.UtcNow
             };
@@ -39,12 +40,14 @@ namespace OnlineConsulting.Services.Repositories
             await _dbContext.SaveChangesAsync();
         }
 
-        public async Task<Conversation> CreateConversationAsync()
+        public async Task<Conversation> CreateConversationAsync(CreateConversation createConversation)
         {
             var conversation = new Conversation
             {
                 CreateDate = DateTime.UtcNow,
-                Status = ConversationStatus.NEW
+                Status = ConversationStatus.NEW,
+                Host = createConversation.Host,
+                Path = createConversation.Path
             };
 
             _dbContext.Conversations.Add(conversation);
@@ -58,11 +61,32 @@ namespace OnlineConsulting.Services.Repositories
             return _dbContext.Conversations.SingleOrDefault(c => c.Id == id);
         }
 
+        public async Task UpdateConversationAsync(Conversation conversation, ConversationStatus conversationStatus)
+        {
+            conversation.Status = conversationStatus;
+
+            await _dbContext.SaveChangesAsync();
+        }
+
         public async Task<Conversation> GetConversationByConnectionIdAsync(string connectionId)
         {
             var database = _multiplexer.GetDatabase();
             var conversationId = await database.HashGetAsync(SIGNALR_CONNECTIONS, connectionId);
             return GetConversationById(Guid.Parse(conversationId.ToString()));
+        }
+
+        public async Task<IEnumerable<NewConversationWithConnection>> GetNewConversationsWithConnectionsAsync()
+        {
+            var database = _multiplexer.GetDatabase();
+            var connections = await database.HashGetAllAsync(SIGNALR_CONNECTIONS);
+
+            var newConversations = _dbContext.Conversations.Where(c => c.Status == ConversationStatus.NEW).Include(c => c.LastMessage).ToList();
+
+            return newConversations.Select(conversation => new NewConversationWithConnection
+            {
+                ConnectionId = connections.SingleOrDefault(c => c.Value.ToString() == conversation.Id.ToString()).Name,
+                Conversation = conversation
+            });
         }
 
         public async Task AddConnectionAsync(string connectionId, string conversationId)
@@ -75,12 +99,6 @@ namespace OnlineConsulting.Services.Repositories
         {
             var database = _multiplexer.GetDatabase();
             await database.HashDeleteAsync(SIGNALR_CONNECTIONS, connectionId);
-        }
-
-        public async Task<HashEntry[]> GetAllConnectionsAsync()
-        {
-            var database = _multiplexer.GetDatabase();
-            return await database.HashGetAllAsync(SIGNALR_CONNECTIONS);
         }
 
     }

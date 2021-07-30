@@ -49,21 +49,21 @@ namespace OnlineConsulting.Migrations
                         new
                         {
                             Id = "c319ab1e-f914-4ebb-8ac9-d6da40d88419",
-                            ConcurrencyStamp = "c031a7af-f9e1-45c7-ab3a-8d6a5aea04e9",
+                            ConcurrencyStamp = "70f5cedf-9818-459a-a2bd-1a7d3c816c59",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
                             Id = "51802d91-7fa7-436c-9873-a201c8a35bfb",
-                            ConcurrencyStamp = "ad742293-7f72-476a-82e8-2c454fce1d40",
+                            ConcurrencyStamp = "df5e56e4-3dbf-43f5-941c-ee23916fd252",
                             Name = "Employer",
                             NormalizedName = "EMPLOYER"
                         },
                         new
                         {
                             Id = "e1dbd6ec-4d0e-4f0a-bd9f-125cb168ff42",
-                            ConcurrencyStamp = "a857f330-d993-458c-9a2b-4e92e57f46f0",
+                            ConcurrencyStamp = "9a69bd44-bf95-4dd1-ae1c-66c4dc7cc6cb",
                             Name = "Consultant",
                             NormalizedName = "CONSULTANT"
                         });
@@ -191,9 +191,6 @@ namespace OnlineConsulting.Migrations
                     b.Property<DateTime>("CreateDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("Origin")
-                        .HasColumnType("nvarchar(max)");
-
                     b.HasKey("Id");
 
                     b.HasIndex("ConsultantId");
@@ -218,11 +215,14 @@ namespace OnlineConsulting.Migrations
                     b.Property<DateTime?>("EndDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<string>("Host")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<Guid?>("LastMessageId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid?>("LastMessageId1")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<string>("Path")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime?>("StartDate")
                         .HasColumnType("datetime2");
@@ -234,7 +234,7 @@ namespace OnlineConsulting.Migrations
 
                     b.HasIndex("ConsultantId");
 
-                    b.HasIndex("LastMessageId1");
+                    b.HasIndex("LastMessageId");
 
                     b.ToTable("Conversations");
                 });
@@ -421,7 +421,7 @@ namespace OnlineConsulting.Migrations
 
                     b.HasOne("OnlineConsulting.Models.Entities.ChatMessage", "LastMessage")
                         .WithMany()
-                        .HasForeignKey("LastMessageId1");
+                        .HasForeignKey("LastMessageId");
 
                     b.Navigation("Consultant");
 
