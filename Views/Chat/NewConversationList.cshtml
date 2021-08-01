@@ -4,36 +4,42 @@
 
 @foreach (var newConversationWithConnection in Model)
 {
-<div class="card mb-5">
-    <div class="card-header d-flex justify-content-sm-between">
-        <div class="d-flex align-items-center" >
-            <i class="fas fa-comment-alt fa-lg"></i>
-            <h5 class="card-title m-0 ml-2 d-flex align-items-center">@newConversationWithConnection.Conversation.Host</h5>
+    <div class="card mb-5">
+        <div class="card-header d-flex justify-content-sm-between">
+            <div class="d-flex align-items-center">
+                <i class="fas fa-comment-alt fa-lg"></i>
+                <h5 class="card-title m-0 ml-2 d-flex align-items-center">@newConversationWithConnection.Conversation.Host</h5>
+            </div>
+            <a class="btn btn-success"
+               asp-controller="chat"
+               asp-action="consultant"
+               asp-route-clientConnectionId="@newConversationWithConnection.ConnectionId">Join</a>
         </div>
-        <a class="btn btn-success"
-           asp-controller="chat"
-           asp-action="consultant"
-           asp-route-clientConnectionId="@newConversationWithConnection.ConnectionId">Join</a>
-    </div>
-    <div class="card-body">
-        <table class="table">
-            <tbody>
+        <div class="card-body">
+            <table class="table">
+                <tbody>
 
-                <tr>
-                    <th>Create date</th>
-                    <td>@newConversationWithConnection.Conversation.CreateDate</td>
-                </tr>
-                <tr>
-                    <th>Origin</th>
-                    <td>@newConversationWithConnection.Conversation.Host@newConversationWithConnection.Conversation.Path</td>
-                </tr>
-                <tr>
-                    <th>Last message</th>
-                    <td>@newConversationWithConnection.Conversation.LastMessage?.Content</td>
-                </tr>
+                    <tr>
+                        <th>Create date</th>
+                        <td data-utc-date="@newConversationWithConnection.Conversation.CreateDate"></td>
+                    </tr>
+                    <tr>
+                        <th>Origin</th>
+                        <td>@newConversationWithConnection.Conversation.Host@newConversationWithConnection.Conversation.Path</td>
+                    </tr>
+                    <tr>
+                        <th>Last message</th>
+                        <td>@newConversationWithConnection.Conversation.LastMessage?.Content</td>
+                    </tr>
 
-            </tbody>
-        </table>
+                </tbody>
+            </table>
+        </div>
     </div>
-</div>
 }
+
+@section Scripts {
+    <partial name="/Views/Shared/Scripts/_UtcToLocal.cshtml" />
+}
+
+
