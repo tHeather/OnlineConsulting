@@ -1,19 +1,20 @@
-﻿@model IEnumerable<OnlineConsulting.Models.ValueObjects.Chat.NewConversationWithConnection>;
+﻿@using OnlineConsulting.Models.ViewModels.Pagination;
+@model OnlineConsulting.Models.ViewModels.Chat.NewConversationListViewModel;
 
-<h1>New conversation list</h1>
+<h1 class="my-5">New conversations</h1>
 
-@foreach (var newConversationWithConnection in Model)
+@foreach (var conversation in Model.ConversationList)
 {
     <div class="card mb-5">
         <div class="card-header d-flex justify-content-sm-between">
             <div class="d-flex align-items-center">
                 <i class="fas fa-comment-alt fa-lg"></i>
-                <h5 class="card-title m-0 ml-2 d-flex align-items-center">@newConversationWithConnection.Conversation.Host</h5>
+                <h5 class="card-title m-0 ml-2 d-flex align-items-center">@conversation.Conversation.Host</h5>
             </div>
             <a class="btn btn-success"
                asp-controller="chat"
                asp-action="consultant"
-               asp-route-clientConnectionId="@newConversationWithConnection.ConnectionId">Join</a>
+               asp-route-clientConnectionId="@conversation.ConnectionId">Join</a>
         </div>
         <div class="card-body">
             <table class="table">
@@ -21,15 +22,15 @@
 
                     <tr>
                         <th>Create date</th>
-                        <td data-utc-date="@newConversationWithConnection.Conversation.CreateDate"></td>
+                        <td data-utc-date="@conversation.Conversation.CreateDate"></td>
                     </tr>
                     <tr>
                         <th>Origin</th>
-                        <td>@newConversationWithConnection.Conversation.Host@newConversationWithConnection.Conversation.Path</td>
+                        <td>@conversation.Conversation.Host@conversation.Conversation.Path</td>
                     </tr>
                     <tr>
                         <th>Last message</th>
-                        <td>@newConversationWithConnection.Conversation.LastMessage?.Content</td>
+                        <td>@conversation.Conversation.LastMessage?.Content</td>
                     </tr>
 
                 </tbody>
@@ -37,6 +38,18 @@
         </div>
     </div>
 }
+
+@await Html.PartialAsync(
+    "/Views/Shared/Pagination/_Pagination.cshtml",
+    new PaginationViewModel
+    {
+        PageIndex = Model.ConversationList.PageIndex,
+        TotalPages = Model.ConversationList.TotalPages,
+        HasPreviousPage = Model.ConversationList.HasPreviousPage,
+        HasNextPage = Model.ConversationList.HasNextPage,
+        SurroundingIndexes = Model.ConversationList.GetSurroundingIndexes(2),
+        Action = "NewConversationList"
+    })
 
 @section Scripts {
     <partial name="/Views/Shared/Scripts/_UtcToLocal.cshtml" />

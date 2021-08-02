@@ -6,7 +6,6 @@ using OnlineConsulting.Models.ValueObjects.Chat;
 using OnlineConsulting.Services.Repositories.Interfaces;
 using StackExchange.Redis;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -75,18 +74,15 @@ namespace OnlineConsulting.Services.Repositories
             return GetConversationById(Guid.Parse(conversationId.ToString()));
         }
 
-        public async Task<IEnumerable<NewConversationWithConnection>> GetNewConversationsWithConnectionsAsync()
+        public IQueryable<Conversation> GetNewConversationsQuery()
+        {
+            return _dbContext.Conversations.Where(c => c.Status == ConversationStatus.NEW).Include(c => c.LastMessage);
+        }
+
+        public async Task<HashEntry[]> GetAllConnectionsAsync()
         {
             var database = _multiplexer.GetDatabase();
-            var connections = await database.HashGetAllAsync(SIGNALR_CONNECTIONS);
-
-            var newConversations = _dbContext.Conversations.Where(c => c.Status == ConversationStatus.NEW).Include(c => c.LastMessage).ToList();
-
-            return newConversations.Select(conversation => new NewConversationWithConnection
-            {
-                ConnectionId = connections.SingleOrDefault(c => c.Value.ToString() == conversation.Id.ToString()).Name,
-                Conversation = conversation
-            });
+            return await database.HashGetAllAsync(SIGNALR_CONNECTIONS);
         }
 
         public async Task AddConnectionAsync(string connectionId, string conversationId)
