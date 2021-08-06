@@ -60,17 +60,31 @@ namespace OnlineConsulting.Services.Repositories
             return _dbContext.Conversations.SingleOrDefault(c => c.Id == id);
         }
 
-        public async Task UpdateConversationAsync(Conversation conversation, ConversationStatus conversationStatus)
+        public async Task ChangeConversationStatusAsync(Conversation conversation, ConversationStatus conversationStatus)
         {
             conversation.Status = conversationStatus;
 
             await _dbContext.SaveChangesAsync();
         }
 
+        public async Task<bool> ChangeConversationStatusConcurrencySafeAsync(
+            Conversation conversation, ConversationStatus conversationStatus, byte[] rowVersion)
+        {
+            try
+            {
+                conversation.Status = conversationStatus;
+                _dbContext.Entry(conversation).OriginalValues["RowVersion"] = rowVersion;
+                await _dbContext.SaveChangesAsync();
+                return true;
+            }
+            catch { return false; }
+        }
+
         public async Task<Conversation> GetConversationByConnectionIdAsync(string connectionId)
         {
             var database = _multiplexer.GetDatabase();
             var conversationId = await database.HashGetAsync(SIGNALR_CONNECTIONS, connectionId);
+            if (conversationId.IsNullOrEmpty) return null;
             return GetConversationById(Guid.Parse(conversationId.ToString()));
         }
 

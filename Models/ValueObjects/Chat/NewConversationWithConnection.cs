@@ -6,5 +6,6 @@ namespace OnlineConsulting.Models.ValueObjects.Chat
     {
         public string ConnectionId { get; set; }
         public Conversation Conversation { get; set; }
+        public byte[] RowVersion { get; set; }
     }
 }

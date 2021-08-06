@@ -1,6 +1,7 @@
 ﻿using OnlineConsulting.Enums;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace OnlineConsulting.Models.Entities
@@ -19,6 +20,9 @@ namespace OnlineConsulting.Models.Entities
         public string Path { get; set; }
         public ConversationStatus Status { get; set; }
 
+
+        [Timestamp]
+        public byte[] RowVersion { get; set; }
         public ChatMessage LastMessage { get; set; }
         public List<ChatMessage> ChatMessages { get; set; }
         public User Consultant { get; set; }

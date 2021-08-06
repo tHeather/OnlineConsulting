@@ -45,7 +45,7 @@ namespace OnlineConsulting.Hubs
             {
                 await Groups.RemoveFromGroupAsync(Context.ConnectionId, Context.ConnectionId);
                 var conversation = await _chatRepository.GetConversationByConnectionIdAsync(Context.ConnectionId);
-                await _chatRepository.UpdateConversationAsync(conversation, ConversationStatus.DONE);
+                await _chatRepository.ChangeConversationStatusAsync(conversation, ConversationStatus.DONE);
                 await _chatRepository.RemoveConnectionAsync(Context.ConnectionId);
             }
 
