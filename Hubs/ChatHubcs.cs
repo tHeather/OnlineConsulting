@@ -57,7 +57,7 @@ namespace OnlineConsulting.Hubs
             await Groups.AddToGroupAsync(Context.ConnectionId, group);
         }
 
-        public async Task SendMessageAsync(string origin, string message, string clientConnectionId)
+        public async Task SendMessageAsync(string message, string clientConnectionId)
         {
             var connectionId = clientConnectionId ?? Context.ConnectionId;
 

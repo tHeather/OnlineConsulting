@@ -48,10 +48,9 @@
     });
 
     document.getElementById("sendButton").addEventListener("click", async function (event) {
-        var origin = window.location.href;
         var message = document.getElementById("messageInput").value;
 
-        connection.invoke("SendMessageAsync", origin, message, "@Model").catch(function (err) {
+        connection.invoke("SendMessageAsync", message, "@Model").catch(function (err) {
             return console.error(err.toString());
         });
         event.preventDefault();

@@ -17,10 +17,9 @@ connection.start().then(function () {
 });
 
 document.getElementById("sendButton").addEventListener("click", function (event) {
-    var origin = window.location.href;
     var message = document.getElementById("messageInput").value;
 
-    connection.invoke("SendMessageAsync", origin, message, null).catch(function (err) {
+    connection.invoke("SendMessageAsync", message, null).catch(function (err) {
         return console.error(err.toString());
     });
     event.preventDefault();
