@@ -11,7 +11,7 @@ namespace OnlineConsulting.Services.Repositories.Interfaces
 {
     public interface IChatRepository
     {
-        public Task CreateMessageAsync(CreateMessage createMessage);
+        public Task<ChatMessage> CreateMessageAsync(CreateMessage createMessage);
         public Task<Conversation> CreateConversationAsync(CreateConversation createConversation);
         public Task<Conversation> GetConversationByClientConnectionIdAsync(string ClientConnectionId);
         public Task<Guid?> GetConversationIdByClientConnectionIdAsync(string ClientConnectionId);

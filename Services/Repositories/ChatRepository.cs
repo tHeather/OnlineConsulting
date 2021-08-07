@@ -24,7 +24,7 @@ namespace OnlineConsulting.Services.Repositories
             _multiplexer = multiplexer;
         }
 
-        public async Task CreateMessageAsync(CreateMessage createMessage)
+        public async Task<ChatMessage> CreateMessageAsync(CreateMessage createMessage)
         {
             var message = new ChatMessage
             {
@@ -38,6 +38,8 @@ namespace OnlineConsulting.Services.Repositories
             createMessage.Conversation.LastMessageId = message.Id;
 
             await _dbContext.SaveChangesAsync();
+
+            return message;
         }
 
         public async Task<Conversation> CreateConversationAsync(CreateConversation createConversation)

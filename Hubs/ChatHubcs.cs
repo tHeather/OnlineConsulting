@@ -78,9 +78,15 @@ namespace OnlineConsulting.Hubs
                 Conversation = conversation
             };
 
-            await _chatRepository.CreateMessageAsync(createMessage);
+            var savedMessage = await _chatRepository.CreateMessageAsync(createMessage);
 
-            await Clients.Group(connectionId).SendAsync("ReceiveMessageAsync", message);
+            var chatMessageViewModel = new ChatMessageViewModel
+            {
+                Content = savedMessage.Content,
+                CreateDate = savedMessage.CreateDate.ToString()
+            };
+
+            await Clients.Group(connectionId).SendAsync("ReceiveMessageAsync", chatMessageViewModel);
         }
     }
 }

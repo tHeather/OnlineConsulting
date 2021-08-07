@@ -48,11 +48,23 @@
         convertUtcToLocalDate();
     });
 
-    connection.on("ReceiveMessageAsync", function (message) {
-        var li = document.createElement("li");
-        var messageList = document.getElementById("messagesList");
-        messageList.lastChild.after(li);
-        li.textContent = message;
+    connection.on("ReceiveMessageAsync", ({ createDate, content }) => {
+
+        const li = document.createElement("li");
+        const span = document.createElement('span');
+        const messageList = document.getElementById("messagesList");
+
+        span.dataset.utcDate = createDate;
+        li.textContent = content;
+        li.appendChild(span);
+
+        if (messageList.lastChild) {
+            messageList.lastChild.after(li);
+        } else {
+            messageList.appendChild(li);
+        }
+
+        convertUtcToLocalDate();
     });
 
     connection.start().then(function () {
