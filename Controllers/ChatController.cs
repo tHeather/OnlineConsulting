@@ -25,11 +25,6 @@ namespace OnlineConsulting.Controllers
             _chatRepository = chatRepository;
         }
 
-        public IActionResult Index()
-        {
-            return View("ClientChat");
-        }
-
         [Authorize(Roles = UserRoleValue.CONSULTANT)]
         [HttpPost("consultant")]
         public async Task<IActionResult> ConsultantChat(ConsultantChatConnection consultantChatConnection)

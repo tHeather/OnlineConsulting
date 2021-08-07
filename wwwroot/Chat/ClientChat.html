@@ -1,0 +1,46 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+</head>
+<body>
+    <div class="container">
+        <div class="row">&nbsp;</div>
+        <div class="row">
+            <div class="col-2">Message</div>
+            <div class="col-4"><input type="text" id="messageInput" /></div>
+        </div>
+        <div class="row">&nbsp;</div>
+        <div class="row">
+            <div class="col-6">
+                <input type="button" id="sendButton" value="Send Message" />
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-12">
+            <hr />
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-6">
+            <ul id="messagesList"></ul>
+        </div>
+    </div>
+    <script src="/js/signalr/dist/browser/signalr.js"></script>
+    <script src="/js/chat.js"></script>
+    <script src="/lib/moment.js/moment.min.js"></script>
+    <script>
+        const convertUtcToLocalDate = () => {
+            const dateTags = document.querySelectorAll("[data-utc-date]");
+            dateTags.forEach(dateTag => {
+                dateTag.innerText = moment
+                    .utc(dateTag.dataset.utcDate, 'DD-MM-YYYY HH:mm')
+                    .local().format('DD-MM-YYYY HH:mm');
+            });
+        }
+        convertUtcToLocalDate();
+    </script>
+</body>
+</html>
