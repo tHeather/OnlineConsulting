@@ -31,9 +31,27 @@
 
     document.getElementById("sendButton").disabled = true;
 
+    connection.on("ReceiveConversationHistoryAsync", function (messages) {
+
+        const fragment = document.createDocumentFragment();
+
+        messages.forEach(message => {
+            var li = document.createElement('li');
+            var span = document.createElement('span');
+            li.textContent = message.content;
+            span.dataset.utcDate = message.createDate;
+            li.appendChild(span);
+            fragment.appendChild(li);
+        });
+
+        document.getElementById("messagesList").appendChild(fragment);
+        convertUtcToLocalDate();
+    });
+
     connection.on("ReceiveMessageAsync", function (message) {
         var li = document.createElement("li");
-        document.getElementById("messagesList").appendChild(li);
+        var messageList = document.getElementById("messagesList");
+        messageList.lastChild.after(li);
         li.textContent = message;
     });
 
@@ -56,3 +74,7 @@
         event.preventDefault();
     });
 </script>
+
+@section Scripts {
+    <partial name="/Views/Shared/Scripts/_UtcToLocal.cshtml" />
+}

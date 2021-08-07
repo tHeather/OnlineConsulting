@@ -1,8 +1,10 @@
 ﻿using Microsoft.AspNetCore.SignalR;
 using OnlineConsulting.Enums;
 using OnlineConsulting.Models.ValueObjects.Chat;
+using OnlineConsulting.Models.ViewModels.Chat;
 using OnlineConsulting.Services.Repositories.Interfaces;
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace OnlineConsulting.Hubs
@@ -44,7 +46,7 @@ namespace OnlineConsulting.Hubs
             if (!Context.User.Identity.IsAuthenticated)
             {
                 await Groups.RemoveFromGroupAsync(Context.ConnectionId, Context.ConnectionId);
-                var conversation = await _chatRepository.GetConversationByConnectionIdAsync(Context.ConnectionId);
+                var conversation = await _chatRepository.GetConversationByClientConnectionIdAsync(Context.ConnectionId);
                 await _chatRepository.ChangeConversationStatusAsync(conversation, ConversationStatus.DONE);
                 await _chatRepository.RemoveConnectionAsync(Context.ConnectionId);
             }
@@ -52,16 +54,23 @@ namespace OnlineConsulting.Hubs
             await base.OnDisconnectedAsync(exception);
         }
 
-        public async Task JoinToGroupAsync(string group)
+        public async Task JoinToGroupAsync(string ClientConnectionId)
         {
-            await Groups.AddToGroupAsync(Context.ConnectionId, group);
+            await Groups.AddToGroupAsync(Context.ConnectionId, ClientConnectionId);
+            var messages = await _chatRepository.GetAllMessagesForConversationByClientConnectionId(ClientConnectionId);
+            var chatMessages = messages.Select(message => new ChatMessageViewModel
+            {
+                Content = message.Content,
+                CreateDate = message.CreateDate.ToString()
+            });
+            await Clients.Client(Context.ConnectionId).SendAsync("ReceiveConversationHistoryAsync", chatMessages);
         }
 
         public async Task SendMessageAsync(string message, string clientConnectionId)
         {
             var connectionId = clientConnectionId ?? Context.ConnectionId;
 
-            var conversation = await _chatRepository.GetConversationByConnectionIdAsync(connectionId);
+            var conversation = await _chatRepository.GetConversationByClientConnectionIdAsync(connectionId);
 
             var createMessage = new CreateMessage
             {

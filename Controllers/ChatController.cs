@@ -35,7 +35,7 @@ namespace OnlineConsulting.Controllers
         public async Task<IActionResult> ConsultantChat(ConsultantChatConnection consultantChatConnection)
         {
 
-            var conversation = await _chatRepository.GetConversationByConnectionIdAsync(consultantChatConnection.ClientConnectionId);
+            var conversation = await _chatRepository.GetConversationByClientConnectionIdAsync(consultantChatConnection.ClientConnectionId);
 
             if (conversation == null) return RedirectToAction("NewConversationList", new ModalViewModel
             {

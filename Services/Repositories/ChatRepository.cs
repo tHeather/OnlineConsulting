@@ -6,6 +6,7 @@ using OnlineConsulting.Models.ValueObjects.Chat;
 using OnlineConsulting.Services.Repositories.Interfaces;
 using StackExchange.Redis;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -80,17 +81,31 @@ namespace OnlineConsulting.Services.Repositories
             catch { return false; }
         }
 
-        public async Task<Conversation> GetConversationByConnectionIdAsync(string connectionId)
+        public async Task<Conversation> GetConversationByClientConnectionIdAsync(string ClientConnectionId)
+        {
+            var conversationId = await GetConversationIdByClientConnectionIdAsync(ClientConnectionId);
+            if (conversationId == null) return null;
+            return GetConversationById((Guid)conversationId);
+        }
+
+        public async Task<Guid?> GetConversationIdByClientConnectionIdAsync(string ClientConnectionId)
         {
             var database = _multiplexer.GetDatabase();
-            var conversationId = await database.HashGetAsync(SIGNALR_CONNECTIONS, connectionId);
+            var conversationId = await database.HashGetAsync(SIGNALR_CONNECTIONS, ClientConnectionId);
             if (conversationId.IsNullOrEmpty) return null;
-            return GetConversationById(Guid.Parse(conversationId.ToString()));
+            return Guid.Parse(conversationId.ToString());
         }
 
         public IQueryable<Conversation> GetNewConversationsQuery()
         {
             return _dbContext.Conversations.Where(c => c.Status == ConversationStatus.NEW).Include(c => c.LastMessage);
+        }
+
+        public async Task<IEnumerable<ChatMessage>> GetAllMessagesForConversationByClientConnectionId(string connectionId)
+        {
+            var conversationId = await GetConversationIdByClientConnectionIdAsync(connectionId);
+            var conversation = _dbContext.Conversations.Where(c => c.Id == conversationId).Include(c => c.ChatMessages).SingleOrDefault();
+            return conversation.ChatMessages;
         }
 
         public async Task<HashEntry[]> GetAllConnectionsAsync()

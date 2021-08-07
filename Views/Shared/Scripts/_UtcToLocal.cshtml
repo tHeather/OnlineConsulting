@@ -1,9 +1,12 @@
 ﻿<script src="~/lib/moment.js/moment.min.js"></script>
 <script>
-    const dateTags = document.querySelectorAll("[data-utc-date]");
-    dateTags.forEach(dateTag => {
-        dateTag.innerText = moment
-            .utc(dateTag.dataset.utcDate, 'DD-MM-YYYY HH:mm')
-            .local().format('DD-MM-YYYY HH:mm');
-    });
+    const convertUtcToLocalDate = () => {
+        const dateTags = document.querySelectorAll("[data-utc-date]");
+        dateTags.forEach(dateTag => {
+            dateTag.innerText = moment
+                .utc(dateTag.dataset.utcDate, 'DD-MM-YYYY HH:mm')
+                .local().format('DD-MM-YYYY HH:mm');
+        });
+    }
+    convertUtcToLocalDate();
 </script>
