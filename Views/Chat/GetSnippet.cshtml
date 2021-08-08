@@ -1,0 +1,76 @@
+﻿@using OnlineConsulting.Constants;
+@model Microsoft.Extensions.Configuration.IConfiguration;
+
+@{
+    var origin = Model[Parameters.APPLICATION_URL];
+    var baseSnippet = @"
+    <style>
+    .chat-display {
+    height: 100%;
+    width: 100%;
+    border: none;
+    }
+    .chat-container {
+    width: 50px;
+    height: 50px;
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    }
+    .chat-container--open {
+    width: calc(100% - 60px);
+    height: 100%;
+    max-width: 500px;
+    max-height: 500px;
+    }
+    </style>
+    <div id='chat-container' class='chat-container'>
+    <iframe id = 'chat-display' class='chat-display'></iframe>
+    </div>
+    <script>
+    const containerTag = document.getElementById('chat-container');
+    const chatDisplayTag = document.getElementById('chat-display');
+    const handleMessage = (event) => {
+    if (event.origin != 'APPLICATION_URL') return;
+    if (event.data != 'TOGGLE') return;
+    containerTag.classList.toggle('chat-container--open');
+    };
+    chatDisplayTag.setAttribute(
+    'src',
+    `APPLICATION_URL/chat/clientchat.html?client=${window.location}`
+    );
+    window.addEventListener('message', handleMessage, false);
+    </script>";
+
+    var snippet = baseSnippet.Replace("APPLICATION_URL", origin);
+}
+
+<h1 class="mt-2" ><i class="fas fa-solid fa-code text-info mr-2"></i>Get snippet</h1>
+<hr />
+<p class="lead mt-3 mb-4">Put this code snippet at the bottom of <b>&lt;body&gt;</b> section.</p>
+
+<div id="code-snippet" class="bg-light p-2 rounded d-flex flex-column">
+    <button 
+            class="btn btn-outline-info align-self-end" 
+            id="copy-code-btn"
+            data-container="body" 
+            data-toggle="popover" 
+            data-placement="top" 
+            data-content="Copied">
+        <i class="fas fa-solid fa-clipboard"></i>
+    </button>
+    <code class="my-2" >@snippet</code>
+</div>
+
+<script>
+
+    const updateClipboard = () => {
+        const copyText = document.getElementById("code-snippet").textContent;
+        navigator.clipboard.writeText(copyText).then(() => {
+            $("#copy-code-btn").popover('show');
+            setTimeout(() => { $("#copy-code-btn").popover('hide'); }, 1200);
+        });
+    }
+
+    document.querySelector("#copy-code-btn").addEventListener("click", updateClipboard);
+</script>

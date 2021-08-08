@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using OnlineConsulting.Constants;
 using OnlineConsulting.Enums;
 using OnlineConsulting.Models.Constants;
@@ -19,10 +20,19 @@ namespace OnlineConsulting.Controllers
     public class ChatController : Controller
     {
         private readonly IChatRepository _chatRepository;
+        private readonly IConfiguration _configuration;
 
-        public ChatController(IChatRepository chatRepository)
+        public ChatController(IChatRepository chatRepository, IConfiguration configuration)
         {
             _chatRepository = chatRepository;
+            _configuration = configuration;
+        }
+
+        [Authorize(Roles = UserRoleValue.EMPLOYER)]
+        [HttpGet("get-snippet")]
+        public IActionResult GetSnippet()
+        {
+            return View(_configuration);
         }
 
         [Authorize(Roles = UserRoleValue.CONSULTANT)]
