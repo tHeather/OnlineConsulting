@@ -83,7 +83,8 @@ namespace OnlineConsulting.Hubs
             var chatMessageViewModel = new ChatMessageViewModel
             {
                 Content = savedMessage.Content,
-                CreateDate = savedMessage.CreateDate.ToString()
+                CreateDate = savedMessage.CreateDate.ToString(),
+                IsFromClient = clientConnectionId == null
             };
 
             await Clients.Group(connectionId).SendAsync("ReceiveMessageAsync", chatMessageViewModel);

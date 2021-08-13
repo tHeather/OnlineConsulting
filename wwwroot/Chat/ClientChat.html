@@ -1,87 +1,31 @@
 ﻿<!DOCTYPE html>
 <html>
-<head>
+  <head>
     <meta charset="utf-8" />
-    <title></title>
-</head>
-<body>
-    <button id="chat-icon" class="chat-icon"></button>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Roboto&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" type="text/css" href="/css/clientChat.css" />
+  </head>
+  <body>
     <div id="chat-content" class="chat-content">
-        <div class="container">
-            <div class="row">&nbsp;</div>
-            <div class="row">
-                <div class="col-2">Message</div>
-                <div class="col-4"><input type="text" id="messageInput" /></div>
-            </div>
-            <div class="row">&nbsp;</div>
-            <div class="row">
-                <div class="col-6">
-                    <input type="button" id="sendButton" value="Send Message" />
-                </div>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-12">
-                <hr />
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-6">
-                <ul id="messagesList"></ul>
-            </div>
-        </div>
+      <ul id="chat-messages-list" class="chat-messages-list"></ul>
+      <div class="chat-form">
+        <textarea
+          maxlength="1000"
+          type="text"
+          id="chat-message-input"
+          class="chat-form__input"
+        ></textarea>
+        <button id="chat-send-button" class="chat-form__button">►</button>
+      </div>
     </div>
-    <script>
-        const chatIconButton = document.getElementById("chat-icon");
-        const urlSearchParams = new URLSearchParams(window.location.search);
-        const {client} = Object.fromEntries(urlSearchParams.entries());
-
-        const handleClick = () => {
-            window.parent.postMessage("TOGGLE", client);
-        };
-
-        chatIconButton.addEventListener("click", handleClick);
-    </script>
-    <style>
-        html {
-            width: 100%;
-            height: calc(100% - 50px);
-        }
-
-        body,
-        .chat-content {
-            width: 100%;
-            height: 100%;
-        }
-
-        body {
-            margin: 0;
-            overflow: hidden;
-        }
-
-        .chat-content {
-            background: lightblue;
-        }
-
-        .chat-icon {
-            width: 50px;
-            height: 50px;
-        }
-    </style>
-   
+    <button id="chat-icon" class="chat-icon"></button>
     <script src="/js/signalr/dist/browser/signalr.js"></script>
-    <script src="/js/chat.js"></script>
     <script src="/lib/moment.js/moment.min.js"></script>
-    <script>
-        const convertUtcToLocalDate = () => {
-            const dateTags = document.querySelectorAll("[data-utc-date]");
-            dateTags.forEach(dateTag => {
-                dateTag.innerText = moment
-                    .utc(dateTag.dataset.utcDate, 'DD-MM-YYYY HH:mm')
-                    .local().format('DD-MM-YYYY HH:mm');
-            });
-        }
-        convertUtcToLocalDate();
-    </script>
-</body>
+    <script type="module" src="/js/clientChat.js"></script>
+  </body>
 </html>

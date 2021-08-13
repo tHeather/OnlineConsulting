@@ -11,8 +11,8 @@
     border: none;
     }
     .chat-container {
-    width: 50px;
-    height: 50px;
+    width: 70px;
+    height: 70px;
     position: fixed;
     bottom: 30px;
     right: 30px;
@@ -20,14 +20,15 @@
     .chat-container--open {
     width: calc(100% - 60px);
     height: 100%;
-    max-width: 500px;
-    max-height: 500px;
+    max-width: 350px;
+    max-height: 600px;
     }
     </style>
     <div id='chat-container' class='chat-container'>
     <iframe id = 'chat-display' class='chat-display'></iframe>
     </div>
     <script>
+    (function () {
     const containerTag = document.getElementById('chat-container');
     const chatDisplayTag = document.getElementById('chat-display');
     const handleMessage = (event) => {
@@ -40,6 +41,7 @@
     `APPLICATION_URL/chat/clientchat.html?client=${window.location}`
     );
     window.addEventListener('message', handleMessage, false);
+    })();
     </script>";
 
     var snippet = baseSnippet.Replace("APPLICATION_URL", origin);

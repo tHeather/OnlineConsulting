@@ -4,5 +4,6 @@
     {
         public string Content { get; set; }
         public string CreateDate { get; set; }
+        public bool IsFromClient { get; set; }
     }
 }
