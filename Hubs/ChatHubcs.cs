@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.SignalR;
-using OnlineConsulting.Enums;
 using OnlineConsulting.Models.ValueObjects.Chat;
 using OnlineConsulting.Models.ViewModels.Chat;
 using OnlineConsulting.Services.Repositories.Interfaces;
@@ -13,69 +12,68 @@ namespace OnlineConsulting.Hubs
     {
         private readonly IChatRepository _chatRepository;
 
-
         public ChatHub(IChatRepository chatRepository)
         {
             _chatRepository = chatRepository;
-
         }
 
-        public override async Task OnConnectedAsync()
+        public async Task CreateConversationAsync(string firstMessage)
         {
-
-            if (!Context.User.Identity.IsAuthenticated)
+            var createConversation = new CreateConversation
             {
+                Host = Context.GetHttpContext().Request.Host.ToString(),
+                Path = Context.GetHttpContext().Request.Path.ToString()
+            };
 
-                var createConversation = new CreateConversation
-                {
-                    Host = Context.GetHttpContext().Request.Host.ToString(),
-                    Path = Context.GetHttpContext().Request.Path.ToString()
-                };
+            var conversation = await _chatRepository.CreateConversationAsync(createConversation);
 
-                var conversation = await _chatRepository.CreateConversationAsync(createConversation);
-                await Groups.AddToGroupAsync(Context.ConnectionId, Context.ConnectionId);
-                await _chatRepository.AddConnectionAsync(Context.ConnectionId, conversation.Id.ToString());
-            }
-
-            await base.OnConnectedAsync();
-        }
-
-        public override async Task OnDisconnectedAsync(Exception exception)
-        {
-
-            if (!Context.User.Identity.IsAuthenticated)
+            var createMessage = new CreateMessage
             {
-                await Groups.RemoveFromGroupAsync(Context.ConnectionId, Context.ConnectionId);
-                var conversation = await _chatRepository.GetConversationByClientConnectionIdAsync(Context.ConnectionId);
-                await _chatRepository.ChangeConversationStatusAsync(conversation, ConversationStatus.DONE);
-                await _chatRepository.RemoveConnectionAsync(Context.ConnectionId);
-            }
+                Content = firstMessage,
+                Conversation = conversation,
+                IsFromClient = true
+            };
 
-            await base.OnDisconnectedAsync(exception);
+            await _chatRepository.CreateMessageAsync(createMessage);
+            await JoinTheGroupAsync(conversation.Id.ToString());
         }
 
-        public async Task JoinToGroupAsync(string ClientConnectionId)
+        public async Task JoinTheGroupAsync(string conversationId)
         {
-            await Groups.AddToGroupAsync(Context.ConnectionId, ClientConnectionId);
-            var messages = await _chatRepository.GetAllMessagesForConversationByClientConnectionId(ClientConnectionId);
+            await Groups.AddToGroupAsync(Context.ConnectionId, conversationId);
+
+            var conversationIdGuid = Guid.Parse(conversationId);
+            var messages = await _chatRepository.GetAllMessagesForConversationById(conversationIdGuid);
+
             var chatMessages = messages.Select(message => new ChatMessageViewModel
             {
                 Content = message.Content,
-                CreateDate = message.CreateDate.ToString()
+                CreateDate = message.CreateDate.ToString(),
+                IsFromClient = message.IsFromClient
             });
-            await Clients.Client(Context.ConnectionId).SendAsync("ReceiveConversationHistoryAsync", chatMessages);
+
+            var joinToConversationViewModel = new JoinToConversationViewModel
+            {
+                Messages = chatMessages,
+                ConversationId = conversationId,
+            };
+
+            await Clients.Client(Context.ConnectionId)
+                         .SendAsync("JoinedTheGroup", joinToConversationViewModel);
         }
 
-        public async Task SendMessageAsync(string message, string clientConnectionId)
+        public async Task SendMessageAsync(string message, string conversationId)
         {
-            var connectionId = clientConnectionId ?? Context.ConnectionId;
+            var conversationIdGuid = Guid.Parse(conversationId);
+            var conversation = await _chatRepository.GetConversationByIdAsync(conversationIdGuid);
 
-            var conversation = await _chatRepository.GetConversationByClientConnectionIdAsync(connectionId);
+            var isMessageFromClient = !Context.User.Identity.IsAuthenticated;
 
             var createMessage = new CreateMessage
             {
                 Content = message,
-                Conversation = conversation
+                Conversation = conversation,
+                IsFromClient = isMessageFromClient
             };
 
             var savedMessage = await _chatRepository.CreateMessageAsync(createMessage);
@@ -84,10 +82,10 @@ namespace OnlineConsulting.Hubs
             {
                 Content = savedMessage.Content,
                 CreateDate = savedMessage.CreateDate.ToString(),
-                IsFromClient = clientConnectionId == null
+                IsFromClient = savedMessage.IsFromClient
             };
 
-            await Clients.Group(connectionId).SendAsync("ReceiveMessageAsync", chatMessageViewModel);
+            await Clients.Group(conversationId).SendAsync("ReceiveMessageAsync", chatMessageViewModel);
         }
     }
 }

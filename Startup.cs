@@ -5,7 +5,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using OnlineConsulting.Config;
 using OnlineConsulting.Data;
 using OnlineConsulting.Hubs;
 using OnlineConsulting.Models.Entities;
@@ -31,7 +30,6 @@ namespace OnlineConsulting
                 options.UseSqlServer(
                     Configuration.GetConnectionString("DefaultConnection")));
             services.AddDatabaseDeveloperPageExceptionFilter();
-            services.AddRedis(Configuration);
 
             services.AddIdentity<User, IdentityRole>(opt =>
             {

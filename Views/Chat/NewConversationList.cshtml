@@ -9,14 +9,14 @@
         <div class="card-header d-flex justify-content-sm-between">
             <div class="d-flex align-items-center">
                 <i class="fas fa-comment-alt fa-lg"></i>
-                <h5 class="card-title m-0 ml-2 d-flex align-items-center">@conversation.Conversation.Host</h5>
+                <h5 class="card-title m-0 ml-2 d-flex align-items-center">@conversation.Host</h5>
             </div>
             <form asp-controller="chat" asp-action="consultant" method="post">
                 @{
-                    var ClientConnectionId = conversation.ConnectionId;
+                    var ConversationId = conversation.Id;
                     var RowVersion = conversation.RowVersion;
                 }
-                <input type="hidden" asp-for=@ClientConnectionId />
+                <input type="hidden" asp-for=@ConversationId />
                 <input type="hidden" asp-for=@RowVersion />
                 <button class="btn btn-success">Join</button>
             </form>
@@ -26,15 +26,15 @@
                 <tbody>
                     <tr>
                         <th>Create date</th>
-                        <td data-utc-date="@conversation.Conversation.CreateDate"></td>
+                        <td data-utc-date="@conversation.CreateDate"></td>
                     </tr>
                     <tr>
                         <th>Origin</th>
-                        <td>@conversation.Conversation.Host@conversation.Conversation.Path</td>
+                        <td>@conversation.Host@conversation.Path</td>
                     </tr>
                     <tr>
                         <th>Last message</th>
-                        <td>@conversation.Conversation.LastMessage?.Content</td>
+                        <td>@conversation.LastMessage?.Content</td>
                     </tr>
 
                 </tbody>

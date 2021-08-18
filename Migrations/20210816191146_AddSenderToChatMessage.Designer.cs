@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using OnlineConsulting.Data;
 
 namespace OnlineConsulting.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20210816191146_AddSenderToChatMessage")]
+    partial class AddSenderToChatMessage
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -49,21 +51,21 @@ namespace OnlineConsulting.Migrations
                         new
                         {
                             Id = "c319ab1e-f914-4ebb-8ac9-d6da40d88419",
-                            ConcurrencyStamp = "c06e8c36-6e5c-421f-9d83-bf149b3975f2",
+                            ConcurrencyStamp = "1c03132b-1382-4864-999a-20d3e0790fe0",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
                             Id = "51802d91-7fa7-436c-9873-a201c8a35bfb",
-                            ConcurrencyStamp = "2adfd19a-c79b-4bb2-b701-3f03b827a494",
+                            ConcurrencyStamp = "0cc57c03-e2b8-4d6d-9044-242e99d7b772",
                             Name = "Employer",
                             NormalizedName = "EMPLOYER"
                         },
                         new
                         {
                             Id = "e1dbd6ec-4d0e-4f0a-bd9f-125cb168ff42",
-                            ConcurrencyStamp = "43d5146f-87f4-4a8e-bcb9-bcdd4970351e",
+                            ConcurrencyStamp = "ee406ccc-7aa0-4058-9866-ec66e14b5a38",
                             Name = "Consultant",
                             NormalizedName = "CONSULTANT"
                         });
@@ -191,8 +193,8 @@ namespace OnlineConsulting.Migrations
                     b.Property<DateTime>("CreateDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<bool>("IsFromClient")
-                        .HasColumnType("bit");
+                    b.Property<string>("Sender")
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 

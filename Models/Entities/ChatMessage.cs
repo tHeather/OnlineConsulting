@@ -9,6 +9,7 @@ namespace OnlineConsulting.Models.Entities
         public string ConsultantId { get; set; }
         public string Content { get; set; }
         public DateTime CreateDate { get; set; }
+        public bool IsFromClient { get; set; }
 
         public User Consultant { get; set; }
     }

@@ -1,7 +1,6 @@
 ﻿using OnlineConsulting.Enums;
 using OnlineConsulting.Models.Entities;
 using OnlineConsulting.Models.ValueObjects.Chat;
-using StackExchange.Redis;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,16 +12,11 @@ namespace OnlineConsulting.Services.Repositories.Interfaces
     {
         public Task<ChatMessage> CreateMessageAsync(CreateMessage createMessage);
         public Task<Conversation> CreateConversationAsync(CreateConversation createConversation);
-        public Task<Conversation> GetConversationByClientConnectionIdAsync(string ClientConnectionId);
-        public Task<Guid?> GetConversationIdByClientConnectionIdAsync(string ClientConnectionId);
-        public Task<IEnumerable<ChatMessage>> GetAllMessagesForConversationByClientConnectionId(string connectionId);
-        public Conversation GetConversationById(Guid id);
+        public Task<Conversation> GetConversationByIdAsync(Guid id);
         public Task ChangeConversationStatusAsync(Conversation conversation, ConversationStatus conversationStatus);
-        public Task<bool> ChangeConversationStatusConcurrencySafeAsync(Conversation conversation, ConversationStatus conversationStatus, byte[] rowVersion);
+        public Task<bool> ChangeConversationStatusConcurrencySafeAsync(
+            Conversation conversation, ConversationStatus conversationStatus, byte[] rowVersion);
         public IQueryable<Conversation> GetNewConversationsQuery();
-        public Task<HashEntry[]> GetAllConnectionsAsync();
-        public Task AddConnectionAsync(string connectionId, string conversationId);
-        public Task RemoveConnectionAsync(string connectionId);
-
+        public Task<IEnumerable<ChatMessage>> GetAllMessagesForConversationById(Guid conversationId);
     }
 }

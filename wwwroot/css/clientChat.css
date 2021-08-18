@@ -68,14 +68,35 @@ body {
   z-index: 999999999;
 }
 
+.chat-connection-message {
+    padding: 25px 10px;
+    border-radius: 10px;
+}
+
+.chat-connection-message--reconnecting,
+.chat-connection-message--connecting {
+    color: #004085;
+    background-color: #cce5ff;
+}
+
+.chat-connection-message--reconnected {
+    color: #155724;
+    background-color: #d4edda;
+}
+
+.chat-connection-message--disconnected {
+    color: #721c24;
+    background-color: #f8d7da;
+}
+
 .chat-messages-list {
-  overflow-y: auto;
-  list-style: none;
-  padding: 0 10px;
-  margin-top: 0;
-  border-radius: 10px;
-  display: flex;
-  flex-direction: column;
+    overflow-y: auto;
+    list-style: none;
+    padding: 0 10px;
+    margin-top: 0;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
 }
 
 .chat-messages-list__message {
@@ -90,6 +111,11 @@ body {
 .chat-messages-list__message--client {
   align-self: flex-end;
   background-color: #17a2b861;
+}
+
+.chat-messages-list__content{
+    word-break: normal;
+    word-wrap: break-word;
 }
 
 .chat-messages-list__date {

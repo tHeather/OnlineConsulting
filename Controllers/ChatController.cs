@@ -10,8 +10,8 @@ using OnlineConsulting.Models.ViewModels.Chat;
 using OnlineConsulting.Models.ViewModels.Modals;
 using OnlineConsulting.Services.Repositories.Interfaces;
 using OnlineConsulting.Tools;
+using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace OnlineConsulting.Controllers
@@ -39,16 +39,8 @@ namespace OnlineConsulting.Controllers
         [HttpPost("consultant")]
         public async Task<IActionResult> ConsultantChat(ConsultantChatConnection consultantChatConnection)
         {
-
-            var conversation = await _chatRepository.GetConversationByClientConnectionIdAsync(consultantChatConnection.ClientConnectionId);
-
-            if (conversation == null) return RedirectToAction("NewConversationList", new ModalViewModel
-            {
-                ModalLabel = "Ended conversation",
-                ModalText = new List<string>() { "The client has ended the conversation." },
-                IsVisible = true,
-                ModalType = ModalStyles.ERROR
-            });
+            var conversationId = Guid.Parse(consultantChatConnection.ConversationId);
+            var conversation = await _chatRepository.GetConversationByIdAsync(conversationId);
 
             if (conversation.Status != ConversationStatus.NEW) return RedirectToAction("NewConversationList", new ModalViewModel
             {
@@ -71,14 +63,13 @@ namespace OnlineConsulting.Controllers
             });
 
 
-            return View("ConsultantChat", consultantChatConnection.ClientConnectionId);
+            return View("ConsultantChat", consultantChatConnection.ConversationId);
         }
 
         [Authorize(Roles = UserRoleValue.CONSULTANT)]
         [HttpGet("new-conversation-list")]
         public async Task<IActionResult> NewConversationList(int pageIndex = 1, ModalViewModel modalViewModel = null)
         {
-            var connections = await _chatRepository.GetAllConnectionsAsync();
             var newConversations = _chatRepository.GetNewConversationsQuery();
 
             var newConversationsPaginated = await PaginatedList<Conversation>
@@ -87,30 +78,11 @@ namespace OnlineConsulting.Controllers
                                                                 pageIndex,
                                                                 10);
 
-
-            var newConversationWithConnections = newConversationsPaginated
-                .Select(conversation =>
-                    new NewConversationWithConnection
-                    {
-                        ConnectionId = connections.SingleOrDefault(
-                            c => c.Value.ToString() == conversation.Id.ToString()
-                            ).Name,
-                        Conversation = conversation,
-                        RowVersion = conversation.RowVersion
-                    }
-                );
-
-
-            var newConversationWithConnectionsPaginated = new PaginatedList<NewConversationWithConnection>(
-                                                                                newConversationWithConnections,
-                                                                                newConversationsPaginated.TotalPages,
-                                                                                newConversationsPaginated.PageIndex);
-
             return View(
                 "NewConversationList",
                     new NewConversationListViewModel
                     {
-                        ConversationList = newConversationWithConnectionsPaginated,
+                        ConversationList = newConversationsPaginated,
                         Modal = modalViewModel
                     }
                 );

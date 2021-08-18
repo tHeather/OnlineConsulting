@@ -4,7 +4,6 @@ using OnlineConsulting.Enums;
 using OnlineConsulting.Models.Entities;
 using OnlineConsulting.Models.ValueObjects.Chat;
 using OnlineConsulting.Services.Repositories.Interfaces;
-using StackExchange.Redis;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,13 +14,10 @@ namespace OnlineConsulting.Services.Repositories
     public class ChatRepository : IChatRepository
     {
         private readonly ApplicationDbContext _dbContext;
-        private readonly IConnectionMultiplexer _multiplexer;
-        const string SIGNALR_CONNECTIONS = "signalr-connections";
 
-        public ChatRepository(ApplicationDbContext applicationDbContext, IConnectionMultiplexer multiplexer)
+        public ChatRepository(ApplicationDbContext applicationDbContext)
         {
             _dbContext = applicationDbContext;
-            _multiplexer = multiplexer;
         }
 
         public async Task<ChatMessage> CreateMessageAsync(CreateMessage createMessage)
@@ -30,7 +26,8 @@ namespace OnlineConsulting.Services.Repositories
             {
                 ConversationId = createMessage.Conversation.Id,
                 Content = createMessage.Content,
-                CreateDate = DateTime.UtcNow
+                CreateDate = DateTime.UtcNow,
+                IsFromClient = createMessage.IsFromClient
             };
 
             _dbContext.ChatMessages.Add(message);
@@ -58,9 +55,9 @@ namespace OnlineConsulting.Services.Repositories
             return conversation;
         }
 
-        public Conversation GetConversationById(Guid id)
+        public Task<Conversation> GetConversationByIdAsync(Guid id)
         {
-            return _dbContext.Conversations.SingleOrDefault(c => c.Id == id);
+            return _dbContext.Conversations.SingleOrDefaultAsync(c => c.Id == id);
         }
 
         public async Task ChangeConversationStatusAsync(Conversation conversation, ConversationStatus conversationStatus)
@@ -83,49 +80,21 @@ namespace OnlineConsulting.Services.Repositories
             catch { return false; }
         }
 
-        public async Task<Conversation> GetConversationByClientConnectionIdAsync(string ClientConnectionId)
-        {
-            var conversationId = await GetConversationIdByClientConnectionIdAsync(ClientConnectionId);
-            if (conversationId == null) return null;
-            return GetConversationById((Guid)conversationId);
-        }
-
-        public async Task<Guid?> GetConversationIdByClientConnectionIdAsync(string ClientConnectionId)
-        {
-            var database = _multiplexer.GetDatabase();
-            var conversationId = await database.HashGetAsync(SIGNALR_CONNECTIONS, ClientConnectionId);
-            if (conversationId.IsNullOrEmpty) return null;
-            return Guid.Parse(conversationId.ToString());
-        }
-
         public IQueryable<Conversation> GetNewConversationsQuery()
         {
-            return _dbContext.Conversations.Where(c => c.Status == ConversationStatus.NEW).Include(c => c.LastMessage);
+            return _dbContext.Conversations
+                        .Where(c => c.Status == ConversationStatus.NEW)
+                        .Include(c => c.LastMessage);
         }
 
-        public async Task<IEnumerable<ChatMessage>> GetAllMessagesForConversationByClientConnectionId(string connectionId)
+        public async Task<IEnumerable<ChatMessage>> GetAllMessagesForConversationById(Guid conversationId)
         {
-            var conversationId = await GetConversationIdByClientConnectionIdAsync(connectionId);
-            var conversation = _dbContext.Conversations.Where(c => c.Id == conversationId).Include(c => c.ChatMessages).SingleOrDefault();
+            var conversation = await _dbContext.Conversations
+                                        .Where(c => c.Id == conversationId)
+                                        .Include(c => c.ChatMessages)
+                                        .SingleOrDefaultAsync();
+
             return conversation.ChatMessages;
-        }
-
-        public async Task<HashEntry[]> GetAllConnectionsAsync()
-        {
-            var database = _multiplexer.GetDatabase();
-            return await database.HashGetAllAsync(SIGNALR_CONNECTIONS);
-        }
-
-        public async Task AddConnectionAsync(string connectionId, string conversationId)
-        {
-            var database = _multiplexer.GetDatabase();
-            await database.HashSetAsync(SIGNALR_CONNECTIONS, new HashEntry[] { new HashEntry(connectionId, conversationId) });
-        }
-
-        public async Task RemoveConnectionAsync(string connectionId)
-        {
-            var database = _multiplexer.GetDatabase();
-            await database.HashDeleteAsync(SIGNALR_CONNECTIONS, connectionId);
         }
 
     }
