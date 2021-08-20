@@ -1,92 +1,19 @@
 ﻿@model string;
 
-<div class="container">
-    <div class="row">&nbsp;</div>
-    <div class="row">
-        <div class="col-2">Message</div>
-        <div class="col-4"><input type="text" id="messageInput" /></div>
-    </div>
-    <div class="row">&nbsp;</div>
-    <div class="row">
-        <div class="col-6">
-            <input type="button" id="sendButton" value="Send Message" />
-        </div>
+<div id="chat-content" class="chat-content">
+    <ul id="chat-messages-list" class="chat-messages-list"></ul>
+    <div class="chat-form">
+        <textarea maxlength="1000"
+                  type="text"
+                  id="chat-message-input"
+                  class="chat-form__input"></textarea>
+        <button id="chat-send-button" class="chat-form__button">►</button>
     </div>
 </div>
-<div class="row">
-    <div class="col-12">
-        <hr />
-    </div>
-</div>
-<div class="row">
-    <div class="col-6">
-        <ul id="messagesList"></ul>
-    </div>
-</div>
-<script src="~/js/signalr/dist/browser/signalr.js"></script>
-<script>
-    "use strict";
-
-    var connection = new signalR.HubConnectionBuilder().withUrl("/chatHub").build();
-
-    document.getElementById("sendButton").disabled = true;
-
-    connection.on("ReceiveConversationHistoryAsync", function (messages) {
-
-        const fragment = document.createDocumentFragment();
-
-        messages.forEach(message => {
-            var li = document.createElement('li');
-            var span = document.createElement('span');
-            li.textContent = message.content;
-            span.dataset.utcDate = message.createDate;
-            li.appendChild(span);
-            fragment.appendChild(li);
-        });
-
-        document.getElementById("messagesList").appendChild(fragment);
-        convertUtcToLocalDate();
-    });
-
-    connection.on("ReceiveMessageAsync", ({ createDate, content }) => {
-
-        const li = document.createElement("li");
-        const span = document.createElement('span');
-        const messageList = document.getElementById("messagesList");
-
-        span.dataset.utcDate = createDate;
-        li.textContent = content;
-        li.appendChild(span);
-
-        if (messageList.lastChild) {
-            messageList.lastChild.after(li);
-        } else {
-            messageList.appendChild(li);
-        }
-
-        convertUtcToLocalDate();
-    });
-
-    connection.start().then(function () {
-        document.getElementById("sendButton").disabled = false;
-
-        connection.invoke("JoinToGroupAsync", "@Model").catch(function (err) {
-        return console.error(err.toString());
-    });
-    }).catch(function (err) {
-        return console.error(err.toString());
-    });
-
-    document.getElementById("sendButton").addEventListener("click", async function (event) {
-        var message = document.getElementById("messageInput").value;
-
-        connection.invoke("SendMessageAsync", message, "@Model").catch(function (err) {
-            return console.error(err.toString());
-        });
-        event.preventDefault();
-    });
-</script>
 
 @section Scripts {
-    <partial name="/Views/Shared/Scripts/_UtcToLocal.cshtml" />
+    <script src="~/js/signalr/dist/browser/signalr.js"></script>
+    <script src="~/lib/moment.js/moment.min.js"></script>
+    <script>const conversationId = "@Model"</script>
+    <script type="module" src="~/js/consultantChat.js"></script>
 }

@@ -67,12 +67,13 @@ namespace OnlineConsulting.Services.Repositories
             await _dbContext.SaveChangesAsync();
         }
 
-        public async Task<bool> ChangeConversationStatusConcurrencySafeAsync(
-            Conversation conversation, ConversationStatus conversationStatus, byte[] rowVersion)
+        public async Task<bool> AssignConsultantToConversation(
+            Conversation conversation, string consultantId, byte[] rowVersion)
         {
             try
             {
-                conversation.Status = conversationStatus;
+                conversation.Status = ConversationStatus.IN_PROGRESS;
+                conversation.ConsultantId = consultantId;
                 _dbContext.Entry(conversation).OriginalValues["RowVersion"] = rowVersion;
                 await _dbContext.SaveChangesAsync();
                 return true;

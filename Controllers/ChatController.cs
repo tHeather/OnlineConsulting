@@ -12,6 +12,7 @@ using OnlineConsulting.Services.Repositories.Interfaces;
 using OnlineConsulting.Tools;
 using System;
 using System.Collections.Generic;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace OnlineConsulting.Controllers
@@ -41,6 +42,12 @@ namespace OnlineConsulting.Controllers
         {
             var conversationId = Guid.Parse(consultantChatConnection.ConversationId);
             var conversation = await _chatRepository.GetConversationByIdAsync(conversationId);
+            var consultantId = User.FindFirst(ClaimTypes.NameIdentifier).Value;
+
+            if (
+                conversation.Status == ConversationStatus.IN_PROGRESS &&
+                conversation.ConsultantId == consultantId
+                ) return View("ConsultantChat", consultantChatConnection.ConversationId);
 
             if (conversation.Status != ConversationStatus.NEW) return RedirectToAction("NewConversationList", new ModalViewModel
             {
@@ -50,8 +57,8 @@ namespace OnlineConsulting.Controllers
                 ModalType = ModalStyles.ERROR
             });
 
-            var isSaved = await _chatRepository.ChangeConversationStatusConcurrencySafeAsync(conversation,
-                                                                             ConversationStatus.IN_PROGRESS,
+            var isSaved = await _chatRepository.AssignConsultantToConversation(conversation,
+                                                                             consultantId,
                                                                              consultantChatConnection.RowVersion);
 
             if (!isSaved) return RedirectToAction("NewConversationList", new ModalViewModel
@@ -72,11 +79,10 @@ namespace OnlineConsulting.Controllers
         {
             var newConversations = _chatRepository.GetNewConversationsQuery();
 
-            var newConversationsPaginated = await PaginatedList<Conversation>
-                                                            .CreateAsync(
-                                                                newConversations,
-                                                                pageIndex,
-                                                                10);
+            var newConversationsPaginated = await PaginatedList<Conversation>.CreateAsync(
+                                                                                newConversations,
+                                                                                pageIndex,
+                                                                                10);
 
             return View(
                 "NewConversationList",
