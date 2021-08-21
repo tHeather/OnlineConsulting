@@ -68,7 +68,12 @@ const startConnection = async () => {
         if (conversationId) {
            await connection.invoke("JoinTheGroupAsync", conversationId);
         } else {
-            await connection.invoke("CreateConversationAsync", messageInput.value);
+            const url = new URL(client);
+            await connection.invoke("CreateConversationAsync", {
+                FirstMessage: messageInput.value,
+                Host: url.hostname,
+                Path: url.pathname
+            });
             clearInput();
         }
         hideConnectionStateMessage();

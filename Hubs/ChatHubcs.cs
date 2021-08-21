@@ -17,19 +17,19 @@ namespace OnlineConsulting.Hubs
             _chatRepository = chatRepository;
         }
 
-        public async Task CreateConversationAsync(string firstMessage)
+        public async Task CreateConversationAsync(CreateConversationViewModel createConversationViewModel)
         {
             var createConversation = new CreateConversation
             {
-                Host = Context.GetHttpContext().Request.Host.ToString(),
-                Path = Context.GetHttpContext().Request.Path.ToString()
+                Host = createConversationViewModel.Host,
+                Path = createConversationViewModel.Path
             };
 
             var conversation = await _chatRepository.CreateConversationAsync(createConversation);
 
             var createMessage = new CreateMessage
             {
-                Content = firstMessage,
+                Content = createConversationViewModel.FirstMessage,
                 Conversation = conversation,
                 IsFromClient = true
             };
