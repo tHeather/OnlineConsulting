@@ -63,7 +63,6 @@ namespace OnlineConsulting.Services.Repositories
         public async Task ChangeConversationStatusAsync(Conversation conversation, ConversationStatus conversationStatus)
         {
             conversation.Status = conversationStatus;
-
             await _dbContext.SaveChangesAsync();
         }
 
@@ -85,6 +84,13 @@ namespace OnlineConsulting.Services.Repositories
         {
             return _dbContext.Conversations
                         .Where(c => c.Status == ConversationStatus.NEW)
+                        .Include(c => c.LastMessage);
+        }
+
+        public IQueryable<Conversation> GetInProgressConversationsForConsultantQuery(string consultantId)
+        {
+            return _dbContext.Conversations
+                        .Where(c => c.Status == ConversationStatus.IN_PROGRESS && c.ConsultantId == consultantId)
                         .Include(c => c.LastMessage);
         }
 

@@ -94,5 +94,20 @@ namespace OnlineConsulting.Controllers
                 );
         }
 
+        [Authorize(Roles = UserRoleValue.CONSULTANT)]
+        [HttpGet("in-progress-conversation-list")]
+        public async Task<IActionResult> InProgressConversationList(int pageIndex = 1)
+        {
+            var consultantId = User.FindFirst(ClaimTypes.NameIdentifier).Value;
+            var conversationsInProgress = _chatRepository.GetInProgressConversationsForConsultantQuery(consultantId);
+
+            var conversationsInProgressPaginated = await PaginatedList<Conversation>.CreateAsync(
+                                                                                conversationsInProgress,
+                                                                                pageIndex,
+                                                                                10);
+
+            return View("InProgressConversationList", conversationsInProgressPaginated);
+        }
+
     }
 }

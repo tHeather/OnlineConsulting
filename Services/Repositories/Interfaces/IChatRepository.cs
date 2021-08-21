@@ -17,6 +17,7 @@ namespace OnlineConsulting.Services.Repositories.Interfaces
         public Task<bool> AssignConsultantToConversation(
                                 Conversation conversation, string consultantId, byte[] rowVersion);
         public IQueryable<Conversation> GetNewConversationsQuery();
+        public IQueryable<Conversation> GetInProgressConversationsForConsultantQuery(string consultantId);
         public Task<IEnumerable<ChatMessage>> GetAllMessagesForConversationById(Guid conversationId);
     }
 }
