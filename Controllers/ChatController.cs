@@ -40,14 +40,17 @@ namespace OnlineConsulting.Controllers
         [HttpPost("consultant")]
         public async Task<IActionResult> ConsultantChat(ConsultantChatConnection consultantChatConnection)
         {
-            var conversationId = Guid.Parse(consultantChatConnection.ConversationId);
-            var conversation = await _chatRepository.GetConversationByIdAsync(conversationId);
+            var conversation = await _chatRepository.GetConversationByIdAsync(consultantChatConnection.ConversationId);
             var consultantId = User.FindFirst(ClaimTypes.NameIdentifier).Value;
 
             if (
                 conversation.Status == ConversationStatus.IN_PROGRESS &&
                 conversation.ConsultantId == consultantId
-                ) return View("ConsultantChat", consultantChatConnection.ConversationId);
+                ) return View("ConsultantChat", new ConsultantChatViewModel
+                {
+                    ConversationId = consultantChatConnection.ConversationId,
+                    RedirectAction = consultantChatConnection.RedirectAction
+                });
 
             if (conversation.Status != ConversationStatus.NEW) return RedirectToAction("NewConversationList", new ModalViewModel
             {
@@ -70,7 +73,11 @@ namespace OnlineConsulting.Controllers
             });
 
 
-            return View("ConsultantChat", consultantChatConnection.ConversationId);
+            return View("ConsultantChat", new ConsultantChatViewModel
+            {
+                ConversationId = consultantChatConnection.ConversationId,
+                RedirectAction = consultantChatConnection.RedirectAction
+            });
         }
 
         [Authorize(Roles = UserRoleValue.CONSULTANT)]
@@ -107,6 +114,17 @@ namespace OnlineConsulting.Controllers
                                                                                 10);
 
             return View("InProgressConversationList", conversationsInProgressPaginated);
+        }
+
+        [Authorize(Roles = UserRoleValue.CONSULTANT)]
+        [HttpPost("change-conversation-status")]
+        public async Task<IActionResult> ChangeConversationStatus(
+            Guid conversationId, ConversationStatus conversationStatus, string redirectAction)
+        {
+            var conversation = await _chatRepository.GetConversationByIdAsync(conversationId);
+            await _chatRepository.ChangeConversationStatusAsync(conversation, conversationStatus);
+
+            return RedirectToAction(redirectAction);
         }
 
     }

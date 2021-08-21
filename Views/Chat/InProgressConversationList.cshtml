@@ -2,7 +2,7 @@
 @using OnlineConsulting.Models.ViewModels.Pagination;
 @model OnlineConsulting.Tools.PaginatedList<OnlineConsulting.Models.Entities.Conversation>;
 
-<h1 class="my-5">New conversations</h1>
+<h1 class="my-5">Conversations in progress</h1>
 
 @foreach (var conversation in Model)
 {
@@ -17,6 +17,7 @@
                     var ConversationId = conversation.Id;
                 }
                 <input type="hidden" asp-for=@ConversationId />
+                <input type="hidden" name="redirectAction" value="InProgressConversationList"/>
                 <button class="btn btn-success">Join</button>
             </form>
         </div>

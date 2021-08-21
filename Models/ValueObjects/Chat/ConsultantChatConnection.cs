@@ -1,8 +1,11 @@
-﻿namespace OnlineConsulting.Models.ValueObjects.Chat
+﻿using System;
+
+namespace OnlineConsulting.Models.ValueObjects.Chat
 {
     public class ConsultantChatConnection
     {
-        public string ConversationId { get; set; }
+        public Guid ConversationId { get; set; }
         public byte[] RowVersion { get; set; }
+        public string RedirectAction { get; set; }
     }
 }

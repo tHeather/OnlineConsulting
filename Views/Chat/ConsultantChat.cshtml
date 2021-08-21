@@ -1,4 +1,15 @@
-﻿@model string;
+﻿@using OnlineConsulting.Enums;
+@model OnlineConsulting.Models.ViewModels.Chat.ConsultantChatViewModel;
+
+<form method="post" asp-controller="Chat" asp-action="ChangeConversationStatus">
+    @{
+        var conversationId = Model.ConversationId;
+    }
+    <input type="hidden" asp-for=@conversationId />
+    <input type="hidden" name="conversationStatus" value="@ConversationStatus.DONE" />
+    <input type="hidden" name="redirectAction" value="@Model.RedirectAction"/>
+    <button class="btn btn-danger">Close conversation</button>
+</form>
 
 <div id="chat-content" class="chat-content">
     <ul id="chat-messages-list" class="chat-messages-list"></ul>
@@ -18,6 +29,6 @@
 @section Scripts {
     <script src="~/js/signalr/dist/browser/signalr.js"></script>
     <script src="~/lib/moment.js/moment.min.js"></script>
-    <script>const conversationId = "@Model"</script>
+    <script>const conversationId = "@Model.ConversationId"</script>
     <script type="module" src="~/js/consultantChat.js"></script>
 }
