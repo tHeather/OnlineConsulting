@@ -49,7 +49,9 @@ namespace OnlineConsulting.Controllers
                 ) return View("ConsultantChat", new ConsultantChatViewModel
                 {
                     ConversationId = consultantChatConnection.ConversationId,
-                    RedirectAction = consultantChatConnection.RedirectAction
+                    RedirectAction = consultantChatConnection.RedirectAction,
+                    Host = conversation.Host,
+                    Path = conversation.Path
                 });
 
             if (conversation.Status != ConversationStatus.NEW) return RedirectToAction("NewConversationList", new ModalViewModel
@@ -76,7 +78,9 @@ namespace OnlineConsulting.Controllers
             return View("ConsultantChat", new ConsultantChatViewModel
             {
                 ConversationId = consultantChatConnection.ConversationId,
-                RedirectAction = consultantChatConnection.RedirectAction
+                RedirectAction = consultantChatConnection.RedirectAction,
+                Host = conversation.Host,
+                Path = conversation.Path
             });
         }
 

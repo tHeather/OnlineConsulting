@@ -6,5 +6,7 @@ namespace OnlineConsulting.Models.ViewModels.Chat
     {
         public Guid ConversationId { get; set; }
         public string RedirectAction { get; set; }
+        public string Host { get; set; }
+        public string Path { get; set; }
     }
 }
