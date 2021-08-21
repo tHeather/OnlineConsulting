@@ -11,6 +11,13 @@
     <button class="btn btn-danger">Close conversation</button>
 </form>
 
+<a
+   asp-controller="Chat" 
+   asp-action="@Model.RedirectAction"
+   >
+    Back to list
+</a>
+
 <div id="chat-content" class="chat-content">
     <ul id="chat-messages-list" class="chat-messages-list"></ul>
     <div class="chat-form">
