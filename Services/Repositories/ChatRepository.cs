@@ -97,9 +97,8 @@ namespace OnlineConsulting.Services.Repositories
         public async Task<IEnumerable<ChatMessage>> GetAllMessagesForConversationById(Guid conversationId)
         {
             var conversation = await _dbContext.Conversations
-                                        .Where(c => c.Id == conversationId)
                                         .Include(c => c.ChatMessages)
-                                        .SingleOrDefaultAsync();
+                                        .SingleOrDefaultAsync(c => c.Id == conversationId);
 
             return conversation.ChatMessages;
         }
