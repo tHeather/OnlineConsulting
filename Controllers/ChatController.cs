@@ -46,21 +46,27 @@ namespace OnlineConsulting.Controllers
             if (
                 conversation.Status == ConversationStatus.IN_PROGRESS &&
                 conversation.ConsultantId == consultantId
-                ) return View("ConsultantChat", new ConsultantChatViewModel
+                )
+            {
+                return View("ConsultantChat", new ConsultantChatViewModel
                 {
                     ConversationId = consultantChatConnection.ConversationId,
                     RedirectAction = consultantChatConnection.RedirectAction,
                     Host = conversation.Host,
                     Path = conversation.Path
                 });
+            }
 
-            if (conversation.Status != ConversationStatus.NEW) return RedirectToAction("NewConversationList", new ModalViewModel
+            if (conversation.Status != ConversationStatus.NEW)
             {
-                ModalLabel = "Already taken",
-                ModalText = new List<string>() { "Other consultant has already joined to this conversation." },
-                IsVisible = true,
-                ModalType = ModalStyles.ERROR
-            });
+                return RedirectToAction("NewConversationList", new ModalViewModel
+                {
+                    ModalLabel = "Already taken",
+                    ModalText = new List<string>() { "Other consultant has already joined to this conversation." },
+                    IsVisible = true,
+                    ModalType = ModalStyles.ERROR
+                });
+            }
 
             var isSaved = await _chatRepository.AssignConsultantToConversation(conversation,
                                                                              consultantId,
