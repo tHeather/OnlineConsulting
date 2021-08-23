@@ -1,67 +1,67 @@
 ﻿@using OnlineConsulting.Enums;
 @model OnlineConsulting.Models.ViewModels.Chat.ConsultantChatViewModel;
 
-    <div class="container">
-        <div class="row">
-            <div class="col-3 bg-light rounded">
-                <a 
-                   class="d-block mb-5 mt-3"
-                   asp-controller="Chat"
-                   asp-action="@Model.RedirectAction">
-                    <i class="fas fa-chevron-left"></i>
-                    Back to list
-                </a>
-                <p class="d-flex flex-column align-items-start">
-                    <span class="font-weight-bold" >Host:</span>
-                    <span class="text-truncate w-100"
-                          data-toggle="tooltip"
-                          data-placement="top"
-                          title="@Model.Host">
-                        @Model.Host
-                    </span>
-                </p>
-                <p class="d-flex flex-column align-items-start">
-                    <span class="font-weight-bold" >Path:</span>
-                    <span class="text-truncate w-100"
-                          data-toggle="tooltip"
-                          data-placement="top"
-                          title="@Model.Path">
-                        @Model.Path
-                    </span>
-                </p>
-                <form method="post" asp-controller="Chat" asp-action="ChangeConversationStatus">
-                    @{
-                        var conversationId = Model.ConversationId;
-                    }
-                    <input type="hidden" asp-for=@conversationId />
-                    <input type="hidden" name="conversationStatus" value="@ConversationStatus.DONE" />
-                    <input type="hidden" name="redirectAction" value="@Model.RedirectAction" />
-                    <button class="btn btn-danger mt-5">Close conversation</button>
-                </form>
-            </div>
-            <div id="chat-content" class="chat-content col-9">
-                <ul id="chat-messages-list" class="chat-messages-list"></ul>
-                <div class="chat-form">
-                    <textarea maxlength="1000"
-                              type="text"
-                              id="chat-message-input"
-                              class="chat-form__input"></textarea>
-                    <button id="chat-send-button" class="chat-form__button">►</button>
-                </div>
+<div class="container">
+    <div class="row">
+        <div class="col-3 bg-light rounded">
+            <a class="d-block mb-5 mt-3"
+               asp-controller="Chat"
+               asp-action="@Model.RedirectAction">
+                <i class="fas fa-chevron-left"></i>
+                Back to list
+            </a>
+            <p class="d-flex flex-column align-items-start">
+                <span class="font-weight-bold">Host:</span>
+                <span class="text-truncate w-100"
+                      data-toggle="tooltip"
+                      data-placement="top"
+                      title="@Model.Host">
+                    @Model.Host
+                </span>
+            </p>
+            <p class="d-flex flex-column align-items-start">
+                <span class="font-weight-bold">Path:</span>
+                <span class="text-truncate w-100"
+                      data-toggle="tooltip"
+                      data-placement="top"
+                      title="@Model.Path">
+                    @Model.Path
+                </span>
+            </p>
+            <form method="post" asp-controller="Chat" asp-action="ChangeConversationStatus">
+                @{
+                    var conversationId = Model.ConversationId;
+                }
+                <input type="hidden" asp-for=@conversationId />
+                <input type="hidden" name="conversationStatus" value="@ConversationStatus.DONE" />
+                <input type="hidden" name="redirectAction" value="@Model.RedirectAction" />
+                <button class="btn btn-danger mt-5">Close conversation</button>
+            </form>
+        </div>
+        <div id="chat-content" class="chat-content col-9">
+            <ul id="chat-messages-list" class="chat-messages-list"></ul>
+            <div class="chat-form">
+                <textarea maxlength="1000"
+                          type="text"
+                          id="chat-message-input"
+                          class="chat-form__input"></textarea>
+                <button id="chat-send-button" class="chat-form__button">►</button>
             </div>
         </div>
     </div>
+</div>
 
-    @section Styles{
-        <link rel="stylesheet" href="~/css/consultantChat.css">
-    }
+@section Styles{
+    <link rel="stylesheet" href="~/css/consultantChat.css">
+}
 
-    @section Scripts {
-        <script src="~/js/signalr/dist/browser/signalr.js"></script>
-        <script src="~/lib/moment.js/moment.min.js"></script>
-        <script>const conversationId = "@Model.ConversationId"</script>
-        <script type="module" src="~/js/consultantChat.js"></script>
-        <script>$(function () {
-                $('[data-toggle="tooltip"]').tooltip()
-            })</script>
-    }
+@section Scripts {
+    <script src="~/js/signalr/dist/browser/signalr.js"></script>
+    <partial name="/Views/Shared/Scripts/_UtcToLocal.cshtml" />
+    <script>const conversationId = "@Model.ConversationId"</script>
+    <script type="module" src="~/js/consultantChat.js"></script>
+    <script>
+    $(function () {
+            $('[data-toggle="tooltip"]').tooltip()
+        })</script>
+}

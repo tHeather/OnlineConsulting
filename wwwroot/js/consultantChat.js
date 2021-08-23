@@ -13,7 +13,7 @@ const makeMessageTemplate = ({ createDate, content, isFromClient }) => {
     const messageTemplate = `
         <div class="chat-messages-list__content" >${content}</div>
         <div class="chat-messages-list__date">
-        ${moment.utc(createDate, "DD-MM-YYYY HH:mm").local().format("HH:mm")}
+        ${dayjs.utc(createDate, "DD-MM-YYYY HH:mm").local().format("HH:mm")}
         </div>
         `;
 
