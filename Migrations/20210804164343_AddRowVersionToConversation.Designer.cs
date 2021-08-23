@@ -10,8 +10,8 @@ using OnlineConsulting.Data;
 namespace OnlineConsulting.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20210630192622_ChangeUserEnityConstraint")]
-    partial class ChangeUserEnityConstraint
+    [Migration("20210804164343_AddRowVersionToConversation")]
+    partial class AddRowVersionToConversation
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -50,22 +50,22 @@ namespace OnlineConsulting.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "466c4c05-2a69-4d64-8a39-e8db4f6b5b04",
-                            ConcurrencyStamp = "28a43ad5-46e1-41f4-b71b-a04224a4bc68",
+                            Id = "c319ab1e-f914-4ebb-8ac9-d6da40d88419",
+                            ConcurrencyStamp = "2e37d2cb-228c-417e-9dac-3b5edb734ddb",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
-                            Id = "82fcd2ee-521a-4cbf-8c15-cae05a702688",
-                            ConcurrencyStamp = "473d15df-47d7-41b2-b615-d8786a13d2a9",
+                            Id = "51802d91-7fa7-436c-9873-a201c8a35bfb",
+                            ConcurrencyStamp = "12603279-97d3-4ef4-b48a-3bb0d4f6eb2b",
                             Name = "Employer",
                             NormalizedName = "EMPLOYER"
                         },
                         new
                         {
-                            Id = "1e0bdedb-d6c8-49ad-bbf3-8d5ee2d52df6",
-                            ConcurrencyStamp = "4f552f7d-636e-4451-a712-eca920cc47aa",
+                            Id = "e1dbd6ec-4d0e-4f0a-bd9f-125cb168ff42",
+                            ConcurrencyStamp = "9f4bdb89-1893-4406-8898-0109756f5666",
                             Name = "Consultant",
                             NormalizedName = "CONSULTANT"
                         });
@@ -175,6 +175,77 @@ namespace OnlineConsulting.Migrations
                     b.ToTable("AspNetUserTokens");
                 });
 
+            modelBuilder.Entity("OnlineConsulting.Models.Entities.ChatMessage", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("ConsultantId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("Content")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("ConversationId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreateDate")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ConsultantId");
+
+                    b.HasIndex("ConversationId");
+
+                    b.ToTable("ChatMessages");
+                });
+
+            modelBuilder.Entity("OnlineConsulting.Models.Entities.Conversation", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("ConsultantId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateTime>("CreateDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("EndDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Host")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid?>("LastMessageId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Path")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<byte[]>("RowVersion")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("rowversion");
+
+                    b.Property<DateTime?>("StartDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ConsultantId");
+
+                    b.HasIndex("LastMessageId");
+
+                    b.ToTable("Conversations");
+                });
+
             modelBuilder.Entity("OnlineConsulting.Models.Entities.EmployerSetting", b =>
                 {
                     b.Property<int>("Id")
@@ -186,7 +257,7 @@ namespace OnlineConsulting.Migrations
                         .HasMaxLength(260)
                         .HasColumnType("nvarchar(260)");
 
-                    b.Property<DateTime>("SubscriptionEndDate")
+                    b.Property<DateTime?>("SubscriptionEndDate")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("UserId")
@@ -334,6 +405,36 @@ namespace OnlineConsulting.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("OnlineConsulting.Models.Entities.ChatMessage", b =>
+                {
+                    b.HasOne("OnlineConsulting.Models.Entities.User", "Consultant")
+                        .WithMany()
+                        .HasForeignKey("ConsultantId");
+
+                    b.HasOne("OnlineConsulting.Models.Entities.Conversation", null)
+                        .WithMany("ChatMessages")
+                        .HasForeignKey("ConversationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Consultant");
+                });
+
+            modelBuilder.Entity("OnlineConsulting.Models.Entities.Conversation", b =>
+                {
+                    b.HasOne("OnlineConsulting.Models.Entities.User", "Consultant")
+                        .WithMany()
+                        .HasForeignKey("ConsultantId");
+
+                    b.HasOne("OnlineConsulting.Models.Entities.ChatMessage", "LastMessage")
+                        .WithMany()
+                        .HasForeignKey("LastMessageId");
+
+                    b.Navigation("Consultant");
+
+                    b.Navigation("LastMessage");
+                });
+
             modelBuilder.Entity("OnlineConsulting.Models.Entities.User", b =>
                 {
                     b.HasOne("OnlineConsulting.Models.Entities.EmployerSetting", "EmployerSetting")
@@ -341,6 +442,11 @@ namespace OnlineConsulting.Migrations
                         .HasForeignKey("OnlineConsulting.Models.Entities.User", "EmployerSettingId");
 
                     b.Navigation("EmployerSetting");
+                });
+
+            modelBuilder.Entity("OnlineConsulting.Models.Entities.Conversation", b =>
+                {
+                    b.Navigation("ChatMessages");
                 });
 
             modelBuilder.Entity("OnlineConsulting.Models.Entities.EmployerSetting", b =>

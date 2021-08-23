@@ -15,7 +15,7 @@
         }
         else if (User.IsInRole(UserRoleValue.CONSULTANT))
         {
-            <div>Consultant</div>
+            <partial name="/Views/Shared/Navbar/_EmployeeNavbar.cshtml" />
         }
         else if (User.IsInRole(UserRoleValue.ADMIN))
         {

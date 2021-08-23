@@ -1,0 +1,37 @@
+﻿<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Roboto&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" type="text/css" href="/css/clientChat.css" />
+  </head>
+  <body>
+      <div id="chat-content" class="chat-content">
+          <ul id="chat-messages-list" class="chat-messages-list"></ul>
+          <div class="chat-form">
+              <textarea maxlength="1000"
+                        type="text"
+                        id="chat-message-input"
+                        class="chat-form__input"></textarea>
+              <button id="chat-send-button" class="chat-form__button">►</button>
+          </div>
+      </div>
+      <button id="chat-icon" class="chat-icon"></button>
+      <script src="/js/signalr/dist/browser/signalr.js"></script>
+      <script src="/lib/dayjs/dayjs.min.js"></script>
+      <script src="/lib/dayjs/plugin/customParseFormat.min.js"></script>
+      <script src="/lib/dayjs/plugin/relativeTime.min.js"></script>
+      <script src="/lib/dayjs/plugin/utc.min.js"></script>
+      <script>   
+          dayjs.extend(window.dayjs_plugin_utc);
+          dayjs.extend(window.dayjs_plugin_relativeTime);
+          dayjs.extend(window.dayjs_plugin_customParseFormat);
+      </script>
+      <script type="module" src="/js/clientChat.js"></script>
+  </body>
+</html>

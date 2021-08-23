@@ -1,0 +1,33 @@
+{
+  "version": "1.0",
+  "defaultProvider": "unpkg",
+  "libraries": [
+    {
+      "library": "@microsoft/signalr@latest",
+      "destination": "wwwroot/js/signalr/",
+      "files": [
+        "dist/browser/signalr.min.js",
+        "dist/browser/signalr.js"
+      ]
+    },
+    {
+      "provider": "cdnjs",
+      "library": "font-awesome@5.15.3",
+      "destination": "wwwroot/lib/font-awesome/"
+    },
+    {
+      "provider": "cdnjs",
+      "library": "moment.js@2.29.1",
+      "destination": "wwwroot/lib/moment.js/"
+    },
+    {
+      "provider": "cdnjs",
+      "library": "dayjs@1.10.6",
+      "destination": "wwwroot/lib/dayjs/",
+      "files": [
+        "plugin/customParseFormat.js",
+        "plugin/customParseFormat.min.js"
+      ]
+    }
+  ]
+}

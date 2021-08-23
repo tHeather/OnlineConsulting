@@ -1,0 +1,67 @@
+﻿
+@using OnlineConsulting.Models.ViewModels.Pagination;
+@model OnlineConsulting.Tools.PaginatedList<OnlineConsulting.Models.Entities.Conversation>;
+
+<h1 class="my-5">Conversations in progress</h1>
+
+@if(Model.Count > 0) { 
+    @foreach (var conversation in Model)
+    {
+        <div class="card mb-5">
+            <div class="card-header d-flex justify-content-sm-between">
+                <div class="d-flex align-items-center">
+                    <i class="fas fa-comment-alt fa-lg"></i>
+                    <h5 class="card-title m-0 ml-2 d-flex align-items-center">@conversation.Host</h5>
+                </div>
+                <form asp-controller="chat" asp-action="consultant" method="post">
+                    @{
+                        var ConversationId = conversation.Id;
+                    }
+                    <input type="hidden" asp-for=@ConversationId />
+                    <input type="hidden" name="redirectAction" value="InProgressConversationList"/>
+                    <button class="btn btn-success">Join</button>
+                </form>
+            </div>
+            <div class="card-body">
+                <table class="table">
+                    <tbody>
+                        <tr>
+                            <th>Create date</th>
+                            <td data-utc-date="@conversation.CreateDate"></td>
+                        </tr>
+                        <tr>
+                            <th>Origin</th>
+                            <td>@conversation.Host@conversation.Path</td>
+                        </tr>
+                        <tr>
+                            <th>Last message</th>
+                            <td>@conversation.LastMessage?.Content</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    }
+}
+else 
+{
+<p>No active conversations</p>
+}
+
+@await Html.PartialAsync(
+    "/Views/Shared/Pagination/_Pagination.cshtml",
+    new PaginationViewModel
+    {
+        PageIndex = Model.PageIndex,
+        TotalPages = Model.TotalPages,
+        HasPreviousPage = Model.HasPreviousPage,
+        HasNextPage = Model.HasNextPage,
+        SurroundingIndexes = Model.GetSurroundingIndexes(2),
+        Action = "NewConversationList"
+    })
+
+@section Scripts {
+    <partial name="/Views/Shared/Scripts/_UtcToLocal.cshtml" />
+}
+
+
