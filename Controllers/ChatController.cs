@@ -20,6 +20,7 @@ namespace OnlineConsulting.Controllers
     [Route("chat")]
     public class ChatController : Controller
     {
+        const int PAGE_SIZE = 10;
         private readonly IChatRepository _chatRepository;
         private readonly IConfiguration _configuration;
 
@@ -99,7 +100,7 @@ namespace OnlineConsulting.Controllers
             var newConversationsPaginated = await PaginatedList<Conversation>.CreateAsync(
                                                                                 newConversations,
                                                                                 pageIndex,
-                                                                                10);
+                                                                                PAGE_SIZE);
 
             return View(
                 "NewConversationList",
@@ -121,7 +122,7 @@ namespace OnlineConsulting.Controllers
             var conversationsInProgressPaginated = await PaginatedList<Conversation>.CreateAsync(
                                                                                 conversationsInProgress,
                                                                                 pageIndex,
-                                                                                10);
+                                                                                PAGE_SIZE);
 
             return View("InProgressConversationList", conversationsInProgressPaginated);
         }
