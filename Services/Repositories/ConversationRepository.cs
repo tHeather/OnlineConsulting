@@ -5,38 +5,18 @@ using OnlineConsulting.Models.Entities;
 using OnlineConsulting.Models.ValueObjects.Chat;
 using OnlineConsulting.Services.Repositories.Interfaces;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace OnlineConsulting.Services.Repositories
 {
-    public class ChatRepository : IChatRepository
+    public class ConversationRepository : IConversationRepository
     {
         private readonly ApplicationDbContext _dbContext;
 
-        public ChatRepository(ApplicationDbContext applicationDbContext)
+        public ConversationRepository(ApplicationDbContext applicationDbContext)
         {
             _dbContext = applicationDbContext;
-        }
-
-        public async Task<ChatMessage> CreateMessageAsync(CreateMessage createMessage)
-        {
-            var message = new ChatMessage
-            {
-                ConversationId = createMessage.Conversation.Id,
-                Content = createMessage.Content,
-                CreateDate = DateTime.UtcNow,
-                IsFromClient = createMessage.IsFromClient
-            };
-
-            _dbContext.ChatMessages.Add(message);
-
-            createMessage.Conversation.LastMessageId = message.Id;
-
-            await _dbContext.SaveChangesAsync();
-
-            return message;
         }
 
         public async Task<Conversation> CreateConversationAsync(CreateConversation createConversation)
@@ -92,15 +72,6 @@ namespace OnlineConsulting.Services.Repositories
             return _dbContext.Conversations
                         .Where(c => c.Status == ConversationStatus.IN_PROGRESS && c.ConsultantId == consultantId)
                         .Include(c => c.LastMessage);
-        }
-
-        public async Task<IEnumerable<ChatMessage>> GetAllMessagesForConversationById(Guid conversationId)
-        {
-            var conversation = await _dbContext.Conversations
-                                        .Include(c => c.ChatMessages)
-                                        .SingleOrDefaultAsync(c => c.Id == conversationId);
-
-            return conversation.ChatMessages;
         }
 
     }

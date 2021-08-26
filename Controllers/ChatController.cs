@@ -21,12 +21,12 @@ namespace OnlineConsulting.Controllers
     public class ChatController : Controller
     {
         const int PAGE_SIZE = 10;
-        private readonly IChatRepository _chatRepository;
+        private readonly IConversationRepository _conversationRepository;
         private readonly IConfiguration _configuration;
 
-        public ChatController(IChatRepository chatRepository, IConfiguration configuration)
+        public ChatController(IConversationRepository conversationRepository, IConfiguration configuration)
         {
-            _chatRepository = chatRepository;
+            _conversationRepository = conversationRepository;
             _configuration = configuration;
         }
 
@@ -41,7 +41,7 @@ namespace OnlineConsulting.Controllers
         [HttpPost("consultant")]
         public async Task<IActionResult> ConsultantChat(ConsultantChatConnection consultantChatConnection)
         {
-            var conversation = await _chatRepository.GetConversationByIdAsync(consultantChatConnection.ConversationId);
+            var conversation = await _conversationRepository.GetConversationByIdAsync(consultantChatConnection.ConversationId);
             var consultantId = User.FindFirst(ClaimTypes.NameIdentifier).Value;
 
             if (
@@ -69,7 +69,7 @@ namespace OnlineConsulting.Controllers
                 });
             }
 
-            var isSaved = await _chatRepository.AssignConsultantToConversation(conversation,
+            var isSaved = await _conversationRepository.AssignConsultantToConversation(conversation,
                                                                              consultantId,
                                                                              consultantChatConnection.RowVersion);
 
@@ -95,7 +95,7 @@ namespace OnlineConsulting.Controllers
         [HttpGet("new-conversation-list")]
         public async Task<IActionResult> NewConversationList(int pageIndex = 1, ModalViewModel modalViewModel = null)
         {
-            var newConversations = _chatRepository.GetNewConversationsQuery();
+            var newConversations = _conversationRepository.GetNewConversationsQuery();
 
             var newConversationsPaginated = await PaginatedList<Conversation>.CreateAsync(
                                                                                 newConversations,
@@ -117,7 +117,7 @@ namespace OnlineConsulting.Controllers
         public async Task<IActionResult> InProgressConversationList(int pageIndex = 1)
         {
             var consultantId = User.FindFirst(ClaimTypes.NameIdentifier).Value;
-            var conversationsInProgress = _chatRepository.GetInProgressConversationsForConsultantQuery(consultantId);
+            var conversationsInProgress = _conversationRepository.GetInProgressConversationsForConsultantQuery(consultantId);
 
             var conversationsInProgressPaginated = await PaginatedList<Conversation>.CreateAsync(
                                                                                 conversationsInProgress,
@@ -132,8 +132,8 @@ namespace OnlineConsulting.Controllers
         public async Task<IActionResult> ChangeConversationStatus(
             Guid conversationId, ConversationStatus conversationStatus, string redirectAction)
         {
-            var conversation = await _chatRepository.GetConversationByIdAsync(conversationId);
-            await _chatRepository.ChangeConversationStatusAsync(conversation, conversationStatus);
+            var conversation = await _conversationRepository.GetConversationByIdAsync(conversationId);
+            await _conversationRepository.ChangeConversationStatusAsync(conversation, conversationStatus);
 
             return RedirectToAction(redirectAction);
         }

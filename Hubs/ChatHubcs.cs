@@ -10,11 +10,13 @@ namespace OnlineConsulting.Hubs
 {
     public class ChatHub : Hub
     {
-        private readonly IChatRepository _chatRepository;
+        private readonly IConversationRepository _conversationRepository;
+        private readonly IChatMessageRepository _chatMessageRepository;
 
-        public ChatHub(IChatRepository chatRepository)
+        public ChatHub(IConversationRepository conversationRepository, IChatMessageRepository chatMessageRepository)
         {
-            _chatRepository = chatRepository;
+            _conversationRepository = conversationRepository;
+            _chatMessageRepository = chatMessageRepository;
         }
 
         public async Task CreateConversationAsync(CreateConversationViewModel createConversationViewModel)
@@ -25,7 +27,7 @@ namespace OnlineConsulting.Hubs
                 Path = createConversationViewModel.Path
             };
 
-            var conversation = await _chatRepository.CreateConversationAsync(createConversation);
+            var conversation = await _conversationRepository.CreateConversationAsync(createConversation);
 
             var createMessage = new CreateMessage
             {
@@ -34,7 +36,7 @@ namespace OnlineConsulting.Hubs
                 IsFromClient = true
             };
 
-            await _chatRepository.CreateMessageAsync(createMessage);
+            await _chatMessageRepository.CreateMessageAsync(createMessage);
             await JoinTheGroupAsync(conversation.Id.ToString());
         }
 
@@ -43,7 +45,7 @@ namespace OnlineConsulting.Hubs
             await Groups.AddToGroupAsync(Context.ConnectionId, conversationId);
 
             var conversationIdGuid = Guid.Parse(conversationId);
-            var messages = await _chatRepository.GetAllMessagesForConversationById(conversationIdGuid);
+            var messages = await _chatMessageRepository.GetAllMessagesForConversationById(conversationIdGuid);
 
             var chatMessages = messages.Select(message => new ChatMessageViewModel
             {
@@ -65,7 +67,7 @@ namespace OnlineConsulting.Hubs
         public async Task SendMessageAsync(string message, string conversationId)
         {
             var conversationIdGuid = Guid.Parse(conversationId);
-            var conversation = await _chatRepository.GetConversationByIdAsync(conversationIdGuid);
+            var conversation = await _conversationRepository.GetConversationByIdAsync(conversationIdGuid);
 
             var isMessageFromClient = !Context.User.Identity.IsAuthenticated;
 
@@ -76,7 +78,7 @@ namespace OnlineConsulting.Hubs
                 IsFromClient = isMessageFromClient
             };
 
-            var savedMessage = await _chatRepository.CreateMessageAsync(createMessage);
+            var savedMessage = await _chatMessageRepository.CreateMessageAsync(createMessage);
 
             var chatMessageViewModel = new ChatMessageViewModel
             {
