@@ -1,12 +1,5 @@
-﻿<script src="~/lib/dayjs/dayjs.min.js"></script>
-<script src="~/lib/dayjs/plugin/customParseFormat.min.js"></script>
-<script src="~/lib/dayjs/plugin/relativeTime.min.js"></script>
-<script src="~/lib/dayjs/plugin/utc.min.js"></script>
+﻿<partial name="/Views/Shared/Scripts/_Dayjs.cshtml" />
 <script>
-    dayjs.extend(window.dayjs_plugin_utc);
-    dayjs.extend(window.dayjs_plugin_relativeTime);
-    dayjs.extend(window.dayjs_plugin_customParseFormat);
-
     const convertUtcToLocalDate = () => {
         const dateTags = document.querySelectorAll("[data-utc-date]");
         dateTags.forEach(dateTag => {

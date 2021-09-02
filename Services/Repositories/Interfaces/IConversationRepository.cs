@@ -1,6 +1,7 @@
 ﻿using OnlineConsulting.Enums;
 using OnlineConsulting.Models.Entities;
 using OnlineConsulting.Models.ValueObjects.Chat;
+using OnlineConsulting.Models.ValueObjects.Statistic;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
@@ -16,5 +17,6 @@ namespace OnlineConsulting.Services.Repositories.Interfaces
                                 Conversation conversation, string consultantId, byte[] rowVersion);
         public IQueryable<Conversation> GetNewConversationsQuery();
         public IQueryable<Conversation> GetInProgressConversationsForConsultantQuery(string consultantId);
+        public Task<ConversationStatistics> GetConversationsStatistics(ConversationStatisticsParams conversationStatisticsParams);
     }
 }

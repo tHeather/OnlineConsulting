@@ -3,6 +3,7 @@ using OnlineConsulting.Data;
 using OnlineConsulting.Enums;
 using OnlineConsulting.Models.Entities;
 using OnlineConsulting.Models.ValueObjects.Chat;
+using OnlineConsulting.Models.ValueObjects.Statistic;
 using OnlineConsulting.Services.Repositories.Interfaces;
 using System;
 using System.Linq;
@@ -72,6 +73,58 @@ namespace OnlineConsulting.Services.Repositories
             return _dbContext.Conversations
                         .Where(c => c.Status == ConversationStatus.IN_PROGRESS && c.ConsultantId == consultantId)
                         .Include(c => c.LastMessage);
+        }
+
+
+        public async Task<ConversationStatistics> GetConversationsStatistics(ConversationStatisticsParams conversationStatisticsParams)
+        {
+
+            var hoursOffset = conversationStatisticsParams.StartDate.Hour;
+            var filterQuery = _dbContext.Conversations
+                                            .Where(
+                                                c => c.CreateDate >= conversationStatisticsParams.StartDate &&
+                                                c.CreateDate < conversationStatisticsParams.EndDate
+                                            );
+
+            if (conversationStatisticsParams.Domain != null) filterQuery.Where(c => c.Host == conversationStatisticsParams.Domain);
+
+            var allConversationsQuery = filterQuery.GroupBy(
+                            c => c.CreateDate.Hour < hoursOffset ? c.CreateDate.Date : c.CreateDate.Date.AddDays(1),
+                            (date, conversationsDates) => new DailyConversationsNumber
+                            {
+                                Date = date,
+                                Count = conversationsDates.Count()
+                            }); ;
+
+            var servedConversationsQuery = filterQuery.Where(
+                                                    s => s.Status == ConversationStatus.DONE &&
+                                                    s.ConsultantId != null
+                                                    ).GroupBy(
+                                     c => c.CreateDate.Hour < hoursOffset ? c.CreateDate.Date : c.CreateDate.Date.AddDays(1),
+                                    (date, conversationsDates) => new DailyConversationsNumber
+                                    {
+                                        Date = new DateTime(date.Year, date.Month, date.Day, hoursOffset, 0, 0),
+                                        Count = conversationsDates.Count()
+                                    }); ;
+
+            var notServedConversationsQuery = filterQuery.Where(
+                                        s => s.Status == ConversationStatus.DONE &&
+                                        s.ConsultantId == null
+                                        ).GroupBy(
+                         c => c.CreateDate.Hour < hoursOffset ? c.CreateDate.Date : c.CreateDate.Date.AddDays(1),
+                        (date, conversationsDates) => new DailyConversationsNumber
+                        {
+                            Date = new DateTime(date.Year, date.Month, date.Day, hoursOffset, 0, 0),
+                            Count = conversationsDates.Count()
+                        }); ;
+
+
+            return new ConversationStatistics
+            {
+                AllConversations = await allConversationsQuery.ToListAsync(),
+                ServedConversations = await servedConversationsQuery.ToListAsync(),
+                NotServedConversations = await notServedConversationsQuery.ToListAsync(),
+            };
         }
 
     }

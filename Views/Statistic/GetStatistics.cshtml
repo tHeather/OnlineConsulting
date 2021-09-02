@@ -1,0 +1,16 @@
+﻿<div>
+    <canvas id="chart"></canvas>
+</div>
+
+<form id="form">
+    <input name="StartDate" id="StartDate" type="date" />
+    <input name="EndDate" id="EndDate" type="date" />
+    <input name="Domain" type="text" />
+    <button>Show</button>
+</form>
+
+@section Scripts{
+    <script src="~/lib/Chart.js/chart.min.js"></script>
+    <partial name="/Views/Shared/Scripts/_Dayjs.cshtml" />
+    <script type="module" src="~/js/statistics.js"></script>
+}
