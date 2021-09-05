@@ -139,6 +139,10 @@ namespace OnlineConsulting.Services.Repositories
 
             var averageConversationDurationTimespan = new TimeSpan((long)averageConversationDuration);
 
+            var inProgressConversationsQuery = filterQuery.Where(
+                                                    s => s.Status == ConversationStatus.IN_PROGRESS
+                                                    );
+
 
             return new ConversationStatistics
             {
@@ -146,7 +150,8 @@ namespace OnlineConsulting.Services.Repositories
                 ServedConversations = await servedConversationsQuery.ToListAsync(),
                 NotServedConversations = await notServedConversationsQuery.ToListAsync(),
                 AverageTimeConsultantJoining = averageTimeConsultantJoiningTimespan,
-                AverageConversationDuration = averageConversationDurationTimespan
+                AverageConversationDuration = averageConversationDurationTimespan,
+                InProgressConversationsNumber = await inProgressConversationsQuery.CountAsync()
             };
         }
 

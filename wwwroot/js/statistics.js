@@ -1,6 +1,7 @@
 ﻿const formTag = document.getElementById("form");
 const AverageTimeConsultantJoiningCounter = document.getElementById("AverageTimeConsultantJoiningCounter");
 const AverageConversationDuration = document.getElementById("AverageConversationDuration");
+const InProgressConversationsNumber = document.getElementById("InProgressConversationsNumber");
 const chart = new Chart(
     document.getElementById('chart'),
     {
@@ -119,10 +120,12 @@ const formatCounterValues = ({ hours, minutes, seconds }) => {
 
 const updateCounters = ({
     averageTimeConsultantJoining,
-    averageConversationDuration
+    averageConversationDuration,
+    inProgressConversationsNumber
 }) => {
     AverageTimeConsultantJoiningCounter.innerText = formatCounterValues(averageTimeConsultantJoining);
     AverageConversationDuration.innerText = formatCounterValues(averageConversationDuration);
+    InProgressConversationsNumber.innerText = inProgressConversationsNumber;
 }
 
 const updateStatistics = async () => {
