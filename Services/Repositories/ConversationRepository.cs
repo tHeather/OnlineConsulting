@@ -54,6 +54,7 @@ namespace OnlineConsulting.Services.Repositories
             {
                 conversation.Status = ConversationStatus.IN_PROGRESS;
                 conversation.ConsultantId = consultantId;
+                conversation.StartDate = DateTime.UtcNow;
                 _dbContext.Entry(conversation).OriginalValues["RowVersion"] = rowVersion;
                 await _dbContext.SaveChangesAsync();
                 return true;
@@ -74,7 +75,6 @@ namespace OnlineConsulting.Services.Repositories
                         .Where(c => c.Status == ConversationStatus.IN_PROGRESS && c.ConsultantId == consultantId)
                         .Include(c => c.LastMessage);
         }
-
 
         public async Task<ConversationStatistics> GetConversationsStatistics(ConversationStatisticsParams conversationStatisticsParams)
         {
@@ -118,12 +118,22 @@ namespace OnlineConsulting.Services.Repositories
                             Count = conversationsDates.Count()
                         }); ;
 
+            var consultantsJoiningTimes = await filterQuery.Select(c => c.StartDate - c.CreateDate).ToListAsync();
+
+
+            var averageTimeConsultantJoining = consultantsJoiningTimes.Count > 0 ?
+                                                    consultantsJoiningTimes.Average(t => t.Value.Ticks) :
+                                                    0;
+
+            var averageTimeConsultantJoiningTimespan = new TimeSpan((long)averageTimeConsultantJoining);
+
 
             return new ConversationStatistics
             {
                 AllConversations = await allConversationsQuery.ToListAsync(),
                 ServedConversations = await servedConversationsQuery.ToListAsync(),
                 NotServedConversations = await notServedConversationsQuery.ToListAsync(),
+                AverageTimeConsultantJoining = averageTimeConsultantJoiningTimespan
             };
         }
 

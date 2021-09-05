@@ -1,4 +1,5 @@
 ﻿const formTag = document.getElementById("form");
+const AverageTimeConsultantJoiningCounter = document.getElementById("AverageTimeConsultantJoiningCounter");
 const chart = new Chart(
     document.getElementById('chart'),
     {
@@ -42,7 +43,7 @@ const getStatistics = async (params) => {
             case 200:
                 return await response.json();
             case 500:
-                window.location.href = '/server-error';
+              //  window.location.href = '/server-error';
                 break;
             default:
         }
@@ -86,7 +87,7 @@ const makeDataset = (statisticList, color, label) => {
     };
 }
 
-const updateDatasets = ({
+const updateChart = ({
     allConversations,
     servedConversations,
     notServedConversations
@@ -107,18 +108,31 @@ const updateDatasets = ({
     chart.update();
 }
 
-const updateChart = async () => {
+
+const formatCounterValues = ({ hours, minutes, seconds }) => {
+    const hoursText = hours > 0 ? `${hours} H ` : "";
+    const minutesText = minutes > 0 ? `${minutes} M ` : "";
+    const secondsText = seconds > 0 ? `${seconds} S` : "";
+    return`${hoursText}${minutesText}${secondsText}`;
+}
+
+const updateCounters = ({ averageTimeConsultantJoining }) => {
+    AverageTimeConsultantJoiningCounter.innerText = formatCounterValues(averageTimeConsultantJoining);
+}
+
+const updateStatistics = async () => {
     const formValues = getFormValues();
     const statistics = await getStatistics(formValues);
-    updateDatasets(statistics);
+    updateChart(statistics);
+    updateCounters(statistics);
 }
 
 const submitForm = (e) => {
     e.preventDefault();
-    updateChart();
+    updateStatistics();
 }
 
 
-updateChart();
+updateStatistics();
 formTag.addEventListener("submit", submitForm);
 

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace OnlineConsulting.Models.ValueObjects.Statistic
 {
@@ -7,5 +8,6 @@ namespace OnlineConsulting.Models.ValueObjects.Statistic
         public IEnumerable<DailyConversationsNumber> AllConversations { get; set; }
         public IEnumerable<DailyConversationsNumber> ServedConversations { get; set; }
         public IEnumerable<DailyConversationsNumber> NotServedConversations { get; set; }
+        public TimeSpan AverageTimeConsultantJoining { get; set; }
     }
 }
