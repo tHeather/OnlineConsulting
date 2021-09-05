@@ -3,6 +3,7 @@ const AverageTimeConsultantJoiningCounter = document.getElementById("AverageTime
 const AverageConversationDuration = document.getElementById("AverageConversationDuration");
 const InProgressConversationsNumber = document.getElementById("InProgressConversationsNumber");
 const NewConversationsNumber = document.getElementById("NewConversationsNumber");
+const DateErrorTag = document.getElementById("DateErrorTag");
 const chart = new Chart(
     document.getElementById('chart'),
     {
@@ -77,6 +78,11 @@ const getFormValues = () => {
     return values;
 }
 
+const isDateValid = ({ StartDate, EndDate }) => {
+    const isValid = new Date(StartDate).getTime() <= new Date(EndDate).getTime();
+    DateErrorTag.innerText = isValid? "" : "End date must be greater than start date.";
+    return isValid;
+}
 
 const makeDataset = (statisticList, color, label) => {
 
@@ -133,6 +139,7 @@ const updateCounters = ({
 
 const updateStatistics = async () => {
     const formValues = getFormValues();
+    if (!isDateValid(formValues)) return;
     const statistics = await getStatistics(formValues);
     updateChart(statistics);
     updateCounters(statistics);
