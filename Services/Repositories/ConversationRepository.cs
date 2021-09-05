@@ -100,6 +100,14 @@ namespace OnlineConsulting.Services.Repositories
             var notServedConversationsByDayQuery = CountConversationsByDayQuery(notServedConversationsQuery, hoursOffset);
 
 
+            var inProgressConversationsQuery = filterQuery.Where(
+                                        s => s.Status == ConversationStatus.IN_PROGRESS
+                                        );
+
+            var newConversationsQuery = filterQuery.Where(
+                            s => s.Status == ConversationStatus.NEW
+                            );
+
             var consultantsJoiningTimes = await filterQuery
                                                     .Where(c => c.StartDate != null)
                                                     .Select(c => c.StartDate - c.CreateDate).ToListAsync();
@@ -110,19 +118,15 @@ namespace OnlineConsulting.Services.Repositories
                                                 .Select(c => c.EndDate - c.StartDate).ToListAsync();
             var averageConversationDurationTimespan = CalcAverageTime(conversationsDurations);
 
-            var inProgressConversationsQuery = filterQuery.Where(
-                                                    s => s.Status == ConversationStatus.IN_PROGRESS
-                                                    );
-
-
             return new ConversationStatistics
             {
                 AllConversations = await allConversationsByDayQuery.ToListAsync(),
                 ServedConversations = await servedConversationsByDayQuery.ToListAsync(),
                 NotServedConversations = await notServedConversationsByDayQuery.ToListAsync(),
+                InProgressConversationsNumber = await inProgressConversationsQuery.CountAsync(),
+                NewConversationsNumber = await newConversationsQuery.CountAsync(),
                 AverageTimeConsultantJoining = averageTimeConsultantJoiningTimespan,
-                AverageConversationDuration = averageConversationDurationTimespan,
-                InProgressConversationsNumber = await inProgressConversationsQuery.CountAsync()
+                AverageConversationDuration = averageConversationDurationTimespan
             };
         }
 

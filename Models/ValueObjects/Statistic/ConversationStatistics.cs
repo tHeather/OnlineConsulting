@@ -11,5 +11,6 @@ namespace OnlineConsulting.Models.ValueObjects.Statistic
         public TimeSpan AverageTimeConsultantJoining { get; set; }
         public TimeSpan AverageConversationDuration { get; set; }
         public int InProgressConversationsNumber { get; set; }
+        public int NewConversationsNumber { get; set; }
     }
 }
