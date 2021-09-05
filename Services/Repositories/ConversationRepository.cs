@@ -100,10 +100,14 @@ namespace OnlineConsulting.Services.Repositories
             var notServedConversationsByDayQuery = CountConversationsByDayQuery(notServedConversationsQuery, hoursOffset);
 
 
-            var consultantsJoiningTimes = await filterQuery.Select(c => c.StartDate - c.CreateDate).ToListAsync();
+            var consultantsJoiningTimes = await filterQuery
+                                                    .Where(c => c.StartDate != null)
+                                                    .Select(c => c.StartDate - c.CreateDate).ToListAsync();
             var averageTimeConsultantJoiningTimespan = CalcAverageTime(consultantsJoiningTimes);
 
-            var conversationsDurations = await filterQuery.Select(c => c.EndDate - c.StartDate).ToListAsync();
+            var conversationsDurations = await filterQuery
+                                                .Where(c => c.StartDate != null && c.EndDate != null)
+                                                .Select(c => c.EndDate - c.StartDate).ToListAsync();
             var averageConversationDurationTimespan = CalcAverageTime(conversationsDurations);
 
             var inProgressConversationsQuery = filterQuery.Where(
