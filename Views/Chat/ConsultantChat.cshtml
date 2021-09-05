@@ -33,7 +33,6 @@
                     var conversationId = Model.ConversationId;
                 }
                 <input type="hidden" asp-for=@conversationId />
-                <input type="hidden" name="conversationStatus" value="@ConversationStatus.DONE" />
                 <input type="hidden" name="redirectAction" value="@Model.RedirectAction" />
                 <button class="btn btn-danger mt-5">Close conversation</button>
             </form>

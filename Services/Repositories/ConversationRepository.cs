@@ -41,9 +41,10 @@ namespace OnlineConsulting.Services.Repositories
             return _dbContext.Conversations.SingleOrDefaultAsync(c => c.Id == id);
         }
 
-        public async Task ChangeConversationStatusAsync(Conversation conversation, ConversationStatus conversationStatus)
+        public async Task CloseConversationAsync(Conversation conversation)
         {
-            conversation.Status = conversationStatus;
+            conversation.Status = ConversationStatus.DONE;
+            conversation.EndDate = DateTime.UtcNow;
             await _dbContext.SaveChangesAsync();
         }
 
@@ -128,12 +129,24 @@ namespace OnlineConsulting.Services.Repositories
             var averageTimeConsultantJoiningTimespan = new TimeSpan((long)averageTimeConsultantJoining);
 
 
+
+            var conversationsDurations = await filterQuery.Select(c => c.EndDate - c.StartDate).ToListAsync();
+
+
+            var averageConversationDuration = conversationsDurations.Count > 0 ?
+                                                    conversationsDurations.Average(t => t.Value.Ticks) :
+                                                    0;
+
+            var averageConversationDurationTimespan = new TimeSpan((long)averageConversationDuration);
+
+
             return new ConversationStatistics
             {
                 AllConversations = await allConversationsQuery.ToListAsync(),
                 ServedConversations = await servedConversationsQuery.ToListAsync(),
                 NotServedConversations = await notServedConversationsQuery.ToListAsync(),
-                AverageTimeConsultantJoining = averageTimeConsultantJoiningTimespan
+                AverageTimeConsultantJoining = averageTimeConsultantJoiningTimespan,
+                AverageConversationDuration = averageConversationDurationTimespan
             };
         }
 

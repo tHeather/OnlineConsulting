@@ -1,5 +1,4 @@
-﻿using OnlineConsulting.Enums;
-using OnlineConsulting.Models.Entities;
+﻿using OnlineConsulting.Models.Entities;
 using OnlineConsulting.Models.ValueObjects.Chat;
 using OnlineConsulting.Models.ValueObjects.Statistic;
 using System;
@@ -12,7 +11,7 @@ namespace OnlineConsulting.Services.Repositories.Interfaces
     {
         public Task<Conversation> CreateConversationAsync(CreateConversation createConversation);
         public Task<Conversation> GetConversationByIdAsync(Guid id);
-        public Task ChangeConversationStatusAsync(Conversation conversation, ConversationStatus conversationStatus);
+        public Task CloseConversationAsync(Conversation conversation);
         public Task<bool> AssignConsultantToConversation(
                                 Conversation conversation, string consultantId, byte[] rowVersion);
         public IQueryable<Conversation> GetNewConversationsQuery();

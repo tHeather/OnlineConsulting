@@ -129,11 +129,10 @@ namespace OnlineConsulting.Controllers
 
         [Authorize(Roles = UserRoleValue.CONSULTANT)]
         [HttpPost("change-conversation-status")]
-        public async Task<IActionResult> ChangeConversationStatus(
-            Guid conversationId, ConversationStatus conversationStatus, string redirectAction)
+        public async Task<IActionResult> ChangeConversationStatus(Guid conversationId, string redirectAction)
         {
             var conversation = await _conversationRepository.GetConversationByIdAsync(conversationId);
-            await _conversationRepository.ChangeConversationStatusAsync(conversation, conversationStatus);
+            await _conversationRepository.CloseConversationAsync(conversation);
 
             return RedirectToAction(redirectAction);
         }

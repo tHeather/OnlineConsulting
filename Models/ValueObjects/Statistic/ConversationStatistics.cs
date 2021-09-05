@@ -9,5 +9,6 @@ namespace OnlineConsulting.Models.ValueObjects.Statistic
         public IEnumerable<DailyConversationsNumber> ServedConversations { get; set; }
         public IEnumerable<DailyConversationsNumber> NotServedConversations { get; set; }
         public TimeSpan AverageTimeConsultantJoining { get; set; }
+        public TimeSpan AverageConversationDuration { get; set; }
     }
 }
