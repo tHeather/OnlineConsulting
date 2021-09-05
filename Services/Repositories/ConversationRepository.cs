@@ -6,6 +6,7 @@ using OnlineConsulting.Models.ValueObjects.Chat;
 using OnlineConsulting.Models.ValueObjects.Statistic;
 using OnlineConsulting.Services.Repositories.Interfaces;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -79,65 +80,31 @@ namespace OnlineConsulting.Services.Repositories
 
         public async Task<ConversationStatistics> GetConversationsStatistics(ConversationStatisticsParams conversationStatisticsParams)
         {
-
             var hoursOffset = conversationStatisticsParams.StartDate.Hour;
-            var filterQuery = _dbContext.Conversations
-                                            .Where(
-                                                c => c.CreateDate >= conversationStatisticsParams.StartDate &&
-                                                c.CreateDate < conversationStatisticsParams.EndDate
-                                            );
+            var filterQuery = FilterStatisticsQuery(conversationStatisticsParams);
 
-            if (conversationStatisticsParams.Domain != null) filterQuery.Where(c => c.Host == conversationStatisticsParams.Domain);
+            var allConversationsByDayQuery = CountConversationsByDayQuery(filterQuery, hoursOffset);
 
-            var allConversationsQuery = filterQuery.GroupBy(
-                            c => c.CreateDate.Hour < hoursOffset ? c.CreateDate.Date : c.CreateDate.Date.AddDays(1),
-                            (date, conversationsDates) => new DailyConversationsNumber
-                            {
-                                Date = date,
-                                Count = conversationsDates.Count()
-                            }); ;
 
             var servedConversationsQuery = filterQuery.Where(
                                                     s => s.Status == ConversationStatus.DONE &&
                                                     s.ConsultantId != null
-                                                    ).GroupBy(
-                                     c => c.CreateDate.Hour < hoursOffset ? c.CreateDate.Date : c.CreateDate.Date.AddDays(1),
-                                    (date, conversationsDates) => new DailyConversationsNumber
-                                    {
-                                        Date = new DateTime(date.Year, date.Month, date.Day, hoursOffset, 0, 0),
-                                        Count = conversationsDates.Count()
-                                    }); ;
+                                                    );
+            var servedConversationsByDayQuery = CountConversationsByDayQuery(servedConversationsQuery, hoursOffset);
+
 
             var notServedConversationsQuery = filterQuery.Where(
                                         s => s.Status == ConversationStatus.DONE &&
                                         s.ConsultantId == null
-                                        ).GroupBy(
-                         c => c.CreateDate.Hour < hoursOffset ? c.CreateDate.Date : c.CreateDate.Date.AddDays(1),
-                        (date, conversationsDates) => new DailyConversationsNumber
-                        {
-                            Date = new DateTime(date.Year, date.Month, date.Day, hoursOffset, 0, 0),
-                            Count = conversationsDates.Count()
-                        }); ;
+                                        );
+            var notServedConversationsByDayQuery = CountConversationsByDayQuery(notServedConversationsQuery, hoursOffset);
+
 
             var consultantsJoiningTimes = await filterQuery.Select(c => c.StartDate - c.CreateDate).ToListAsync();
-
-
-            var averageTimeConsultantJoining = consultantsJoiningTimes.Count > 0 ?
-                                                    consultantsJoiningTimes.Average(t => t.Value.Ticks) :
-                                                    0;
-
-            var averageTimeConsultantJoiningTimespan = new TimeSpan((long)averageTimeConsultantJoining);
-
-
+            var averageTimeConsultantJoiningTimespan = CalcAverageTime(consultantsJoiningTimes);
 
             var conversationsDurations = await filterQuery.Select(c => c.EndDate - c.StartDate).ToListAsync();
-
-
-            var averageConversationDuration = conversationsDurations.Count > 0 ?
-                                                    conversationsDurations.Average(t => t.Value.Ticks) :
-                                                    0;
-
-            var averageConversationDurationTimespan = new TimeSpan((long)averageConversationDuration);
+            var averageConversationDurationTimespan = CalcAverageTime(conversationsDurations);
 
             var inProgressConversationsQuery = filterQuery.Where(
                                                     s => s.Status == ConversationStatus.IN_PROGRESS
@@ -146,13 +113,47 @@ namespace OnlineConsulting.Services.Repositories
 
             return new ConversationStatistics
             {
-                AllConversations = await allConversationsQuery.ToListAsync(),
-                ServedConversations = await servedConversationsQuery.ToListAsync(),
-                NotServedConversations = await notServedConversationsQuery.ToListAsync(),
+                AllConversations = await allConversationsByDayQuery.ToListAsync(),
+                ServedConversations = await servedConversationsByDayQuery.ToListAsync(),
+                NotServedConversations = await notServedConversationsByDayQuery.ToListAsync(),
                 AverageTimeConsultantJoining = averageTimeConsultantJoiningTimespan,
                 AverageConversationDuration = averageConversationDurationTimespan,
                 InProgressConversationsNumber = await inProgressConversationsQuery.CountAsync()
             };
+        }
+
+        private IQueryable<Conversation> FilterStatisticsQuery(ConversationStatisticsParams conversationStatisticsParams)
+        {
+            var filterQuery = _dbContext.Conversations.Where(
+                                                c => c.CreateDate >= conversationStatisticsParams.StartDate &&
+                                                c.CreateDate < conversationStatisticsParams.EndDate
+                                            );
+
+            if (conversationStatisticsParams.Domain != null) filterQuery.Where(
+                                                                c => c.Host == conversationStatisticsParams.Domain
+                                                                );
+            return filterQuery;
+        }
+
+        private IQueryable<DailyConversationsNumber> CountConversationsByDayQuery(
+            IQueryable<Conversation> sourceQuery, int hoursOffset
+            )
+        {
+            return sourceQuery.GroupBy(
+                c => c.CreateDate.Hour < hoursOffset ? c.CreateDate.Date : c.CreateDate.Date.AddDays(1),
+                (date, conversationsDates) => new DailyConversationsNumber
+                {
+                    Date = date,
+                    Count = conversationsDates.Count()
+                }); ;
+        }
+
+        private TimeSpan CalcAverageTime(List<TimeSpan?> source)
+        {
+            var averageTimeConsultantJoining = source.Count > 0 ?
+                                                    source.Average(t => t.Value.Ticks) :
+                                                    0;
+            return new TimeSpan((long)averageTimeConsultantJoining);
         }
 
     }
