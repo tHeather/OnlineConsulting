@@ -46,7 +46,7 @@ const getStatistics = async (params) => {
             case 200:
                 return await response.json();
             case 500:
-              //  window.location.href = '/server-error';
+                window.location.href = '/server-error';
                 break;
             default:
         }
