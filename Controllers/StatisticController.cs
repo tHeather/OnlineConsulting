@@ -14,5 +14,11 @@ namespace OnlineConsulting.Controllers
             return View();
         }
 
+        [HttpGet("{id}")]
+        public IActionResult GetStatisticsForConsultant(string id)
+        {
+            return View("GetStatistics", id);
+        }
+
     }
 }

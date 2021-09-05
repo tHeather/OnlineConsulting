@@ -137,9 +137,12 @@ namespace OnlineConsulting.Services.Repositories
                                                 c.CreateDate < conversationStatisticsParams.EndDate
                                             );
 
-            if (conversationStatisticsParams.Domain != null) filterQuery.Where(
-                                                                c => c.Host == conversationStatisticsParams.Domain
-                                                                );
+            if (conversationStatisticsParams.Domain != null)
+                filterQuery = filterQuery.Where(c => c.Host == conversationStatisticsParams.Domain);
+
+            if (conversationStatisticsParams.ConsultantId != null)
+                filterQuery = filterQuery.Where(c => c.ConsultantId == conversationStatisticsParams.ConsultantId);
+
             return filterQuery;
         }
 

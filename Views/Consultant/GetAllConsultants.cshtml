@@ -23,6 +23,16 @@
                     <td>@consultant.Surname</td>
                     <td>@consultant.Email</td>
                     <td>
+                        <a 
+                           class="btn btn-info" 
+                           asp-controller="Statistic"
+                           asp-action="GetStatisticsForConsultant"
+                           asp-route-id=@consultant.Id
+                           >
+                            Statistics
+                        </a>
+                    </td>
+                    <td>
                         <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#Modal-@consultant.Id">
                             Delete
                         </button>
