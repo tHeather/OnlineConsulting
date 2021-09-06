@@ -28,6 +28,11 @@
         "plugin/customParseFormat.js",
         "plugin/customParseFormat.min.js"
       ]
+    },
+    {
+      "provider": "cdnjs",
+      "library": "Chart.js@3.5.1",
+      "destination": "wwwroot/lib/Chart.js/"
     }
   ]
 }

@@ -55,7 +55,8 @@ namespace OnlineConsulting
 
             services.AddScoped<IEmployerSettingsRepository, EmployerSettingsRepository>();
             services.AddScoped<IUserRepository, UserRepository>();
-            services.AddScoped<IChatRepository, ChatRepository>();
+            services.AddScoped<IConversationRepository, ConversationRepository>();
+            services.AddScoped<IChatMessageRepository, ChatMessageRepository>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
