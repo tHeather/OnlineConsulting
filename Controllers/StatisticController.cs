@@ -8,7 +8,6 @@ namespace OnlineConsulting.Controllers
     [Route("statistics")]
     public class StatisticController : Controller
     {
-        [HttpGet("")]
         public IActionResult GetStatistics()
         {
             return View();
