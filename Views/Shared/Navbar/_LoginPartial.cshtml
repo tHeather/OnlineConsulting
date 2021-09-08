@@ -3,25 +3,24 @@
 @inject SignInManager<OnlineConsulting.Models.Entities.User> SignInManager
 @inject UserManager<OnlineConsulting.Models.Entities.User> UserManager
 
-
-<ul class="navbar-nav">
-
-    @if (SignInManager.IsSignedIn(User))
-    {
-
-        if (User.IsInRole(UserRoleValue.EMPLOYER))
-        {
-            <partial name="/Views/Shared/Navbar/_EmployerNavbar.cshtml" />
-        }
-        else if (User.IsInRole(UserRoleValue.CONSULTANT))
-        {
-            <partial name="/Views/Shared/Navbar/_EmployeeNavbar.cshtml" />
-        }
-        else if (User.IsInRole(UserRoleValue.ADMIN))
-        {
-            <div>Admin</div>
-        }
-
+@if (SignInManager.IsSignedIn(User))
+{
+    <ul class="navbar-nav mr-auto sidenav bg-dark " id="navAccordion">
+       @{ if (User.IsInRole(UserRoleValue.EMPLOYER))
+           {
+        <partial name="/Views/Shared/Navbar/_EmployerNavbar.cshtml" />
+           }
+           else if (User.IsInRole(UserRoleValue.CONSULTANT))
+           {
+        <partial name="/Views/Shared/Navbar/_EmployeeNavbar.cshtml" />
+           }
+           else if (User.IsInRole(UserRoleValue.ADMIN))
+           {
+        <div>Admin</div>
+               }
+           }
+     </ul>
+    <ul class="list-unstyled d-flex m-0 nav-horizontal-list" >
         <li class="nav-item">
             <a class="nav-link text-light" asp-area="Identity" asp-page="/Account/Manage/Index" title="Manage">Hello @User.Identity.Name!</a>
         </li>
@@ -29,18 +28,18 @@
             <form class="form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
                 <button type="submit" class="nav-link btn btn-link text-light">Logout</button>
             </form>
-
         </li>
-    }
-    else
-    {
-        <li class="nav-item">
-            <a class="nav-link text-light" asp-area="Identity" asp-page="/Account/Register">Register</a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link text-light" asp-area="Identity" asp-page="/Account/Login">Login</a>
-        </li>
-    }
-
-</ul>
+    </ul>
+}
+else
+{
+  <ul>
+     <li class="nav-item">
+         <a class="nav-link text-light" asp-area="Identity" asp-page="/Account/Register">Register</a>
+      </li>
+      <li class="nav-item">
+          <a class="nav-link text-light" asp-area="Identity" asp-page="/Account/Login">Login</a>
+       </li>
+  </ul>
+}      
 

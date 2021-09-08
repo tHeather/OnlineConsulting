@@ -1,25 +1,64 @@
-﻿<li class="nav-item dropdown">
-    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-        Consultants
+﻿<li class="nav-item">
+    <a class="nav-link nav-collapse-btn text-light"
+       data-toggle="collapse"
+       data-target="#Statistics"
+       aria-controls="Statistics"
+       aria-expanded="false">
+        <i class="fas fa-chart-bar fa-lg "></i>
+        <span class="nav-collapse-btn-text ">Statistics</span>
     </a>
-    <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-        <a class="dropdown-item" asp-controller="Consultant" asp-action="AddConsultant">Add consultant</a>
-        <a class="dropdown-item" asp-controller="Consultant" asp-action="GetAllConsultants">Consultant list</a>
-    </div>
+    <ul class="nav-second-level collapse" id="Statistics" data-parent="#navAccordion">
+        <li class="nav-item">
+            <a class="nav-link text-light"
+               asp-controller="Statistic"
+               asp-action="GetStatistics">
+                Conversations
+            </a>
+        </li>
+    </ul>
 </li>
-<li class="nav-item dropdown">
-    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-        Settings
+<li class="nav-item">
+    <a class="nav-link nav-collapse-btn text-light"
+       data-toggle="collapse"
+       data-target="#Consultants"
+       aria-controls="Consultants"
+       aria-expanded="false">
+        <i class="fas fa-user-friends fa-lg "></i>
+        <span class="nav-collapse-btn-text ">Consultants</span>
     </a>
-    <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-        <a class="dropdown-item" asp-controller="Chat" asp-action="GetSnippet">Widget</a>
-    </div>
+    <ul class="nav-second-level collapse" id="Consultants" data-parent="#navAccordion">
+        <li class="nav-item">
+            <a class="nav-link text-light"
+               asp-controller="Consultant"
+               asp-action="AddConsultant">
+                Add consultant
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link text-light"
+               asp-controller="Consultant"
+               asp-action="InProgressConversationList">
+                Consultant list
+            </a>
+        </li>
+    </ul>
 </li>
-<li class="nav-item dropdown">
-    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-        Statistics
+<li class="nav-item">
+    <a class="nav-link nav-collapse-btn text-light"
+       data-toggle="collapse"
+       data-target="#Settings"
+       aria-controls="Settings"
+       aria-expanded="false">
+        <i class="fas fa-cog fa-lg "></i>
+        <span class="nav-collapse-btn-text ">Settings</span>
     </a>
-    <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-        <a class="dropdown-item" asp-controller="Statistic" asp-action="GetStatistics">Statistics</a>
-    </div>
+    <ul class="nav-second-level collapse" id="Settings" data-parent="#navAccordion">
+        <li class="nav-item">
+            <a class="nav-link text-light"
+               asp-controller="Chat"
+               asp-action="GetSnippet">
+                Widget
+            </a>
+        </li>
+    </ul>
 </li>

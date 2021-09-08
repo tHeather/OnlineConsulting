@@ -1,9 +1,31 @@
-﻿<li class="nav-item dropdown">
-    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-        Conversations
+﻿<li class="nav-item">
+    <a class="nav-link nav-collapse-btn text-light"
+       data-toggle="collapse"
+       data-target="#Conversations"
+       aria-controls="Conversations"
+       aria-expanded="false"
+       >
+        <i class="fas fa-comments fa-lg "></i>
+        <span class="nav-collapse-btn-text ">Conversations</span>
     </a>
-    <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-        <a class="dropdown-item" asp-controller="Chat" asp-action="NewConversationList">New conversations</a>
-        <a class="dropdown-item" asp-controller="Chat" asp-action="InProgressConversationList">In progress conversations</a>
-    </div>
+    <ul class="nav-second-level collapse" id="Conversations" data-parent="#navAccordion">
+        <li class="nav-item">
+            <a 
+               class="nav-link text-light"
+               asp-controller="Chat" 
+               asp-action="NewConversationList"
+             >
+                New conversations
+            </a>
+        </li>
+        <li class="nav-item">
+            <a 
+               class="nav-link text-light"
+               asp-controller="Chat" 
+               asp-action="InProgressConversationList"
+              >
+                In progress conversations
+            </a>
+        </li>
+    </ul>
 </li>
