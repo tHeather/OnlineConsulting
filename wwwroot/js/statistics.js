@@ -3,17 +3,65 @@ const AverageTimeConsultantJoiningCounter = document.getElementById("AverageTime
 const AverageConversationDuration = document.getElementById("AverageConversationDuration");
 const InProgressConversationsNumber = document.getElementById("InProgressConversationsNumber");
 const NewConversationsNumber = document.getElementById("NewConversationsNumber");
-const DateErrorTag = document.getElementById("DateErrorTag");
+const loaders = document.querySelectorAll(".loader");
+const counterNumbers = document.querySelectorAll(".counterNumber");
+const plugin = {
+    id: 'custom_canvas_background_color',
+    beforeDraw: (chart) => {
+        const ctx = chart.canvas.getContext('2d');
+        ctx.save();
+        ctx.globalCompositeOperation = 'destination-over';
+        ctx.fillStyle = '#27293d';
+        ctx.fillRect(0, 0, chart.width, chart.height);
+        ctx.restore();
+    }
+};
 const chart = new Chart(
     document.getElementById('chart'),
     {
         type: 'line',
-        data: {},
-        options: {}
+        plugins: [plugin],
+        options: {
+            plugins:{
+                legend: {
+                    labels: {
+                        color: "#bebfc5"
+                    }
+                }
+            },
+            scales: {
+                x: {
+                    grid: {
+                        borderColor: "#6c757d",
+                        color: "#6c757d",
+                    },
+                    ticks: {
+                        color:"#bebfc5"
+                    }
+                },
+                y: {
+                    grid: {
+                        borderColor: "#6c757d",
+                        color: "#6c757d"
+                    },
+                    ticks: {
+                        color: "#bebfc5"
+                    }
+                },
+            },
+        }
     }
 );
 document.getElementById("StartDate").value = dayjs().add(-1,'day').format("YYYY-MM-DD");
 document.getElementById("EndDate").value = dayjs().format("YYYY-MM-DD");
+
+
+const changeLoadersState = (areLoadersVisible) => {
+    const loadersDisplay = areLoadersVisible ? "inline-block" : "none";
+    const countersDisplay = areLoadersVisible ? "none" :"inline";
+    counterNumbers.forEach(counter => counter.style.display = countersDisplay);
+    loaders.forEach(loader => loader.style.display = loadersDisplay);
+}
 
 const makeQueryString = (paramsObj) => {
     let paramsString = "";
@@ -40,7 +88,6 @@ return await fetch(
 };
 
 const getStatistics = async (params) => {
-
     try {
         const response = await fetchData(params);
         switch (response.status) {
@@ -80,7 +127,7 @@ const getFormValues = () => {
 
 const isDateValid = ({ StartDate, EndDate }) => {
     const isValid = new Date(StartDate).getTime() <= new Date(EndDate).getTime();
-    DateErrorTag.innerText = isValid? "" : "End date must be greater than start date.";
+    if (!isValid) alert("End date must be greater than start date.");
     return isValid;
 }
 
@@ -102,8 +149,8 @@ const updateChart = ({
     notServedConversations
 }) => {
 
-    const allConversationsDataSet = makeDataset(allConversations, "#4dc9f6", "All");
-    const servedConversationsDataSet = makeDataset(servedConversations, "#f67019", "Served");
+    const allConversationsDataSet = makeDataset(allConversations, "#1d8cf8", "All");
+    const servedConversationsDataSet = makeDataset(servedConversations, "#00f2c3", "Served");
     const notServedConversationsDataSet = makeDataset(notServedConversations, "#f53794", "Closed, not served");
 
     const dates = allConversations.map(c => dayjs.utc(c.date, "YYYY-MM-DD HH:mm").local().format("DD-MM-YYYY"));
@@ -138,11 +185,14 @@ const updateCounters = ({
 }
 
 const updateStatistics = async () => {
+
     const formValues = getFormValues();
     if (!isDateValid(formValues)) return;
+    changeLoadersState(true);
     const statistics = await getStatistics(formValues);
     updateChart(statistics);
     updateCounters(statistics);
+    changeLoadersState(false);
 }
 
 const submitForm = (e) => {

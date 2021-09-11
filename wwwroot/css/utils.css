@@ -2,6 +2,10 @@
     background-color: #27293d !important;
 }
 
+.bg-light {
+    background-color: #cdcdd2 !important;
+}
+
 .text-light {
     color: #cdcdd2 !important;
 }
@@ -9,3 +13,4 @@
 .shadow-dark {
     box-shadow: rgb(0 0 0 / 80%) 2px 20px 30px -15px;
 }
+

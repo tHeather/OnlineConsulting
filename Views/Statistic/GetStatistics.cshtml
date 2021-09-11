@@ -1,29 +1,86 @@
 ﻿@model string;
 
 @if (Model != null)
-{<a href='javascript:history.go(-1)'>Back to list</a>}
-
-<form id="form">
-    <input name="StartDate" id="StartDate" type="date" />
-    <input name="EndDate" id="EndDate" type="date" />
-    <span id="DateErrorTag"></span>
-    <input name="Domain" type="text" />
-    @if (Model != null)
-    {<input type="text" name="ConsultantId" value=@Model hidden />}
-    <button>Show</button>
-</form>
-
-<div class="container">
-    <canvas class="rounded"  id="chart"></canvas>
+{
+<div class="p-3 d-flex specific-user-wrapper" >
+    <a href='javascript:history.go(-1)' class="btn btn-outline-primary">Back to list</a>
+    <h3 class="text-light specific-user-wrapper__user-name">Name Surname</h3>
 </div>
+}
 
-<div>Average time consultant joining: <span id="AverageTimeConsultantJoiningCounter"></span></div>
-<div>Average conversation duration: <span id="AverageConversationDuration"></span></div>
-<div>Conversations in progress: <span id="InProgressConversationsNumber"></span></div>
-<div>New Conversations: <span id="NewConversationsNumber"></span></div>
+<div class="chart-container">
+
+  <form id="form" class="filters d-flex pt-3">
+        <div class="filters__control-wrapper d-flex align-items-center">
+            <label for="StartDate" class=" text-light mb-0  mr-2">Start date</label>
+            <input name="StartDate" id="StartDate" type="date" class="rounded p-1 bg-light border-0" />
+        </div>
+        <div class="filters__control-wrapper d-flex align-items-center">
+            <label for="EndDate" class="text-light mb-0 mr-2">End date</label>
+            <input name="EndDate" id="EndDate" type="date" class="rounded p-1 bg-light border-0" />
+        </div>
+        <div class="filters__control-wrapper d-flex align-items-center">
+            <label for="Domain" class="text-light mb-0 mr-2">Domain</label>
+            <input name="Domain" type="text" id="Domain" class="rounded p-1 bg-light border-0" />
+        </div>
+        @if (Model != null)
+        {<input type="text" name="ConsultantId" value=@Model hidden />}
+        <button class="btn btn-secondary">Show</button>
+    </form>
+
+    <div class="counters py-3">
+        <div class="bg-dark counter p-3 rounded shadow-dark">
+            <div class="d-flex justify-content-between w-100">
+                <i class="fas fa-user-clock fa-2x text-warning"></i>
+                <h3 class="text-light counter__headline">Average time consultant joining: </h3>
+            </div>
+            <span id="AverageTimeConsultantJoiningCounter" class="text-light counterNumber"></span>
+            <div class="spinner-border text-warning loader" role="status">
+                <span class="sr-only">Loading...</span>
+            </div>
+        </div>
+        <div class="bg-dark counter p-3 rounded shadow-dark">
+            <div class="d-flex justify-content-between w-100">
+                <i class="fas fa-comments fa-2x text-danger"></i>
+                <h3 class="text-light counter__headline">Average conversation duration: </h3>
+            </div>
+            <span id="AverageConversationDuration" class="text-light counterNumber"></span>
+            <div class="spinner-border text-danger loader" role="status">
+                <span class="sr-only">Loading...</span>
+            </div>
+        </div>
+        <div class="bg-dark counter p-3 rounded shadow-dark">
+            <div class="d-flex justify-content-between w-100">
+                <i class="fas fa-comment-dots fa-2x text-info"></i>
+                <h3 class="text-light counter__headline">Conversations in progress: </h3>
+            </div>
+            <span id="InProgressConversationsNumber" class="text-light counterNumber"></span>
+            <div class="spinner-border text-info loader" role="status">
+                <span class="sr-only">Loading...</span>
+            </div>
+        </div>
+        <div class="bg-dark counter p-3 rounded shadow-dark">
+            <div class="d-flex justify-content-between w-100">
+                <i class="fas fa-comment-medical fa-2x text-success"></i>
+                <h3 class="text-light counter__headline">New Conversations: </h3>
+            </div>
+            <span id="NewConversationsNumber" class="text-light counterNumber"></span>
+            <div class="spinner-border text-success loader" role="status">
+                <span class="sr-only">Loading...</span>
+            </div>
+        </div>
+    </div>
+
+
+    <canvas class="rounded shadow-dark" id="chart"></canvas>
+</div>
 
 @section Scripts{
     <script src="~/lib/Chart.js/chart.min.js"></script>
     <partial name="/Views/Shared/Scripts/_Dayjs.cshtml" />
     <script type="module" src="~/js/statistics.js"></script>
+}
+
+@section Styles{
+    <link rel="stylesheet" href="/css/statistics.css">
 }

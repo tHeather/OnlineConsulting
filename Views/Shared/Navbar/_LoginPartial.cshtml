@@ -5,7 +5,7 @@
 
 @if (SignInManager.IsSignedIn(User))
 {
-    <ul class="navbar-nav mr-auto sidenav bg-dark " id="navAccordion">
+    <ul class="navbar-nav mr-auto sidenav bg-dark shadow-dark" id="navAccordion">
        @{ if (User.IsInRole(UserRoleValue.EMPLOYER))
            {
         <partial name="/Views/Shared/Navbar/_EmployerNavbar.cshtml" />
