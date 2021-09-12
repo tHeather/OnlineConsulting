@@ -51,6 +51,10 @@ namespace OnlineConsulting
 
             services.AddRazorPages();
             services.AddControllersWithViews();
+            services.AddMvc().AddRazorPagesOptions(options =>
+            {
+                options.Conventions.AddAreaPageRoute("Identity", "/Account/Login", "");
+            });
             services.AddSignalR();
 
             services.AddScoped<IEmployerSettingsRepository, EmployerSettingsRepository>();
@@ -83,9 +87,6 @@ namespace OnlineConsulting
 
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapControllerRoute(
-                    name: "default",
-                    pattern: "{controller=Home}/{action=Index}/{id?}");
                 endpoints.MapRazorPages();
                 endpoints.MapHub<ChatHub>("/chatHub");
             });
