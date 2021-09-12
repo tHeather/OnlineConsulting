@@ -20,20 +20,23 @@
                }
            }
      </ul>
-    <ul class="list-unstyled d-flex m-0 nav-horizontal-list" >
+    <ul class="list-unstyled d-flex m-0 nav-horizontal-list bg-dark" >
         <li class="nav-item">
-            <a class="nav-link text-light" asp-area="Identity" asp-page="/Account/Manage/Index" title="Manage">Hello @User.Identity.Name!</a>
+            <a class="nav-link text-light" asp-area="Identity" asp-page="/Account/Manage/Index" title="Manage">
+              <i class="fas fa-user text-warning mr-1"></i>
+               @User.Identity.Name!
+            </a>
         </li>
         <li class="nav-item">
             <form class="form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
-                <button type="submit" class="nav-link btn btn-link text-light">Logout</button>
+                <button type="submit" class="nav-link btn btn-link text-warning">Logout</button>
             </form>
         </li>
     </ul>
 }
 else
 {
-  <ul class="list-unstyled d-flex m-0 nav-horizontal-list" >
+  <ul class="list-unstyled d-flex m-0 nav-horizontal-list bg-dark" >
      <li class="nav-item">
          <a class="nav-link text-light" asp-area="Identity" asp-page="/Account/Register">Register</a>
       </li>

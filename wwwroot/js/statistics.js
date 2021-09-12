@@ -11,7 +11,7 @@ const plugin = {
         const ctx = chart.canvas.getContext('2d');
         ctx.save();
         ctx.globalCompositeOperation = 'destination-over';
-        ctx.fillStyle = '#27293d';
+        ctx.fillStyle = '#252525';
         ctx.fillRect(0, 0, chart.width, chart.height);
         ctx.restore();
     }
