@@ -1,0 +1,18 @@
+﻿.login-car-container{
+   padding-top: calc(50vh - 350px);
+}
+
+@media(max-height:700px) {
+    .login-car-container {
+        padding-top: 25px;
+    }
+}
+
+.login-card{
+    max-width:450px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    margin: auto ;
+    padding: 40px 0;
+}

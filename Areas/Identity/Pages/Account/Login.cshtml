@@ -1,45 +1,55 @@
 ﻿@page
 @model LoginModel
 
-@{
-    ViewData["Title"] = "Log in";
-}
+<div class="container login-car-container">
+    <form id="account" class="bg-dark shadow-dark rounded login-card" method="post">
+        <i class="fas fa-user fa-5x  text-warning"></i>
+        <h1 class="text-light">Login</h1>
+        <div asp-validation-summary="All" class="text-danger"></div>
+        <div class="form-group w-75">
+            <label asp-for="Input.Email" class="text-light"></label>
+            <div class="input-group mb-2 mr-sm-2">
+                <div class="input-group-prepend ">
+                    <div class="input-group-text bg-warning border-0">
+                        <i class="fas fa-user text-dark"></i>
+                    </div>
+                </div>
+                <input asp-for="Input.Email" class="form-control p-1 bg-light border-0" />
+            </div>
+                <span asp-validation-for="Input.Email" class="text-danger"></span>
+        </div>
+        <div class="form-group w-75">
+            <label asp-for="Input.Password" class="text-light"></label>
+            <div class="input-group mb-2 mr-sm-2">
+                <div class="input-group-prepend ">
+                    <div class="input-group-text bg-warning border-0">
+                        <i class="fas fa-key text-dark"></i>
+                    </div>
+                </div>
+                <input asp-for="Input.Password" class="form-control p-1 bg-light border-0" />
+            </div>
+                <span asp-validation-for="Input.Password" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <button type="submit" class="btn btn-warning">Log in</button>
+            </div>
+                <p>
+                    <a id="forgot-password" asp-page="./ForgotPassword">Forgot your password?</a>
+                </p>
+                <p>
+                    <a asp-page="./Register" asp-route-returnUrl="@Model.ReturnUrl">Register as a new user</a>
+                </p>
+                <p>
+                    <a id="resend-confirmation" asp-page="./ResendEmailConfirmation">Resend email confirmation</a>
+                </p>
 
-<h1 class="text-light"  >@ViewData["Title"]</h1>
-
-        
-            <form id="account bg-dark shadow-dark rounded" method="post">
-                <h4>Use a local account to log in.</h4>
-                <hr />
-                <div asp-validation-summary="All" class="text-danger"></div>
-                <div class="form-group">
-                    <label asp-for="Input.Email" class="text-light" ></label>
-                    <input asp-for="Input.Email" class="form-control" />
-                    <span asp-validation-for="Input.Email" class="text-danger"></span>
-                </div>
-                <div class="form-group">
-                    <label asp-for="Input.Password" class="text-light" ></label>
-                    <input asp-for="Input.Password" class="form-control" />
-                    <span asp-validation-for="Input.Password" class="text-danger"></span>
-                </div>
-                <div class="form-group">
-                    <button type="submit" class="btn btn-primary">Log in</button>
-                </div>
-                <div class="form-group">
-                    <p>
-                        <a id="forgot-password" asp-page="./ForgotPassword">Forgot your password?</a>
-                    </p>
-                    <p>
-                        <a asp-page="./Register" asp-route-returnUrl="@Model.ReturnUrl">Register as a new user</a>
-                    </p>
-                    <p>
-                        <a id="resend-confirmation" asp-page="./ResendEmailConfirmation">Resend email confirmation</a>
-                    </p>
-                </div>
-            </form>
-      
-
+</form>
+</div>
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+}
+
+@section Styles{
+    <link rel="stylesheet" href="/css/login.css">
 }
