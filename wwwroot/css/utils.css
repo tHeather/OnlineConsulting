@@ -10,6 +10,10 @@
     color: #cdcdd2 !important;
 }
 
+.text-dark {
+    color: #252525 !important;
+}
+
 .shadow-dark {
     box-shadow: rgb(0 0 0 / 80%) 2px 20px 30px -15px;
 }

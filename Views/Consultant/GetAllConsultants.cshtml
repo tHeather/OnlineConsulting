@@ -2,67 +2,60 @@
 @using OnlineConsulting.Models.ViewModels.Pagination;
 @model OnlineConsulting.Models.ViewModels.Consultant.GetAllConsultantsViewModel;
 
+<div class="p-1 p-xl-5">
+        <h1 class="text-light pb-3 pt-3 pt-xl-0">Consultant List</h1>
+        <div class="table-responsive rounded mb-2">
+            <table class="table ">
+                <thead class="bg-light ">
+                    <tr>
+                        <th scope="col" class="text-dark">First name </th>
+                        <th scope="col" class="text-dark">Surname</th>
+                        <th scope="col" class="text-dark">E-mail</th>
+                        <th></th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var consultant in Model.ConsultantList)
+                    {
+                        <tr class="bg-dark" >
+                            <td class="text-light">@consultant.FirstName</td>
+                            <td class="text-light">@consultant.Surname</td>
+                            <td class="text-light">@consultant.Email</td>
+                            <td>
+                                <a class="btn btn-info"
+                                   asp-controller="Statistic"
+                                   asp-action="GetStatisticsForConsultant"
+                                   asp-route-id=@consultant.Id>
+                                    Statistics
+                                </a>
+                            </td>
+                            <td>
+                                <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#Modal-@consultant.Id">
+                                    Delete
+                                </button>
 
-<h1>Consultant List</h1>
+                                @await Html.PartialAsync(
+                               "/Views/Shared/Modals/_ConfirmationModal.cshtml",
+                               new ConfirmationModalViewModel
+                               {
+                                   Id = $"Modal-{consultant.Id}",
+                                   ModalLabel = "Delete Confirmation",
+                                   ModalText = $"Are you sure want to delete {consultant.Email} consultant?",
+                                   ConfirmController = "Consultant",
+                                   ConfirmAction = "DeleteConsultant",
+                                   ConfirmText = "Yes",
+                                   ConfirmParams = new Dictionary<string, string> { { "id", consultant.Id } },
+                                   RejectText = "No"
+                               })
 
-<div class="table-responsive">
-    <table class="table">
-        <thead>
-            <tr>
-                <th scope="col">First name </th>
-                <th scope="col">Surname</th>
-                <th scope="col">E-mail</th>
-                <th></th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var consultant in Model.ConsultantList)
-            {
-                <tr>
-                    <td>@consultant.FirstName</td>
-                    <td>@consultant.Surname</td>
-                    <td>@consultant.Email</td>
-                    <td>
-                        <a 
-                           class="btn btn-info" 
-                           asp-controller="Statistic"
-                           asp-action="GetStatisticsForConsultant"
-                           asp-route-id=@consultant.Id
-                           >
-                            Statistics
-                        </a>
-                    </td>
-                    <td>
-                        <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#Modal-@consultant.Id">
-                            Delete
-                        </button>
-
-                        @await Html.PartialAsync(
-                       "/Views/Shared/Modals/_ConfirmationModal.cshtml",
-                       new ConfirmationModalViewModel
-                       {
-                           Id = $"Modal-{consultant.Id}",
-                           ModalLabel = "Delete Confirmation",
-                           ModalText = $"Are you sure want to delete {consultant.Email} consultant?",
-                           ConfirmController = "Consultant",
-                           ConfirmAction = "DeleteConsultant",
-                           ConfirmText = "Yes",
-                           ConfirmParams = new Dictionary<string, string> { { "id", consultant.Id } },
-                           RejectText = "No"
-                       })
-
-                    </td>
-                </tr>
-            }
-        </tbody>
-    </table>
-</div>
-
-@if (Model.Modal.ModalText != null)
-{@await Html.PartialAsync("/Views/Shared/Modals/_Modal.cshtml", Model.Modal);
-}
-
-@await Html.PartialAsync(
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+        @await Html.PartialAsync(
     "/Views/Shared/Pagination/_Pagination.cshtml",
     new PaginationViewModel
     {
@@ -73,3 +66,9 @@
         SurroundingIndexes = Model.ConsultantList.GetSurroundingIndexes(2),
         Action = "GetAllConsultants"
     })
+</div>
+
+    @if (Model.Modal.ModalText != null)
+    {@await Html.PartialAsync("/Views/Shared/Modals/_Modal.cshtml", Model.Modal);
+}
+
