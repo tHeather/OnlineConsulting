@@ -1,54 +1,61 @@
 ﻿@using OnlineConsulting.Models.ViewModels.Pagination;
 @model OnlineConsulting.Models.ViewModels.Chat.NewConversationListViewModel;
 
-<h1 class="my-5">New conversations</h1>
-@if (Model.ConversationList.Count > 0)
-{
-    @foreach (var conversation in Model.ConversationList)
+<div class="p-1 p-xl-5">
+    <h1 class="text-light pb-3 pt-3 pt-xl-0 text-center text-sm-left">New conversations</h1>
+    @if (Model.ConversationList.Count > 0)
     {
-        <div class="card mb-5">
-            <div class="card-header d-flex justify-content-sm-between">
-                <div class="d-flex align-items-center">
-                    <i class="fas fa-comment-alt fa-lg"></i>
-                    <h5 class="card-title m-0 ml-2 d-flex align-items-center">@conversation.Host</h5>
+        @foreach (var conversation in Model.ConversationList)
+        {
+            <div class="card mb-5 bg-dark shadow-dark rounded">
+                <div class="card-header d-flex justify-content-between flex-column-reverse flex-sm-row bg-light">
+                    <div class="d-flex align-items-center ">
+                        <i class="fas fa-comments fa-lg text-dark"></i>
+                        <h5 
+                            class="card-title m-0 ml-2 d-flex align-items-center text-dark "
+                            >
+                        @conversation.Host
+                        </h5>
+                    </div>
+                    <form asp-controller="chat" asp-action="consultant" method="post" class="align-self-end">
+                        @{
+                            var ConversationId = conversation.Id;
+                            var RowVersion = conversation.RowVersion;
+                        }
+                        <input type="hidden" asp-for=@ConversationId />
+                        <input type="hidden" asp-for=@RowVersion />
+                        <input type="hidden" name="redirectAction" value="NewConversationList" />
+                        <button class="btn btn-warning">Join</button>
+                    </form>
                 </div>
-                <form asp-controller="chat" asp-action="consultant" method="post">
-                    @{
-                        var ConversationId = conversation.Id;
-                        var RowVersion = conversation.RowVersion;
-                    }
-                    <input type="hidden" asp-for=@ConversationId />
-                    <input type="hidden" asp-for=@RowVersion />
-                    <input type="hidden" name="redirectAction" value="NewConversationList" />
-                    <button class="btn btn-success">Join</button>
-                </form>
-            </div>
-            <div class="card-body">
-                <table class="table">
-                    <tbody>
-                        <tr>
-                            <th>Create date</th>
-                            <td data-utc-date="@conversation.CreateDate"></td>
-                        </tr>
-                        <tr>
-                            <th>Origin</th>
-                            <td>@conversation.Host@conversation.Path</td>
-                        </tr>
-                        <tr>
-                            <th>Last message</th>
-                            <td>@conversation.LastMessage?.Content</td>
-                        </tr>
+                <div class="card-body">
+                    <div class="table-responsive" >
+                        <table class="table text-light">
+                            <tbody>
+                                <tr>
+                                    <th>Create date</th>
+                                    <td data-utc-date="@conversation.CreateDate"></td>
+                                </tr>
+                                <tr>
+                                    <th>Origin</th>
+                                    <td>@conversation.Host@conversation.Path</td>
+                                </tr>
+                                <tr>
+                                    <th>Last message</th>
+                                    <td>@conversation.LastMessage?.Content</td>
+                                </tr>
 
-                    </tbody>
-                </table>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
-        </div>
-     }
-}
-else
-{
-<p>No new conversations</p>
-}
+        }
+    }
+    else
+    {
+        <p class="text-light" >No new conversations</p>
+    }
 
     @await Html.PartialAsync(
         "/Views/Shared/Pagination/_Pagination.cshtml",
@@ -61,13 +68,15 @@ else
             SurroundingIndexes = Model.ConversationList.GetSurroundingIndexes(2),
             Action = "NewConversationList"
         })
+</div>
 
-    @if (Model.Modal.ModalText != null)
-    {@await Html.PartialAsync("/Views/Shared/Modals/_Modal.cshtml", Model.Modal);
-}
+        @if (Model.Modal.ModalText != null)
+        {
+            @await Html.PartialAsync("/Views/Shared/Modals/_Modal.cshtml", Model.Modal);
+        }
 
-    @section Scripts {
-        <partial name="/Views/Shared/Scripts/_UtcToLocal.cshtml" />
-    }
+        @section Scripts {
+            <partial name="/Views/Shared/Scripts/_UtcToLocal.cshtml" />
+        }
 
 
