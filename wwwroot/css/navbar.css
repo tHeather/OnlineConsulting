@@ -39,10 +39,13 @@
         position: absolute;
         top: 0;
         left: 0;
-        width: 230px;
-        height: calc(100vh - 3.5rem);
-        margin-top: 3.5rem;
-        box-sizing: border-box;
+        width: 246px;
+        height: calc(100vh - 6rem);
+        margin-top: 4.75rem;
+        margin-left: 1rem;
+        padding: 15px 4px;
+        border-radius: 20px;
+        border: 2px solid #ffc107;
     }
 
     .navbar-expand-lg .sidenav {

@@ -1,18 +1,41 @@
-﻿@using OnlineConsulting.Enums;
-@model OnlineConsulting.Models.ViewModels.Chat.ConsultantChatViewModel;
+﻿@model OnlineConsulting.Models.ViewModels.Chat.ConsultantChatViewModel;
 
-<div class="container">
-    <div class="row">
-        <div class="col-3 bg-light rounded">
-            <a class="d-block mb-5 mt-3"
+<div class="chat-container">
+
+    <div id="chat-content" class="chat-content">
+        <ul id="chat-messages-list" class="chat-messages-list"></ul>
+        <div class="chat-form">
+            <textarea maxlength="1000"
+                      type="text"
+                      id="chat-message-input"
+                      class="chat-form__input"></textarea>
+            <button id="chat-send-button" class="chat-form__button">
+                <i class="fas fa-play fa-lg text-warning"></i>
+            </button>
+        </div>
+    </div>
+
+    <div>
+        <button 
+                class="btn btn-light w-100" 
+                type="button" 
+                id="collapseSideBarBtn" 
+                data-toggle="collapse" 
+                data-target="#collapseSideBar" 
+                aria-expanded="false" 
+                aria-controls="collapseSideBar">
+            Details
+        </button>
+        <div class=" bg-dark shadow-dark p-3 collapse chat-sidebar" id="collapseSideBar">
+            <a class="d-block mb-5 mt-3 text-light"
                asp-controller="Chat"
                asp-action="@Model.RedirectAction">
-                <i class="fas fa-chevron-left"></i>
+                <i class="fas fa-chevron-left text-warning"></i>
                 Back to list
             </a>
             <p class="d-flex flex-column align-items-start">
-                <span class="font-weight-bold">Host:</span>
-                <span class="text-truncate w-100"
+                <span class="font-weight-bold text-warning">Host:</span>
+                <span class="text-truncate w-100 text-light"
                       data-toggle="tooltip"
                       data-placement="top"
                       title="@Model.Host">
@@ -20,8 +43,8 @@
                 </span>
             </p>
             <p class="d-flex flex-column align-items-start">
-                <span class="font-weight-bold">Path:</span>
-                <span class="text-truncate w-100"
+                <span class="font-weight-bold text-warning">Path:</span>
+                <span class="text-truncate w-100 text-light"
                       data-toggle="tooltip"
                       data-placement="top"
                       title="@Model.Path">
@@ -37,17 +60,8 @@
                 <button class="btn btn-danger mt-5">Close conversation</button>
             </form>
         </div>
-        <div id="chat-content" class="chat-content col-9">
-            <ul id="chat-messages-list" class="chat-messages-list"></ul>
-            <div class="chat-form">
-                <textarea maxlength="1000"
-                          type="text"
-                          id="chat-message-input"
-                          class="chat-form__input"></textarea>
-                <button id="chat-send-button" class="chat-form__button">►</button>
-            </div>
-        </div>
     </div>
+
 </div>
 
 @section Styles{
@@ -60,7 +74,7 @@
     <script>const conversationId = "@Model.ConversationId"</script>
     <script type="module" src="~/js/consultantChat.js"></script>
     <script>
-    $(function () {
+        $(function () {
             $('[data-toggle="tooltip"]').tooltip()
         })</script>
 }

@@ -1,11 +1,14 @@
-﻿.main {
-    margin-top: 3.5rem;
-    min-height: calc(100vh - 3.5rem);
+﻿body {
     background-color: #3a3939;
+}
+
+.main {
+    margin-top: 3.5rem;
+    min-height: calc(100vh - 3.5rem);  
 }
 
 @media (min-width: 992px) {
   .main-ml{
-      margin-left: 230px;
+      margin-left: 270px;
     }
 }
