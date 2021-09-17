@@ -1,21 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Text.Encodings.Web;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authentication;
+﻿using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
 using OnlineConsulting.Constants;
 using OnlineConsulting.Models.Entities;
-using OnlineConsulting.Services.Repositories.Interfaces;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace OnlineConsulting.Areas.Identity.Pages.Account
 {
@@ -25,22 +21,19 @@ namespace OnlineConsulting.Areas.Identity.Pages.Account
         private readonly SignInManager<User> _signInManager;
         private readonly UserManager<User> _userManager;
         private readonly ILogger<RegisterModel> _logger;
-        private readonly IEmployerSettingsRepository _employerSettingsRepository;
         //private readonly IEmailSender _emailSender;
 
         public RegisterModel(
             UserManager<User> userManager,
             SignInManager<User> signInManager,
-            ILogger<RegisterModel> logger,
-            IEmployerSettingsRepository employerSettingsRepository
+            ILogger<RegisterModel> logger
            // ,IEmailSender emailSender
            )
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _logger = logger;
-            _employerSettingsRepository = employerSettingsRepository;
-           // _emailSender = emailSender;
+            // _emailSender = emailSender;
         }
 
         [BindProperty]
@@ -92,23 +85,20 @@ namespace OnlineConsulting.Areas.Identity.Pages.Account
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
             if (ModelState.IsValid)
             {
-                var user = new User { 
+                var user = new User
+                {
                     UserName = Input.Email,
                     Email = Input.Email,
                     FirstName = Input.FirstName,
                     Surname = Input.Surname,
-                   
+
                 };
 
                 var result = await _userManager.CreateAsync(user, Input.Password);
                 if (result.Succeeded)
                 {
 
-                    await _userManager.AddToRoleAsync(user,UserRoleValue.EMPLOYER);
-
-                    var settings = await _employerSettingsRepository.CreateSettingsAsync(user.Id);
-
-                    user.EmployerSettingId = settings.Id;
+                    await _userManager.AddToRoleAsync(user, UserRoleValue.EMPLOYER);
 
                     await _userManager.UpdateAsync(user);
 

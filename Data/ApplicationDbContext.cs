@@ -8,8 +8,6 @@ namespace OnlineConsulting.Data
 {
     public class ApplicationDbContext : IdentityDbContext<User>
     {
-
-        public DbSet<EmployerSetting> EmployerSettings { get; set; }
         public DbSet<Conversation> Conversations { get; set; }
         public DbSet<ChatMessage> ChatMessages { get; set; }
 

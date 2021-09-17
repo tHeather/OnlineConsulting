@@ -57,7 +57,6 @@ namespace OnlineConsulting
             });
             services.AddSignalR();
 
-            services.AddScoped<IEmployerSettingsRepository, EmployerSettingsRepository>();
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IConversationRepository, ConversationRepository>();
             services.AddScoped<IChatMessageRepository, ChatMessageRepository>();
