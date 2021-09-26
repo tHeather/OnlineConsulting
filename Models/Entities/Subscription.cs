@@ -4,10 +4,10 @@ namespace OnlineConsulting.Models.Entities
 {
     public class Subscription
     {
-        public Guid Id;
-        public DateTime EndDate;
-        public string EmployeeId;
+        public Guid Id { get; set; }
+        public DateTime EndDate { get; set; }
+        public string EmployerId { get; set; }
 
-        public User Employee { get; set; }
+        public User Employer { get; set; }
     }
 }

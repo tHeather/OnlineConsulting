@@ -1,11 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
 
-namespace StudyOnlineServer.Services.Interfaces
+namespace OnlineConsulting.Services.Interfaces
 {
     public interface IDotPayService
     {
-        string CreatePaymentUri(Guid transactionId, int amount, string userEmail, string callbackUrl);
-        string GenerateChk(string parameters, bool includeShopId);
+        string CreatePaymentUri(Guid paymentId, int amount, string userEmail, string subscriptionDuration);
+        string GenerateChk(string parameters);
     }
 }

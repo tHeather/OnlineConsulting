@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
 using OnlineConsulting.Constants;
 using OnlineConsulting.Models.Entities;
+using OnlineConsulting.Services.Repositories.Interfaces;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -21,18 +22,22 @@ namespace OnlineConsulting.Areas.Identity.Pages.Account
         private readonly SignInManager<User> _signInManager;
         private readonly UserManager<User> _userManager;
         private readonly ILogger<RegisterModel> _logger;
+        private readonly ISubscriptionRepository _subscriptionRepository;
+
         //private readonly IEmailSender _emailSender;
 
         public RegisterModel(
             UserManager<User> userManager,
             SignInManager<User> signInManager,
-            ILogger<RegisterModel> logger
+            ILogger<RegisterModel> logger,
+            ISubscriptionRepository subscriptionRepository
            // ,IEmailSender emailSender
            )
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _logger = logger;
+            _subscriptionRepository = subscriptionRepository;
             // _emailSender = emailSender;
         }
 
@@ -99,6 +104,8 @@ namespace OnlineConsulting.Areas.Identity.Pages.Account
                 {
 
                     await _userManager.AddToRoleAsync(user, UserRoleValue.EMPLOYER);
+
+                    await _subscriptionRepository.CreateSubscriptionAsync(user.Id);
 
                     await _userManager.UpdateAsync(user);
 

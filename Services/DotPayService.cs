@@ -1,13 +1,13 @@
 ﻿using Microsoft.Extensions.Configuration;
 using OnlineConsulting.Constants;
-using StudyOnlineServer.Services.Interfaces;
+using OnlineConsulting.Services.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 
-namespace StudyOnlineServer.Services
+namespace OnlineConsulting.Services
 {
     public class DotPayService : IDotPayService
     {
@@ -16,8 +16,9 @@ namespace StudyOnlineServer.Services
         private readonly string dotpayCurrency;
         private readonly string dotpayShopEmail;
         private readonly string dotpayShopName;
-        private readonly string dotpayPaymentDescription;
         private readonly string dotpayUri;
+        private readonly string dotpayCallbackPath;
+        private readonly string applicationUrl;
 
         public DotPayService(IConfiguration configuration)
         {
@@ -26,33 +27,34 @@ namespace StudyOnlineServer.Services
             dotpayCurrency = configuration[Parameters.DOTPAY_CURRENCY] ?? throw new ArgumentNullException(dotpayCurrency);
             dotpayShopEmail = configuration[Parameters.DOTPAY_SHOP_EMAIL] ?? throw new ArgumentNullException(dotpayShopEmail);
             dotpayShopName = configuration[Parameters.DOTPAY_SHOP_NAME] ?? throw new ArgumentNullException(dotpayShopName);
-            dotpayPaymentDescription = configuration[Parameters.DOTPAY_PAYMENT_DESCRIPTION] ?? throw new ArgumentNullException(dotpayPaymentDescription);
             dotpayUri = configuration[Parameters.DOTPAY_URI] ?? throw new ArgumentNullException(dotpayUri);
+            dotpayCallbackPath = configuration[Parameters.DOTPAY_CALLBACK_PATH] ?? throw new ArgumentNullException(dotpayCallbackPath);
+            applicationUrl = configuration[Parameters.APPLICATION_URL] ?? throw new ArgumentNullException(applicationUrl);
         }
 
-        public string CreatePaymentUri(Guid transactionId, int amount, string userEmail, string callbackUrl)
+        public string CreatePaymentUri(Guid paymentId, int amount, string userEmail, string subscriptionDuration)
         {
             var paymentParams = new Dictionary<string, string>()
             {
                 { "id", dotpayShopId },
                 { "amount", amount.ToString() },
                 { "currency", dotpayCurrency },
-                { "description", dotpayPaymentDescription },
-                { "control", transactionId.ToString() },
-                //{ "urlc", callbackUrl },
+                { "description", subscriptionDuration },
+                { "control", paymentId.ToString() },
+                { "urlc", $"{applicationUrl}{dotpayCallbackPath}" },
                 { "email", userEmail },
                 { "p_info", dotpayShopName },
                 { "p_email", dotpayShopEmail }
             };
 
-            var chk = GenerateChk(string.Join("", paymentParams.Select(x => x.Value).ToList()), false);
+            var chk = GenerateChk(string.Join("", paymentParams.Select(x => x.Value).ToList()));
             var linkParams = string.Join("", paymentParams.Select(x => $"&{x.Key}={x.Value}")).Remove(0, 1);
             return $"{dotpayUri}?{linkParams}&chk={chk}";
         }
 
-        public string GenerateChk(string parameters, bool includeShopId)
+        public string GenerateChk(string parameters)
         {
-            string concatString = dotpayShopPin + (includeShopId ? dotpayShopId : "") + parameters;
+            string concatString = dotpayShopPin + parameters;
             StringBuilder hash = new StringBuilder();
             using (SHA256 sha256 = SHA256.Create())
             {

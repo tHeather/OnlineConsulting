@@ -62,3 +62,22 @@
         </li>
     </ul>
 </li>
+<li class="nav-item">
+    <a class="nav-link nav-collapse-btn text-light"
+       data-toggle="collapse"
+       data-target="#Payments"
+       aria-controls="Payments"
+       aria-expanded="false">
+        <i class="fas fa-money-bill fa-lg text-warning"></i>
+        <span class="nav-collapse-btn-text ">Payments</span>
+    </a>
+    <ul class="nav-second-level collapse" id="Payments" data-parent="#navAccordion">
+        <li class="nav-item">
+            <a class="nav-link text-light"
+               asp-controller="Payment"
+               asp-action="PayForSubscription">
+                Pay for subscription
+            </a>
+        </li>
+    </ul>
+</li>

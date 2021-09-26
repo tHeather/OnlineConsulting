@@ -8,6 +8,8 @@ using Microsoft.Extensions.Hosting;
 using OnlineConsulting.Data;
 using OnlineConsulting.Hubs;
 using OnlineConsulting.Models.Entities;
+using OnlineConsulting.Services;
+using OnlineConsulting.Services.Interfaces;
 using OnlineConsulting.Services.Repositories;
 using OnlineConsulting.Services.Repositories.Interfaces;
 using System;
@@ -60,6 +62,9 @@ namespace OnlineConsulting
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IConversationRepository, ConversationRepository>();
             services.AddScoped<IChatMessageRepository, ChatMessageRepository>();
+            services.AddScoped<IPaymentRepository, PaymentRepository>();
+            services.AddScoped<ISubscriptionRepository, SubscriptionRepository>();
+            services.AddScoped<IDotPayService, DotPayService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

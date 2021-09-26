@@ -13,14 +13,14 @@
       "launchBrowser": true,
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
-        "APPLICATION_URL": "https://localhost:44310",
-        "DOTPAY_SHOP_ID": "ID",
-        "DOTPAY_SHOP_PIN": "PIN",
-        "DOTPAY_URI": "https://ssl.dotpay.pl/test_payment/",
-        "DOTPAY_CURRENCY": "pln",
-        "DOTPAY_SHOP_EMAIL": "example@test.com",
-        "DOTPAY_SHOP_NAME": "example",
-        "DOTPAY_PAYMENT_DESCRIPTION": "Subscription Fee"
+        "APPLICATION_URL": "",
+        "DOTPAY_SHOP_ID": "",
+        "DOTPAY_SHOP_PIN": "",
+        "DOTPAY_URI": "",
+        "DOTPAY_CURRENCY": "",
+        "DOTPAY_SHOP_EMAIL": "",
+        "DOTPAY_SHOP_NAME": "",
+        "DOTPAY_CALLBACK_PATH": ""
       }
     },
     "OnlineConsulting": {

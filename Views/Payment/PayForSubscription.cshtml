@@ -1,0 +1,54 @@
+﻿@model OnlineConsulting.Models.ViewModels.Payment.PayForSubscriptionViewModel;
+@using OnlineConsulting.Constants;
+@using System;
+
+
+<div class="container pt-5">
+
+    <form asp-controller="Payment"
+          asp-action="PayForSubscription"
+          method="post"
+          class="bg-dark shadow-dark rounded p-4">
+
+        <div class="d-flex align-items-center mb-4 flex-column flex-md-row">
+            <i class="fas fa-user-plus fa-2x text-warning mr-3 mb-3 mb-md-0"></i>
+            <h3 class="text-light m-0">Subscription</h3>
+        </div>
+
+        @if (Model.EndDate.Date < DateTime.UtcNow.Date)
+        {
+            <p class="text-light">Subscription expired.</p>
+        }
+        else
+        {
+            <p class="text-light">
+                Subscription expiration date: 
+                <span data-utc-date="@Model.EndDate"></span>
+            </p>
+        }
+
+        <p class="text-light">Extend or renew your subscription. Choose subscription duration:</p>
+
+        @foreach (var property in typeof(SubscriptionDuration).GetFields())
+        {
+    
+        <input type="radio" 
+               class="btn-check" 
+               asp-for=@Model.SubscriptionDuration 
+               value="@property.GetValue(null)" />
+        <label 
+               class="text-light" 
+               asp-for=@Model.SubscriptionDuration>@property.GetValue(null)</label>
+ 
+        }
+
+        <button class="btn btn-warning" >Pay</button>
+
+    </form>
+
+</div>
+
+
+@section Scripts {
+    <partial name="/Views/Shared/Scripts/_UtcToLocal.cshtml" />
+}

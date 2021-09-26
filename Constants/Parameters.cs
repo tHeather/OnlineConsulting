@@ -11,6 +11,7 @@
         public const string DOTPAY_SHOP_EMAIL = "DOTPAY_SHOP_EMAIL";
         public const string DOTPAY_SHOP_NAME = "DOTPAY_SHOP_NAME";
         public const string DOTPAY_PAYMENT_DESCRIPTION = "DOTPAY_PAYMENT_DESCRIPTION";
+        public const string DOTPAY_CALLBACK_PATH = "DOTPAY_CALLBACK_PATH";
     }
 
 
