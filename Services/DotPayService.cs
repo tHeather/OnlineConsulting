@@ -32,14 +32,14 @@ namespace OnlineConsulting.Services
             applicationUrl = configuration[Parameters.APPLICATION_URL] ?? throw new ArgumentNullException(applicationUrl);
         }
 
-        public string CreatePaymentUri(Guid paymentId, int amount, string userEmail, string subscriptionDuration)
+        public string CreatePaymentUri(Guid paymentId, decimal amount, string userEmail, string subscriptionName)
         {
             var paymentParams = new Dictionary<string, string>()
             {
                 { "id", dotpayShopId },
                 { "amount", amount.ToString() },
                 { "currency", dotpayCurrency },
-                { "description", subscriptionDuration },
+                { "description", $"{subscriptionName} subscription" },
                 { "control", paymentId.ToString() },
                 { "urlc", $"{applicationUrl}{dotpayCallbackPath}" },
                 { "email", userEmail },

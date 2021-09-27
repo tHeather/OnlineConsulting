@@ -64,6 +64,7 @@ namespace OnlineConsulting
             services.AddScoped<IChatMessageRepository, ChatMessageRepository>();
             services.AddScoped<IPaymentRepository, PaymentRepository>();
             services.AddScoped<ISubscriptionRepository, SubscriptionRepository>();
+            services.AddScoped<ISubscriptionTypeRepository, SubscriptionTypeRepository>();
             services.AddScoped<IDotPayService, DotPayService>();
         }
 

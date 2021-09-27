@@ -1,10 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using OnlineConsulting.Constants;
 using OnlineConsulting.Data;
 using OnlineConsulting.Models.Entities;
 using OnlineConsulting.Services.Repositories.Interfaces;
 using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace OnlineConsulting.Services.Repositories
@@ -13,30 +11,13 @@ namespace OnlineConsulting.Services.Repositories
     {
 
         private readonly ApplicationDbContext _dbContext;
+        private readonly ISubscriptionTypeRepository _subscriptionTypeRepository;
 
-        private readonly Dictionary<string, int> SUBSCRIPTION_PRICE_DICTIONARY = new Dictionary<string, int>()
-        {
-            { SubscriptionDuration.MONTH, 100 },
-            { SubscriptionDuration.QUARTER, 250 },
-            { SubscriptionDuration.HALF_YEAR, 450 },
-            { SubscriptionDuration.YEAR, 850 },
-        };
-
-        private readonly Dictionary<string, int> SUBSCRIPTION_DURATION_DICTIONARY = new Dictionary<string, int>()
-        {
-            { SubscriptionDuration.MONTH, 30 },
-            { SubscriptionDuration.QUARTER, 91 },
-            { SubscriptionDuration.HALF_YEAR, 182 },
-            { SubscriptionDuration.YEAR, 365 },
-        };
-        public SubscriptionRepository(ApplicationDbContext dbContext)
+        public SubscriptionRepository(ApplicationDbContext dbContext,
+            ISubscriptionTypeRepository subscriptionTypeRepository)
         {
             _dbContext = dbContext;
-        }
-
-        public int GetPriceForSubscription(string subscriptionDuration)
-        {
-            return SUBSCRIPTION_PRICE_DICTIONARY.GetValueOrDefault(subscriptionDuration);
+            _subscriptionTypeRepository = subscriptionTypeRepository;
         }
 
         public async Task<Subscription> GetSubscriptionForUserAsync(string userId)
@@ -49,24 +30,25 @@ namespace OnlineConsulting.Services.Repositories
             var subscription = new Subscription()
             {
                 EmployerId = userId,
-
             };
 
             await _dbContext.Subscriptions.AddAsync(subscription);
             await _dbContext.SaveChangesAsync();
         }
 
-        public async Task ExtendUsersSubscriptionDuration(string userId, string subscriptionDuration)
+        public async Task ExtendUsersSubscriptionDuration(string userId, Guid subscriptionTypeId)
         {
             var subscription = await GetSubscriptionForUserAsync(userId);
-            var days = SUBSCRIPTION_DURATION_DICTIONARY.GetValueOrDefault(subscriptionDuration);
+
+            var subscriptionType = await _subscriptionTypeRepository.GetSubscriptionTypeByIdAsync(subscriptionTypeId);
+
             if (subscription.EndDate.Date < DateTime.UtcNow.Date)
             {
-                subscription.EndDate = DateTime.UtcNow.Date.AddDays(days);
+                subscription.EndDate = DateTime.UtcNow.Date.AddDays(subscriptionType.Days);
             }
             else
             {
-                subscription.EndDate = subscription.EndDate.AddDays(days);
+                subscription.EndDate = subscription.EndDate.AddDays(subscriptionType.Days);
             }
             await _dbContext.SaveChangesAsync();
         }

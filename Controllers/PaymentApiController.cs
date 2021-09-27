@@ -54,7 +54,8 @@ namespace OnlineConsulting.Controllers
 
             payment.Status = Enum.Parse<PaymentStatus>(dotPayCallback.operation_status, true);
             payment.DotPayOperationNumber = dotPayCallback.operation_number;
-            await _subscriptionRepository.ExtendUsersSubscriptionDuration(payment.EmployerId, dotPayCallback.description);
+            await _subscriptionRepository.ExtendUsersSubscriptionDuration(
+                                            payment.EmployerId, payment.SubscriptionTypeId);
 
             return Ok("OK");
         }

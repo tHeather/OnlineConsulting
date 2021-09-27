@@ -49,21 +49,21 @@ namespace OnlineConsulting.Migrations
                         new
                         {
                             Id = "c319ab1e-f914-4ebb-8ac9-d6da40d88419",
-                            ConcurrencyStamp = "96ba66c3-763d-470f-9a26-73286e7ad0a5",
+                            ConcurrencyStamp = "78b651b0-3349-4d1e-9391-c999b7a6dcd8",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
                             Id = "51802d91-7fa7-436c-9873-a201c8a35bfb",
-                            ConcurrencyStamp = "f12dfef4-2c2e-4c8c-b994-d02458117aa7",
+                            ConcurrencyStamp = "0698567b-6ff1-4aa6-876f-452d2d6f47c4",
                             Name = "Employer",
                             NormalizedName = "EMPLOYER"
                         },
                         new
                         {
                             Id = "e1dbd6ec-4d0e-4f0a-bd9f-125cb168ff42",
-                            ConcurrencyStamp = "35b3b755-b09f-49b4-8547-49e6d0d02c20",
+                            ConcurrencyStamp = "a35ecfbb-d492-410a-8cd1-732e77653493",
                             Name = "Consultant",
                             NormalizedName = "CONSULTANT"
                         });
@@ -265,11 +265,14 @@ namespace OnlineConsulting.Migrations
                     b.Property<string>("EmployerId")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("Price")
-                        .HasColumnType("int");
+                    b.Property<decimal>("Price")
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<int>("Status")
                         .HasColumnType("int");
+
+                    b.Property<Guid>("SubscriptionTypeId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
 
@@ -295,6 +298,56 @@ namespace OnlineConsulting.Migrations
                     b.HasIndex("EmployerId");
 
                     b.ToTable("Subscriptions");
+                });
+
+            modelBuilder.Entity("OnlineConsulting.Models.Entities.SubscriptionType", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("Days")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal>("Price")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("SubscriptionTypes");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("c258fa62-93ce-4eec-a609-10ffbea8b92b"),
+                            Days = 30,
+                            Name = "Month",
+                            Price = 100m
+                        },
+                        new
+                        {
+                            Id = new Guid("ebc9c455-fc60-441d-8c3d-6178912cc4c1"),
+                            Days = 91,
+                            Name = "Quarter",
+                            Price = 250m
+                        },
+                        new
+                        {
+                            Id = new Guid("d57c126c-085c-4541-8ce5-1eb3e4b9b04f"),
+                            Days = 182,
+                            Name = "Half year",
+                            Price = 450m
+                        },
+                        new
+                        {
+                            Id = new Guid("815d30cf-1b74-47d5-9829-4afd4363979a"),
+                            Days = 365,
+                            Name = "Year",
+                            Price = 850m
+                        });
                 });
 
             modelBuilder.Entity("OnlineConsulting.Models.Entities.User", b =>

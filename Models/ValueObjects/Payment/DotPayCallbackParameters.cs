@@ -1,4 +1,5 @@
 ﻿using System;
+
 namespace OnlineConsulting.Models.ValueObjects
 {
     public class DotPayCallbackParameters

@@ -16,15 +16,18 @@ namespace OnlineConsulting.Controllers
         private readonly IDotPayService _dotPayService;
         private readonly IPaymentRepository _paymentRepository;
         private readonly ISubscriptionRepository _subscriptionRepository;
+        private readonly ISubscriptionTypeRepository _subscriptionTypeRepository;
 
         public PaymentController(
             IDotPayService dotPayService,
             IPaymentRepository paymentRepository,
-            ISubscriptionRepository subscriptionRepository)
+            ISubscriptionRepository subscriptionRepository,
+            ISubscriptionTypeRepository subscriptionTypeRepository)
         {
             _dotPayService = dotPayService;
             _paymentRepository = paymentRepository;
             _subscriptionRepository = subscriptionRepository;
+            _subscriptionTypeRepository = subscriptionTypeRepository;
         }
 
         [HttpGet("create")]
@@ -50,11 +53,17 @@ namespace OnlineConsulting.Controllers
 
             var employerEmail = User.FindFirst(ClaimTypes.Email).Value;
 
-            var price = _subscriptionRepository.GetPriceForSubscription(payForSubscriptionViewModel.SubscriptionDuration);
+            var subscriptionType = await _subscriptionTypeRepository.GetSubscriptionTypeByIdAsync(
+                                                               payForSubscriptionViewModel.SubscriptionTypeId
+                                                               );
 
-            var payment = await _paymentRepository.CreatePayment(price, employerId);
+            var payment = await _paymentRepository.CreatePayment(
+                                                    subscriptionType.Price, employerId, subscriptionType.Id
+                                                    );
 
-            var redirectUrl = _dotPayService.CreatePaymentUri(payment.Id, price, employerEmail, payForSubscriptionViewModel.SubscriptionDuration);
+            var redirectUrl = _dotPayService.CreatePaymentUri(
+                                    payment.Id, subscriptionType.Price, employerEmail, subscriptionType.Name
+                                    );
 
             return Redirect(redirectUrl);
         }

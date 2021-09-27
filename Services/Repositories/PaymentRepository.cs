@@ -17,14 +17,17 @@ namespace OnlineConsulting.Services.Repositories
             _dbContext = applicationDbContext;
         }
 
-        public async Task<Payment> CreatePayment(int price, string employerId)
+        public async Task<Payment> CreatePayment(
+            decimal price, string employerId, Guid subscriptionTypeId
+            )
         {
             var payment = new Payment
             {
                 CreateDate = DateTime.UtcNow,
                 EmployerId = employerId,
                 Price = price,
-                Status = PaymentStatus.NEW
+                Status = PaymentStatus.NEW,
+                SubscriptionTypeId = subscriptionTypeId
             };
 
             await _dbContext.Payments.AddAsync(payment);

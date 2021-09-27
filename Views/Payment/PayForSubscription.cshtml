@@ -1,6 +1,7 @@
 ﻿@model OnlineConsulting.Models.ViewModels.Payment.PayForSubscriptionViewModel;
 @using OnlineConsulting.Constants;
 @using System;
+@inject OnlineConsulting.Services.Repositories.Interfaces.ISubscriptionTypeRepository subscriptionTypeRepository 
 
 
 <div class="container pt-5">
@@ -29,16 +30,24 @@
 
         <p class="text-light">Extend or renew your subscription. Choose subscription duration:</p>
 
-        @foreach (var property in typeof(SubscriptionDuration).GetFields())
+        @{ 
+            var subscriptionTypes = await subscriptionTypeRepository.GetAllSubscriptionTypesAsync();
+        }
+
+        @foreach (var subscriptionType in subscriptionTypes)
         {
     
         <input type="radio" 
                class="btn-check" 
-               asp-for=@Model.SubscriptionDuration 
-               value="@property.GetValue(null)" />
-        <label 
-               class="text-light" 
-               asp-for=@Model.SubscriptionDuration>@property.GetValue(null)</label>
+               asp-for=@Model.SubscriptionTypeId 
+               value=@subscriptionType.Id 
+               id=@subscriptionType.Id 
+               />
+        <label class="text-light"
+               for="@subscriptionType.Id"
+               >
+            @subscriptionType.Name
+        </label>
  
         }
 
