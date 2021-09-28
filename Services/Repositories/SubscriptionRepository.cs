@@ -42,9 +42,9 @@ namespace OnlineConsulting.Services.Repositories
 
             var subscriptionType = await _subscriptionTypeRepository.GetSubscriptionTypeByIdAsync(subscriptionTypeId);
 
-            if (subscription.EndDate.Date < DateTime.UtcNow.Date)
+            if (subscription.EndDate < DateTime.UtcNow)
             {
-                subscription.EndDate = DateTime.UtcNow.Date.AddDays(subscriptionType.Days);
+                subscription.EndDate = DateTime.UtcNow.AddDays(subscriptionType.Days);
             }
             else
             {

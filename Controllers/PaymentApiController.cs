@@ -63,7 +63,6 @@ namespace OnlineConsulting.Controllers
 
         private string MakeParamsString(DotPayCallbackParameters parameters)
         {
-
             var stringBuilder = new StringBuilder();
             foreach (var property in parameters.GetType().GetProperties())
             {
