@@ -6,5 +6,6 @@ namespace OnlineConsulting.Models.ViewModels.Payment
     {
         public Guid SubscriptionTypeId { get; set; }
         public DateTime EndDate { get; set; }
+        public string Currency { get; set; }
     }
 }

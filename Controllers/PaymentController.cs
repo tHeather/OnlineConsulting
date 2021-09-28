@@ -1,9 +1,11 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using OnlineConsulting.Constants;
 using OnlineConsulting.Models.ViewModels.Payment;
 using OnlineConsulting.Services.Interfaces;
 using OnlineConsulting.Services.Repositories.Interfaces;
+using System;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
@@ -17,17 +19,21 @@ namespace OnlineConsulting.Controllers
         private readonly IPaymentRepository _paymentRepository;
         private readonly ISubscriptionRepository _subscriptionRepository;
         private readonly ISubscriptionTypeRepository _subscriptionTypeRepository;
+        private readonly string _currency;
+
 
         public PaymentController(
             IDotPayService dotPayService,
             IPaymentRepository paymentRepository,
             ISubscriptionRepository subscriptionRepository,
-            ISubscriptionTypeRepository subscriptionTypeRepository)
+            ISubscriptionTypeRepository subscriptionTypeRepository,
+            IConfiguration configuration)
         {
             _dotPayService = dotPayService;
             _paymentRepository = paymentRepository;
             _subscriptionRepository = subscriptionRepository;
             _subscriptionTypeRepository = subscriptionTypeRepository;
+            _currency = configuration[Parameters.DOTPAY_CURRENCY] ?? throw new ArgumentNullException(_currency);
         }
 
         [HttpGet("create")]
@@ -39,7 +45,8 @@ namespace OnlineConsulting.Controllers
 
             var payForSubscriptionViewModel = new PayForSubscriptionViewModel
             {
-                EndDate = subscription.EndDate
+                EndDate = subscription.EndDate,
+                Currency = _currency
             };
 
             return View(payForSubscriptionViewModel);

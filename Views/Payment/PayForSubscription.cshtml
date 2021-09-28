@@ -9,10 +9,12 @@
     <form asp-controller="Payment"
           asp-action="PayForSubscription"
           method="post"
-          class="bg-dark shadow-dark rounded p-4">
+          class="bg-dark shadow-dark rounded p-4 d-flex flex-column align-items-start m-auto w-100"
+          style="max-width:800px;"
+          >
 
-        <div class="d-flex align-items-center mb-4 flex-column flex-md-row">
-            <i class="fas fa-user-plus fa-2x text-warning mr-3 mb-3 mb-md-0"></i>
+        <div class="d-flex align-items-center mb-4 flex-row">
+            <i class="fas fa-user-plus fa-2x text-warning mr-3 mb-md-0"></i>
             <h3 class="text-light m-0">Subscription</h3>
         </div>
 
@@ -24,7 +26,7 @@
         {
             <p class="text-light">
                 Subscription expiration date: 
-                <span data-utc-date="@Model.EndDate"></span>
+                <b data-utc-date="@Model.EndDate"></b>
             </p>
         }
 
@@ -36,19 +38,24 @@
 
         @foreach (var subscriptionType in subscriptionTypes)
         {
-    
-        <input type="radio" 
-               class="btn-check" 
-               asp-for=@Model.SubscriptionTypeId 
-               value=@subscriptionType.Id 
-               id=@subscriptionType.Id 
-               />
-        <label class="text-light"
-               for="@subscriptionType.Id"
-               >
-            @subscriptionType.Name
-        </label>
- 
+            
+         var isChecked = subscriptionTypes.First() == subscriptionType;
+        
+        <div class="btn bg-light p-0 pl-2 d-flex align-items-center mb-3 w-100" >
+            <input type="radio"
+                   class="btn-check"
+                   asp-for=@Model.SubscriptionTypeId
+                   value=@subscriptionType.Id
+                   id=@subscriptionType.Id 
+                   checked=@isChecked
+                   />
+            <label class="text-dark w-100 h-100 m-0 p-2" 
+                   style="cursor:pointer;"
+                   for="@subscriptionType.Id"
+                   >
+                @subscriptionType.Name - @subscriptionType.Price @Model.Currency
+            </label>
+        </div>
         }
 
         <button class="btn btn-warning" >Pay</button>
