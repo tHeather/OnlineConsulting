@@ -13,6 +13,7 @@ namespace OnlineConsulting.Models.Entities
         public string DotPayOperationNumber { get; set; }
         public Guid SubscriptionTypeId { get; set; }
 
-        public User Employee { get; set; }
+        public User Employer { get; set; }
+        public SubscriptionType SubscriptionType { get; set; }
     }
 }

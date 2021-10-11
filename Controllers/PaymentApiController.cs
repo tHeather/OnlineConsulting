@@ -1,9 +1,13 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using OnlineConsulting.Constants;
 using OnlineConsulting.Enums;
 using OnlineConsulting.Models.ValueObjects;
+using OnlineConsulting.Models.ValueObjects.Payment;
 using OnlineConsulting.Services.Interfaces;
 using OnlineConsulting.Services.Repositories.Interfaces;
+using OnlineConsulting.Tools;
 using System;
 using System.Linq;
 using System.Text;
@@ -15,6 +19,7 @@ namespace OnlineConsulting.Controllers
     [ApiController]
     public class PaymentApiController : ControllerBase
     {
+        private const int PAGINATION_PAGE_SIZE = 10;
         private readonly IDotPayService _dotPayService;
         private readonly IPaymentRepository _paymentRepository;
         private readonly ISubscriptionRepository _subscriptionRepository;
@@ -72,6 +77,41 @@ namespace OnlineConsulting.Controllers
             return stringBuilder.ToString();
         }
 
+        [Authorize(Roles = UserRoleValue.ADMIN)]
+        [HttpGet("list")]
+        public async Task<AdminPaymentList> GetPaymentList(
+            [FromQuery] GetPaymentsFilters getPaymentsFilters, int pageIndex = 1)
+        {
+
+            var paymentQuery = _paymentRepository
+                .GetPaymentsQuery(getPaymentsFilters)
+                .Select(p => new AdminPaymentListItem()
+                {
+                    Id = p.Id,
+                    CreateDate = p.CreateDate,
+                    Price = p.Price,
+                    DotPayOperationNumber = p.DotPayOperationNumber,
+                    Email = p.Employer.Email,
+                    Status = Enum.GetName(p.Status.GetType(), p.Status),
+                    SubscriptionType = p.SubscriptionType.Name,
+
+                });
+
+            var paymentList = await PaginatedList<AdminPaymentListItem>
+                                            .CreateAsync(paymentQuery, pageIndex, PAGINATION_PAGE_SIZE);
+
+
+            return new AdminPaymentList()
+            {
+                List = paymentList,
+                PageIndex = paymentList.PageIndex,
+                HasPreviousPage = paymentList.HasPreviousPage,
+                HasNextPage = paymentList.HasNextPage,
+                SurroundingIndexes = paymentList.GetSurroundingIndexes(2)
+            };
+
+
+        }
 
     }
 }

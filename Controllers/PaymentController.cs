@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace OnlineConsulting.Controllers
 {
-    [Authorize(Roles = UserRoleValue.EMPLOYER)]
+
     [Route("payment")]
     public class PaymentController : Controller
     {
@@ -20,6 +20,7 @@ namespace OnlineConsulting.Controllers
         private readonly ISubscriptionRepository _subscriptionRepository;
         private readonly ISubscriptionTypeRepository _subscriptionTypeRepository;
         private readonly string _currency;
+
 
 
         public PaymentController(
@@ -36,6 +37,8 @@ namespace OnlineConsulting.Controllers
             _currency = configuration[Parameters.DOTPAY_CURRENCY] ?? throw new ArgumentNullException(_currency);
         }
 
+
+        [Authorize(Roles = UserRoleValue.EMPLOYER)]
         [HttpGet("create")]
         public async Task<IActionResult> PayForSubscription()
         {
@@ -52,6 +55,7 @@ namespace OnlineConsulting.Controllers
             return View(payForSubscriptionViewModel);
         }
 
+        [Authorize(Roles = UserRoleValue.EMPLOYER)]
         [HttpPost("create")]
         public async Task<IActionResult> PayForSubscription(PayForSubscriptionViewModel payForSubscriptionViewModel)
         {
@@ -73,6 +77,13 @@ namespace OnlineConsulting.Controllers
                                     );
 
             return Redirect(redirectUrl);
+        }
+
+        [Authorize(Roles = UserRoleValue.ADMIN)]
+        [HttpGet("list")]
+        public IActionResult GetPaymentList()
+        {
+            return View("GetPaymentList");
         }
 
     }

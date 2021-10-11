@@ -23,10 +23,14 @@ namespace OnlineConsulting.Data
         protected override void OnModelCreating(ModelBuilder builder)
         {
 
+            const string ADMIN_EMAIL = "admin@admin.pl";
+            const string ADMIN_GUID = "7f10381c-7a7c-4e65-b468-a5b32c789720";
+            const string ADMIN_ROLE_GUID = "c319ab1e-f914-4ebb-8ac9-d6da40d88419";
+
             builder.Entity<IdentityRole>().HasData(
                     new IdentityRole
                     {
-                        Id = "c319ab1e-f914-4ebb-8ac9-d6da40d88419",
+                        Id = ADMIN_ROLE_GUID,
                         Name = UserRoleValue.ADMIN,
                         NormalizedName = UserRoleValue.ADMIN.ToUpper()
                     }
@@ -89,6 +93,28 @@ namespace OnlineConsulting.Data
                       Price = 850
                   }
               );
+
+
+            builder.Entity<User>().HasData(
+              new User
+              {
+                  Id = ADMIN_GUID,
+                  Email = ADMIN_EMAIL,
+                  NormalizedEmail = ADMIN_EMAIL.ToUpper(),
+                  UserName = ADMIN_EMAIL,
+                  NormalizedUserName = ADMIN_EMAIL.ToUpper(),
+                  PasswordHash = "AQAAAAEAACcQAAAAEOYBeJPoRPDerQ65Eyj6pmLGeMTpwjMPKvtmAKI8bbn0eykfamwp5dlh+h2mlcTyBw==", //Qwerty!2345
+                  EmailConfirmed = true,
+                  FirstName = "Admin",
+                  Surname = "Admin"
+              }
+          );
+
+            builder.Entity<IdentityUserRole<string>>().HasData(new IdentityUserRole<string>
+            {
+                RoleId = ADMIN_ROLE_GUID,
+                UserId = ADMIN_GUID
+            });
 
             base.OnModelCreating(builder);
         }
