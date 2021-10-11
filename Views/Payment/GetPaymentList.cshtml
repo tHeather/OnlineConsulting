@@ -1,4 +1,6 @@
 ﻿@using OnlineConsulting.Enums;
+@using OnlineConsulting.Constants;
+@inject Microsoft.Extensions.Configuration.IConfiguration configuration;
 
 <div class="p-3">
 
@@ -80,7 +82,7 @@
                 <tr>
                     <th class="text-dark">Payment id</th>
                     <th class="text-dark">Create date</th>
-                    <th class="text-dark">Price</th>
+                    <th class="text-dark">Price (@configuration[Parameters.DOTPAY_CURRENCY])</th>
                     <th class="text-dark">Status</th>
                     <th class="text-dark">Dotpay operation number</th>
                     <th class="text-dark">Subscription type</th>
