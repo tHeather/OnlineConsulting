@@ -33,7 +33,7 @@
         <p class="text-light">Extend or renew your subscription. Choose subscription duration:</p>
 
         @{ 
-            var subscriptionTypes = await subscriptionTypeRepository.GetAllSubscriptionTypesAsync();
+            var subscriptionTypes =  subscriptionTypeRepository.GetAllSubscriptionTypesQuery().ToList();
         }
 
         @foreach (var subscriptionType in subscriptionTypes)

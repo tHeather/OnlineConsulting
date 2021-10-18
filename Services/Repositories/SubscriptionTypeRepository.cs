@@ -3,7 +3,7 @@ using OnlineConsulting.Data;
 using OnlineConsulting.Models.Entities;
 using OnlineConsulting.Services.Repositories.Interfaces;
 using System;
-using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace OnlineConsulting.Services.Repositories
@@ -23,9 +23,21 @@ namespace OnlineConsulting.Services.Repositories
             return await _dbContext.SubscriptionTypes.SingleOrDefaultAsync(s => s.Id == subscriptionId);
         }
 
-        public async Task<List<SubscriptionType>> GetAllSubscriptionTypesAsync()
+        public IQueryable<SubscriptionType> GetAllSubscriptionTypesQuery()
         {
-            return await _dbContext.SubscriptionTypes.ToListAsync();
+            return _dbContext.SubscriptionTypes;
+        }
+
+        public async Task<SubscriptionType> UpdatePriceAsync(Guid id, decimal price)
+        {
+            var subscriptionType = await _dbContext.SubscriptionTypes
+                                                .SingleOrDefaultAsync(s => s.Id == id);
+
+            subscriptionType.Price = price;
+
+            await _dbContext.SaveChangesAsync();
+
+            return subscriptionType;
         }
 
     }

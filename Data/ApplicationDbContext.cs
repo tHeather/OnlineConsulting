@@ -13,7 +13,7 @@ namespace OnlineConsulting.Data
         public DbSet<ChatMessage> ChatMessages { get; set; }
         public DbSet<Subscription> Subscriptions { get; set; }
         public DbSet<SubscriptionType> SubscriptionTypes { get; set; }
-        public DbSet<Payment> Payments { get; set; }
+        public DbSet<PaymentType> Payments { get; set; }
 
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)

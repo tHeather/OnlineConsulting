@@ -1,0 +1,38 @@
+﻿@model OnlineConsulting.Models.ViewModels.Subscription.ChangeSubscriptionPriceViewModel;
+
+@if (Model.IsSaved)
+{
+<div class="alert alert-success alert-dismissible fade show" role="alert">
+    Successfully saved
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+    </button>
+</div>
+}
+
+<div class="container pt-5" style="max-width:700px;">
+    <div class="bg-dark shadow-dark rounded p-4">
+        <div class="d-flex align-items-center mb-4 flex-column flex-md-row">
+            <i class="fas fa-clipboard-list fa-2x text-warning mr-3 mb-3 mb-md-0"></i>
+            <h3 class="text-light m-0">Subscription price</h3>
+        </div>
+        <div class="d-flex flex-column">
+            @foreach (var subscription in Model.SubscriptionTypes)
+            {
+                <form asp-controller="Subscription"
+                      asp-action="ChangeSubscriptionPrice"
+                      method="post"
+                      class="mb-4">
+                    <label class="text-light">
+                        @subscription.Name
+                    </label>
+                    <input value="@subscription.Price"
+                           name="Price"
+                           class="form-control" />
+                    <input hidden value="@subscription.Id" name="Id" />
+                    <button class="btn btn-warning mt-2">Save</button>
+                </form>
+            }
+        </div>
+    </div>
+</div>
