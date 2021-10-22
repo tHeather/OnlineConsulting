@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace OnlineConsulting.Controllers
 {
-    [Authorize(Roles = UserRoleValue.ADMIN)]
+    [Route("subscription")]
     public class SubscriptionController : Controller
     {
         private readonly ISubscriptionTypeRepository _subscriptionTypeRepository;
@@ -19,6 +19,7 @@ namespace OnlineConsulting.Controllers
             _subscriptionTypeRepository = subscriptionTypeRepository;
         }
 
+        [Authorize(Roles = UserRoleValue.ADMIN)]
         [HttpGet("change-price")]
         public IActionResult ChangeSubscriptionPrice(bool isSaved)
         {
@@ -34,6 +35,7 @@ namespace OnlineConsulting.Controllers
             return View("ChangeSubscriptionPrice", changeSubscriptionPriceViewModel);
         }
 
+        [Authorize(Roles = UserRoleValue.ADMIN)]
         [HttpPost("change-price")]
         public async Task<IActionResult> ChangeSubscriptionPrice(SubscriptionType subscription)
         {
@@ -45,5 +47,21 @@ namespace OnlineConsulting.Controllers
 
             return RedirectToAction("ChangeSubscriptionPrice", new { isSaved = true });
         }
+
+
+        [Authorize(Roles = UserRoleValue.EMPLOYER)]
+        [HttpGet("employer/subscription-expired")]
+        public IActionResult EmployerSubscriptionExpierd()
+        {
+            return View("EmployerSubscriptionExpierd");
+        }
+
+        [Authorize(Roles = UserRoleValue.CONSULTANT)]
+        [HttpGet("consultant/subscription-expired")]
+        public IActionResult ConsultantSubscriptionExpierd()
+        {
+            return View("ConsultantSubscriptionExpierd");
+        }
+
     }
 }

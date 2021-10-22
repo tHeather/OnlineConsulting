@@ -30,7 +30,8 @@ namespace OnlineConsulting
         {
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(
-                    Configuration.GetConnectionString("DefaultConnection")));
+                    Configuration.GetConnectionString("DefaultConnection")), ServiceLifetime.Transient
+                );
             services.AddDatabaseDeveloperPageExceptionFilter();
 
             services.AddIdentity<User, IdentityRole>(opt =>
