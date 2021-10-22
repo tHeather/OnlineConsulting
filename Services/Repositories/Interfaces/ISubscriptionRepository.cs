@@ -8,6 +8,6 @@ namespace OnlineConsulting.Services.Repositories.Interfaces
     {
         public Task<Subscription> GetSubscriptionForUserAsync(string userId);
         public Task CreateSubscriptionAsync(string userId);
-        public Task ExtendUsersSubscriptionDuration(string userId, Guid subscriptionTypeId);
+        public Task ExtendUsersSubscriptionDuration(string userId, Guid subscriptionTypeId, Guid lastPaymentId);
     }
 }

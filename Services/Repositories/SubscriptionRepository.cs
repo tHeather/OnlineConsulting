@@ -36,9 +36,15 @@ namespace OnlineConsulting.Services.Repositories
             await _dbContext.SaveChangesAsync();
         }
 
-        public async Task ExtendUsersSubscriptionDuration(string userId, Guid subscriptionTypeId)
+        public async Task ExtendUsersSubscriptionDuration(
+            string userId, Guid subscriptionTypeId, Guid lastPaymentId
+            )
         {
             var subscription = await GetSubscriptionForUserAsync(userId);
+
+            if (subscription.LastPaymentId == lastPaymentId) return;
+
+            subscription.LastPaymentId = lastPaymentId;
 
             var subscriptionType = await _subscriptionTypeRepository.GetSubscriptionTypeByIdAsync(subscriptionTypeId);
 

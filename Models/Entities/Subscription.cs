@@ -7,6 +7,7 @@ namespace OnlineConsulting.Models.Entities
         public Guid Id { get; set; }
         public DateTime EndDate { get; set; }
         public string EmployerId { get; set; }
+        public Guid LastPaymentId { get; set; }
 
         public User Employer { get; set; }
     }

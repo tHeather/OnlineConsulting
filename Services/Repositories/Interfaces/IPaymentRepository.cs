@@ -8,8 +8,8 @@ namespace OnlineConsulting.Services.Repositories.Interfaces
 {
     public interface IPaymentRepository
     {
-        public Task<PaymentType> CreatePayment(decimal price, string employerId, Guid subscriptionTypeId);
-        public Task<PaymentType> GetPaymentByIdAsync(Guid id);
-        public IQueryable<PaymentType> GetPaymentsQuery(GetPaymentsFilters getPaymentsFilters);
+        public Task<Payment> CreatePayment(decimal price, string employerId, Guid subscriptionTypeId);
+        public Task<Payment> GetPaymentByIdAsync(Guid id);
+        public IQueryable<Payment> GetPaymentsQuery(GetPaymentsFilters getPaymentsFilters);
     }
 }

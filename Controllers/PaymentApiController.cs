@@ -43,7 +43,7 @@ namespace OnlineConsulting.Controllers
         public async Task<ActionResult> PaymentServiceCallback([FromBody] DotPayCallbackParameters dotPayCallback)
         {
             var ip = HttpContext.Connection.RemoteIpAddress.ToString();
-            if (!_DOTPAY_IPS.Contains(ip)) return Ok("OK");
+            // if (!_DOTPAY_IPS.Contains(ip)) return Ok("OK");
 
             if (dotPayCallback.operation_type != "payment") return Ok("OK");
             if (dotPayCallback.operation_status != "completed") return Ok("OK");
@@ -60,7 +60,7 @@ namespace OnlineConsulting.Controllers
             payment.Status = Enum.Parse<PaymentStatus>(dotPayCallback.operation_status, true);
             payment.DotPayOperationNumber = dotPayCallback.operation_number;
             await _subscriptionRepository.ExtendUsersSubscriptionDuration(
-                                            payment.EmployerId, payment.SubscriptionTypeId);
+                                            payment.EmployerId, payment.SubscriptionTypeId, payment.Id);
 
             return Ok("OK");
         }

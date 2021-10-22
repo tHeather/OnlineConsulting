@@ -19,11 +19,11 @@ namespace OnlineConsulting.Services.Repositories
             _dbContext = applicationDbContext;
         }
 
-        public async Task<PaymentType> CreatePayment(
+        public async Task<Payment> CreatePayment(
             decimal price, string employerId, Guid subscriptionTypeId
             )
         {
-            var payment = new PaymentType
+            var payment = new Payment
             {
                 CreateDate = DateTime.UtcNow,
                 EmployerId = employerId,
@@ -38,12 +38,12 @@ namespace OnlineConsulting.Services.Repositories
             return payment;
         }
 
-        public async Task<PaymentType> GetPaymentByIdAsync(Guid id)
+        public async Task<Payment> GetPaymentByIdAsync(Guid id)
         {
             return await _dbContext.Payments.SingleOrDefaultAsync(p => p.Id == id);
         }
 
-        public IQueryable<PaymentType> GetPaymentsQuery(GetPaymentsFilters getPaymentsFilters)
+        public IQueryable<Payment> GetPaymentsQuery(GetPaymentsFilters getPaymentsFilters)
         {
             var query = _dbContext.Payments.Where(
                 p => p.CreateDate >= getPaymentsFilters.StartDate &&

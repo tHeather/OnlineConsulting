@@ -3,7 +3,7 @@ using System;
 
 namespace OnlineConsulting.Models.Entities
 {
-    public class PaymentType
+    public class Payment
     {
         public Guid Id { get; set; }
         public DateTime CreateDate { get; set; }
