@@ -49,21 +49,21 @@ namespace OnlineConsulting.Migrations
                         new
                         {
                             Id = "c319ab1e-f914-4ebb-8ac9-d6da40d88419",
-                            ConcurrencyStamp = "c06e8c36-6e5c-421f-9d83-bf149b3975f2",
+                            ConcurrencyStamp = "f6f45176-7327-4889-ae17-4b198ae4f141",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
                             Id = "51802d91-7fa7-436c-9873-a201c8a35bfb",
-                            ConcurrencyStamp = "2adfd19a-c79b-4bb2-b701-3f03b827a494",
+                            ConcurrencyStamp = "cca16aab-f5d4-43a8-8921-b752d73478d5",
                             Name = "Employer",
                             NormalizedName = "EMPLOYER"
                         },
                         new
                         {
                             Id = "e1dbd6ec-4d0e-4f0a-bd9f-125cb168ff42",
-                            ConcurrencyStamp = "43d5146f-87f4-4a8e-bcb9-bcdd4970351e",
+                            ConcurrencyStamp = "45237011-4821-4815-bf27-db0eaa510984",
                             Name = "Consultant",
                             NormalizedName = "CONSULTANT"
                         });
@@ -152,6 +152,13 @@ namespace OnlineConsulting.Migrations
                     b.HasIndex("RoleId");
 
                     b.ToTable("AspNetUserRoles");
+
+                    b.HasData(
+                        new
+                        {
+                            UserId = "7f10381c-7a7c-4e65-b468-a5b32c789720",
+                            RoleId = "c319ab1e-f914-4ebb-8ac9-d6da40d88419"
+                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
@@ -247,27 +254,109 @@ namespace OnlineConsulting.Migrations
                     b.ToTable("Conversations");
                 });
 
-            modelBuilder.Entity("OnlineConsulting.Models.Entities.EmployerSetting", b =>
+            modelBuilder.Entity("OnlineConsulting.Models.Entities.Payment", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("Domain")
-                        .HasMaxLength(260)
-                        .HasColumnType("nvarchar(260)");
-
-                    b.Property<DateTime?>("SubscriptionEndDate")
+                    b.Property<DateTime>("CreateDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("UserId")
-                        .IsRequired()
+                    b.Property<string>("DotPayOperationNumber")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("EmployerId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<decimal>("Price")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<Guid>("SubscriptionTypeId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
 
-                    b.ToTable("EmployerSettings");
+                    b.HasIndex("EmployerId");
+
+                    b.HasIndex("SubscriptionTypeId");
+
+                    b.ToTable("Payments");
+                });
+
+            modelBuilder.Entity("OnlineConsulting.Models.Entities.Subscription", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("EmployerId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateTime>("EndDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("LastPaymentId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EmployerId");
+
+                    b.ToTable("Subscriptions");
+                });
+
+            modelBuilder.Entity("OnlineConsulting.Models.Entities.SubscriptionType", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("Days")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal>("Price")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("SubscriptionTypes");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("c258fa62-93ce-4eec-a609-10ffbea8b92b"),
+                            Days = 30,
+                            Name = "Month",
+                            Price = 100m
+                        },
+                        new
+                        {
+                            Id = new Guid("ebc9c455-fc60-441d-8c3d-6178912cc4c1"),
+                            Days = 91,
+                            Name = "Quarter",
+                            Price = 250m
+                        },
+                        new
+                        {
+                            Id = new Guid("d57c126c-085c-4541-8ce5-1eb3e4b9b04f"),
+                            Days = 182,
+                            Name = "Half year",
+                            Price = 450m
+                        },
+                        new
+                        {
+                            Id = new Guid("815d30cf-1b74-47d5-9829-4afd4363979a"),
+                            Days = 365,
+                            Name = "Year",
+                            Price = 850m
+                        });
                 });
 
             modelBuilder.Entity("OnlineConsulting.Models.Entities.User", b =>
@@ -291,9 +380,6 @@ namespace OnlineConsulting.Migrations
 
                     b.Property<string>("EmployerId")
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<int?>("EmployerSettingId")
-                        .HasColumnType("int");
 
                     b.Property<string>("FirstName")
                         .IsRequired()
@@ -340,10 +426,6 @@ namespace OnlineConsulting.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("EmployerSettingId")
-                        .IsUnique()
-                        .HasFilter("[EmployerSettingId] IS NOT NULL");
-
                     b.HasIndex("NormalizedEmail")
                         .HasDatabaseName("EmailIndex");
 
@@ -353,6 +435,26 @@ namespace OnlineConsulting.Migrations
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
                     b.ToTable("AspNetUsers");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = "7f10381c-7a7c-4e65-b468-a5b32c789720",
+                            AccessFailedCount = 0,
+                            ConcurrencyStamp = "a4618fa9-0704-4ace-ba36-d8c2fdd20e73",
+                            Email = "admin@admin.pl",
+                            EmailConfirmed = true,
+                            FirstName = "Admin",
+                            LockoutEnabled = false,
+                            NormalizedEmail = "ADMIN@ADMIN.PL",
+                            NormalizedUserName = "ADMIN@ADMIN.PL",
+                            PasswordHash = "AQAAAAEAACcQAAAAEOYBeJPoRPDerQ65Eyj6pmLGeMTpwjMPKvtmAKI8bbn0eykfamwp5dlh+h2mlcTyBw==",
+                            PhoneNumberConfirmed = false,
+                            SecurityStamp = "709dc567-943c-4456-8f98-622336050e7c",
+                            Surname = "Admin",
+                            TwoFactorEnabled = false,
+                            UserName = "admin@admin.pl"
+                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -436,23 +538,35 @@ namespace OnlineConsulting.Migrations
                     b.Navigation("LastMessage");
                 });
 
-            modelBuilder.Entity("OnlineConsulting.Models.Entities.User", b =>
+            modelBuilder.Entity("OnlineConsulting.Models.Entities.Payment", b =>
                 {
-                    b.HasOne("OnlineConsulting.Models.Entities.EmployerSetting", "EmployerSetting")
-                        .WithOne("User")
-                        .HasForeignKey("OnlineConsulting.Models.Entities.User", "EmployerSettingId");
+                    b.HasOne("OnlineConsulting.Models.Entities.User", "Employer")
+                        .WithMany()
+                        .HasForeignKey("EmployerId");
 
-                    b.Navigation("EmployerSetting");
+                    b.HasOne("OnlineConsulting.Models.Entities.SubscriptionType", "SubscriptionType")
+                        .WithMany()
+                        .HasForeignKey("SubscriptionTypeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Employer");
+
+                    b.Navigation("SubscriptionType");
+                });
+
+            modelBuilder.Entity("OnlineConsulting.Models.Entities.Subscription", b =>
+                {
+                    b.HasOne("OnlineConsulting.Models.Entities.User", "Employer")
+                        .WithMany()
+                        .HasForeignKey("EmployerId");
+
+                    b.Navigation("Employer");
                 });
 
             modelBuilder.Entity("OnlineConsulting.Models.Entities.Conversation", b =>
                 {
                     b.Navigation("ChatMessages");
-                });
-
-            modelBuilder.Entity("OnlineConsulting.Models.Entities.EmployerSetting", b =>
-                {
-                    b.Navigation("User");
                 });
 #pragma warning restore 612, 618
         }

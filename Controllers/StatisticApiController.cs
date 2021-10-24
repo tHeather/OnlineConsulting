@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using OnlineConsulting.Attributes;
 using OnlineConsulting.Constants;
 using OnlineConsulting.Models.ValueObjects.Statistic;
 using OnlineConsulting.Services.Repositories.Interfaces;
@@ -7,6 +8,7 @@ using System.Threading.Tasks;
 
 namespace OnlineConsulting.Controllers
 {
+    [TypeFilter(typeof(ValidateSubscriptionAttribute))]
     [Authorize(Roles = UserRoleValue.EMPLOYER)]
     [Route("api/statistics")]
     [ApiController]

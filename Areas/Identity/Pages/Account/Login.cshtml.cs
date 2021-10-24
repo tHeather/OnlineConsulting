@@ -88,7 +88,7 @@ namespace OnlineConsulting.Areas.Identity.Pages.Account
                     var roles = await _userManager.GetRolesAsync(user);
                     return roles[0] switch
                     {
-                        UserRoleValue.ADMIN => LocalRedirect(returnUrl),
+                        UserRoleValue.ADMIN => RedirectToAction("list", "payment"),
                         UserRoleValue.CONSULTANT => RedirectToAction("NewConversationList", "Chat"),
                         UserRoleValue.EMPLOYER => RedirectToAction("GetStatistics", "Statistics"),
                         _ => throw new System.NotImplementedException(),

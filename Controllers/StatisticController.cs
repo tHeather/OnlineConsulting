@@ -1,10 +1,12 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using OnlineConsulting.Attributes;
 using OnlineConsulting.Constants;
 using OnlineConsulting.Services.Repositories.Interfaces;
 
 namespace OnlineConsulting.Controllers
 {
+    [TypeFilter(typeof(ValidateSubscriptionAttribute))]
     [Authorize(Roles = UserRoleValue.EMPLOYER)]
     [Route("statistics")]
     public class StatisticController : Controller

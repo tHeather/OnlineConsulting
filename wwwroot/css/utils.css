@@ -17,3 +17,17 @@
 .shadow-dark {
     box-shadow: rgb(0 0 0 / 80%) 2px 20px 30px -15px;
 }
+
+.page-item.active .page-link {
+    color: #252525 !important;
+    background-color: #ffc107 !important;
+    border-color: #ffc107 !important;
+    cursor:pointer !important;
+}
+
+.page-item .page-link {
+    color: #252525 !important;
+    background-color: #cdcdd2 !important;
+    border-color: #c5c5c5 !important;
+    cursor: pointer !important;
+}

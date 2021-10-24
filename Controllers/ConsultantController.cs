@@ -1,7 +1,7 @@
 ﻿
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using OnlineConsulting.Attributes;
 using OnlineConsulting.Constants;
 using OnlineConsulting.Models.Constants;
 using OnlineConsulting.Models.Entities;
@@ -10,12 +10,12 @@ using OnlineConsulting.Models.ViewModels.Modals;
 using OnlineConsulting.Services.Repositories.Interfaces;
 using OnlineConsulting.Tools;
 using System.Collections.Generic;
-using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace OnlineConsulting.Controllers
 {
+    [TypeFilter(typeof(ValidateSubscriptionAttribute))]
     [Authorize(Roles = UserRoleValue.EMPLOYER)]
     [Route("consultants")]
 
@@ -38,16 +38,18 @@ namespace OnlineConsulting.Controllers
         [AutoValidateAntiforgeryToken]
         public async Task<ActionResult> AddConsultant(AddConsultantViewModel addConsultantViewModel)
         {
-            if (ModelState.IsValid) {
+            if (ModelState.IsValid)
+            {
 
                 var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
 
                 var createConsultantValueObject = await _userRepository.CreateConsultantAsync(addConsultantViewModel, userIdClaim.Value);
 
-                if (createConsultantValueObject.IdentityResult.Succeeded) 
+                if (createConsultantValueObject.IdentityResult.Succeeded)
                 {
                     ModelState.Clear();
-                    return View(new AddConsultantViewModel {
+                    return View(new AddConsultantViewModel
+                    {
                         GeneratedPassword = createConsultantValueObject.GeneratedPassword,
                         Login = addConsultantViewModel.Email
                     });
@@ -73,19 +75,21 @@ namespace OnlineConsulting.Controllers
                     10);
 
             return View(
-                    new GetAllConsultantsViewModel() { 
+                    new GetAllConsultantsViewModel()
+                    {
                         ConsultantList = consultantList,
-                        Modal =  modalViewModel
+                        Modal = modalViewModel
                     }
                 );
         }
 
         [HttpGet("delete")]
-        public async Task<ActionResult> DeleteConsultant(string id) {
+        public async Task<ActionResult> DeleteConsultant(string id)
+        {
 
             var user = _userRepository.GetUserById(id);
 
-            if(user == null) return RedirectToAction("GetAllConsultants", new ModalViewModel
+            if (user == null) return RedirectToAction("GetAllConsultants", new ModalViewModel
             {
                 ModalLabel = "Delete consultant",
                 ModalText = new List<string>() { "Selected consultant does not exist." },
@@ -95,7 +99,7 @@ namespace OnlineConsulting.Controllers
 
             var result = await _userRepository.DeleteConsultant(user);
 
-            if(!result.Succeeded) RedirectToAction("GetAllConsultants", new ModalViewModel
+            if (!result.Succeeded) RedirectToAction("GetAllConsultants", new ModalViewModel
             {
                 ModalLabel = "Delete consultant",
                 ModalText = (List<string>)result.Errors,

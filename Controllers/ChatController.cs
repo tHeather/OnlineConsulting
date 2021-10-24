@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
+using OnlineConsulting.Attributes;
 using OnlineConsulting.Constants;
 using OnlineConsulting.Enums;
 using OnlineConsulting.Models.Constants;
@@ -17,6 +18,7 @@ using System.Threading.Tasks;
 
 namespace OnlineConsulting.Controllers
 {
+    [TypeFilter(typeof(ValidateSubscriptionAttribute))]
     [Route("chat")]
     public class ChatController : Controller
     {

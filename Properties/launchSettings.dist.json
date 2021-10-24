@@ -13,7 +13,14 @@
       "launchBrowser": true,
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
-        "APPLICATION_URL": "https://localhost:44310"
+        "APPLICATION_URL": "",
+        "DOTPAY_SHOP_ID": "",
+        "DOTPAY_SHOP_PIN": "",
+        "DOTPAY_URI": "",
+        "DOTPAY_CURRENCY": "",
+        "DOTPAY_SHOP_EMAIL": "",
+        "DOTPAY_SHOP_NAME": "",
+        "DOTPAY_CALLBACK_PATH": ""
       }
     },
     "OnlineConsulting": {
