@@ -81,3 +81,23 @@
         </li>
     </ul>
 </li>
+<li class="nav-item">
+    <a class="nav-link nav-collapse-btn text-light"
+       data-toggle="collapse"
+       data-target="#Account"
+       aria-controls="Account"
+       aria-expanded="false">
+        <i class="fas fa-user-cog fa-lg text-warning"></i>
+        <span class="nav-collapse-btn-text ">Account</span>
+    </a>
+    <ul class="nav-second-level collapse" id="Account" data-parent="#navAccordion">
+        <li class="nav-item">
+            <a class="nav-link text-light"
+               asp-area="Identity" 
+               asp-page="/Account/Manage/ChangePassword"
+             >
+                Change password
+            </a>
+        </li>
+    </ul>
+</li>
