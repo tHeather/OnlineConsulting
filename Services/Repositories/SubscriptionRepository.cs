@@ -32,7 +32,7 @@ namespace OnlineConsulting.Services.Repositories
                 EmployerId = userId,
             };
 
-            await _dbContext.Subscriptions.AddAsync(subscription);
+            _dbContext.Subscriptions.Add(subscription);
             await _dbContext.SaveChangesAsync();
         }
 
