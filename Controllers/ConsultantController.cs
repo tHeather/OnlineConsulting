@@ -1,6 +1,8 @@
 ﻿
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 using OnlineConsulting.Attributes;
 using OnlineConsulting.Constants;
 using OnlineConsulting.Models.Constants;
@@ -22,10 +24,15 @@ namespace OnlineConsulting.Controllers
     public class ConsultantController : Controller
     {
         private readonly IUserRepository _userRepository;
+        private readonly IOptions<IdentityOptions> _identityOptions;
 
-        public ConsultantController(IUserRepository userRepository)
+        public ConsultantController(
+            IUserRepository userRepository,
+             IOptions<IdentityOptions> identityOptions
+            )
         {
             _userRepository = userRepository;
+            _identityOptions = identityOptions;
         }
 
         [HttpGet("create")]
@@ -115,6 +122,26 @@ namespace OnlineConsulting.Controllers
                 ModalType = ModalStyles.SUCCESS
             });
 
+        }
+
+        public async Task<IActionResult> ResetConsultantPassword(string id)
+        {
+            var passwordOptions = _identityOptions.Value.Password;
+            using var randomPasswordGenerator = new RandomPasswordGenerator(passwordOptions);
+            var generatedPassword = randomPasswordGenerator.Generate();
+
+            var resetResult = await _userRepository.RestUserPasswordAsync(id, generatedPassword);
+
+            return RedirectToAction("GetAllConsultants", new ModalViewModel
+            {
+                ModalLabel = "Password reset",
+                ModalText = resetResult.IsSucceed ?
+                                new List<string>() {
+                                    $"Password has been reset successfully. The new password is: {generatedPassword}"
+                                } : resetResult.Errors,
+                IsVisible = true,
+                ModalType = resetResult.IsSucceed ? ModalStyles.SUCCESS : ModalStyles.ERROR
+            });
         }
 
     }
