@@ -13,44 +13,53 @@
                         <th scope="col" class="text-dark">E-mail</th>
                         <th></th>
                         <th></th>
+                        <th></th>
                     </tr>
                 </thead>
                 <tbody>
                     @foreach (var consultant in Model.ConsultantList)
                     {
-                        <tr class="bg-dark" >
-                            <td class="text-light">@consultant.FirstName</td>
-                            <td class="text-light">@consultant.Surname</td>
-                            <td class="text-light">@consultant.Email</td>
-                            <td>
-                                <a class="btn btn-info"
-                                   asp-controller="Statistic"
-                                   asp-action="GetStatisticsForConsultant"
-                                   asp-route-id=@consultant.Id>
-                                    Statistics
-                                </a>
-                            </td>
-                            <td>
-                                <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#Modal-@consultant.Id">
-                                    Delete
-                                </button>
+                    <tr class="bg-dark">
+                        <td class="text-light">@consultant.FirstName</td>
+                        <td class="text-light">@consultant.Surname</td>
+                        <td class="text-light">@consultant.Email</td>
+                        <td>
+                            <a class="btn btn-info"
+                               asp-controller="Statistic"
+                               asp-action="GetStatisticsForConsultant"
+                               asp-route-id=@consultant.Id>
+                                Statistics
+                            </a>
+                        </td>
+                        <td>
+                            <a class="btn btn-secondary"
+                               asp-controller="Consultant"
+                               asp-action="ResetConsultantPassword"
+                               asp-route-id=@consultant.Id>
+                                Reset password
+                            </a>
+                        </td>
+                        <td>
+                            <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#Modal-@consultant.Id">
+                                Delete
+                            </button>
 
-                                @await Html.PartialAsync(
-                               "/Views/Shared/Modals/_ConfirmationModal.cshtml",
-                               new ConfirmationModalViewModel
-                               {
-                                   Id = $"Modal-{consultant.Id}",
-                                   ModalLabel = "Delete Confirmation",
-                                   ModalText = $"Are you sure want to delete {consultant.Email} consultant?",
-                                   ConfirmController = "Consultant",
-                                   ConfirmAction = "DeleteConsultant",
-                                   ConfirmText = "Yes",
-                                   ConfirmParams = new Dictionary<string, string> { { "id", consultant.Id } },
-                                   RejectText = "No"
-                               })
+                            @await Html.PartialAsync(
+                           "/Views/Shared/Modals/_ConfirmationModal.cshtml",
+                           new ConfirmationModalViewModel
+                           {
+                               Id = $"Modal-{consultant.Id}",
+                               ModalLabel = "Delete Confirmation",
+                               ModalText = $"Are you sure want to delete {consultant.Email} consultant?",
+                               ConfirmController = "Consultant",
+                               ConfirmAction = "DeleteConsultant",
+                               ConfirmText = "Yes",
+                               ConfirmParams = new Dictionary<string, string> { { "id", consultant.Id } },
+                               RejectText = "No"
+                           })
 
-                            </td>
-                        </tr>
+                        </td>
+                    </tr>
                     }
                 </tbody>
             </table>

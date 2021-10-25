@@ -16,5 +16,6 @@ namespace OnlineConsulting.Services.Repositories.Interfaces
 
         public Task<IdentityResult> DeleteConsultant(User user);
         public Task<User> CreateEmployerAsync(string email, string firstName, string surname, string password);
+        public Task<ResetPasswordResult> RestUserPasswordAsync(string userId, string password);
     }
 }

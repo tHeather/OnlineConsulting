@@ -8,6 +8,7 @@ using OnlineConsulting.Models.ViewModels.Consultant;
 using OnlineConsulting.Services.Repositories.Interfaces;
 using OnlineConsulting.Tools;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -115,6 +116,29 @@ namespace OnlineConsulting.Services.Repositories
             }
 
             return null;
+        }
+
+        public async Task<ResetPasswordResult> RestUserPasswordAsync(string userId, string password)
+        {
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null)
+            {
+                return new ResetPasswordResult()
+                {
+                    IsSucceed = false,
+                    Errors = new List<string> { "Can't find user." }
+                };
+            }
+
+            var code = await _userManager.GeneratePasswordResetTokenAsync(user);
+            var result = await _userManager.ResetPasswordAsync(user, code, password);
+
+            return new ResetPasswordResult()
+            {
+                IsSucceed = result.Succeeded,
+                Errors = result.Errors.Select(e => e.Description).ToList()
+
+            };
         }
 
     }
