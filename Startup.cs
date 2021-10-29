@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using OnlineConsulting.Constants;
 using OnlineConsulting.Data;
 using OnlineConsulting.Hubs;
 using OnlineConsulting.Models.Entities;
@@ -12,6 +13,7 @@ using OnlineConsulting.Services;
 using OnlineConsulting.Services.Interfaces;
 using OnlineConsulting.Services.Repositories;
 using OnlineConsulting.Services.Repositories.Interfaces;
+using SendGrid.Extensions.DependencyInjection;
 using System;
 
 namespace OnlineConsulting
@@ -60,6 +62,12 @@ namespace OnlineConsulting
             });
             services.AddSignalR();
 
+            services.AddSendGrid(options =>
+            {
+                options.ApiKey = Configuration[Parameters.SENDGRID_API_KEY];
+            });
+
+
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IConversationRepository, ConversationRepository>();
             services.AddScoped<IChatMessageRepository, ChatMessageRepository>();
@@ -67,6 +75,7 @@ namespace OnlineConsulting
             services.AddScoped<ISubscriptionRepository, SubscriptionRepository>();
             services.AddScoped<ISubscriptionTypeRepository, SubscriptionTypeRepository>();
             services.AddScoped<IDotPayService, DotPayService>();
+            services.AddScoped<ISendgridService, SendgridService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

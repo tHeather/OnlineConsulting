@@ -20,7 +20,10 @@
         "DOTPAY_CURRENCY": "",
         "DOTPAY_SHOP_EMAIL": "",
         "DOTPAY_SHOP_NAME": "",
-        "DOTPAY_CALLBACK_PATH": ""
+        "DOTPAY_CALLBACK_PATH": "",
+        "SUPPORT_MAIL_ADDRESS": "",
+        "SENDGRID_API_KEY": ""
+
       }
     },
     "OnlineConsulting": {
