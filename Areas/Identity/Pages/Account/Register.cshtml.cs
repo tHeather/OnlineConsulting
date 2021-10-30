@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
 using OnlineConsulting.Models.Entities;
+using OnlineConsulting.Services.Interfaces;
 using OnlineConsulting.Services.Repositories.Interfaces;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -21,26 +22,22 @@ namespace OnlineConsulting.Areas.Identity.Pages.Account
         private readonly SignInManager<User> _signInManager;
         private readonly UserManager<User> _userManager;
         private readonly ILogger<RegisterModel> _logger;
-        private readonly ISubscriptionRepository _subscriptionRepository;
         private readonly IUserRepository _userRepository;
-
-        //private readonly IEmailSender _emailSender;
+        private readonly ISendgridService _sendgridService;
 
         public RegisterModel(
             UserManager<User> userManager,
             SignInManager<User> signInManager,
             ILogger<RegisterModel> logger,
-            ISubscriptionRepository subscriptionRepository,
-            IUserRepository userRepository
-           // ,IEmailSender emailSender
+            IUserRepository userRepository,
+            ISendgridService sendgridService
            )
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _logger = logger;
-            _subscriptionRepository = subscriptionRepository;
             _userRepository = userRepository;
-            // _emailSender = emailSender;
+            _sendgridService = sendgridService;
         }
 
         [BindProperty]
@@ -102,7 +99,6 @@ namespace OnlineConsulting.Areas.Identity.Pages.Account
 
                 if (employer != null)
                 {
-
                     var code = await _userManager.GenerateEmailConfirmationTokenAsync(employer);
                     code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
                     var callbackUrl = Url.Page(
@@ -111,22 +107,14 @@ namespace OnlineConsulting.Areas.Identity.Pages.Account
                         values: new { area = "Identity", userId = employer.Id, code = code, returnUrl = returnUrl },
                         protocol: Request.Scheme);
 
-                    //await _emailSender.SendEmailAsync(Input.Email, "Confirm your email",
-                    //    $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
+                    await _sendgridService.SendConfirmEmailAddressLink(Input.Email, callbackUrl);
 
-                    if (_userManager.Options.SignIn.RequireConfirmedAccount)
-                    {
-                        return RedirectToPage("RegisterConfirmation", new { email = Input.Email, returnUrl = returnUrl });
-                    }
-                    else
-                    {
-                        await _signInManager.SignInAsync(employer, isPersistent: false);
-                        return LocalRedirect(returnUrl);
-                    }
+                    return RedirectToPage("RegisterConfirmation", new { email = Input.Email, returnUrl = returnUrl });
+
                 }
                 else
                 {
-                    ModelState.AddModelError(string.Empty, "");
+                    ModelState.AddModelError(string.Empty, "Can't create user.");
                 }
             }
 
