@@ -74,7 +74,7 @@ namespace OnlineConsulting.Hubs
 
             if (conversation.Status == ConversationStatus.DONE)
             {
-                await Clients.Group(conversationId).SendAsync("OnConversationAsync");
+                await Clients.Group(conversationId).SendAsync("OnCloseConversationAsync");
                 return;
             }
 
