@@ -32,7 +32,7 @@ namespace OnlineConsulting.Hubs
             var createMessage = new CreateMessage
             {
                 Content = createConversationViewModel.FirstMessage,
-                Conversation = conversation,
+                ConversationId = conversation.Id,
                 IsFromClient = true
             };
 
@@ -74,7 +74,7 @@ namespace OnlineConsulting.Hubs
             var createMessage = new CreateMessage
             {
                 Content = message,
-                Conversation = conversation,
+                ConversationId = conversation.Id,
                 IsFromClient = isMessageFromClient
             };
 
@@ -89,5 +89,6 @@ namespace OnlineConsulting.Hubs
 
             await Clients.Group(conversationId).SendAsync("ReceiveMessageAsync", chatMessageViewModel);
         }
+
     }
 }

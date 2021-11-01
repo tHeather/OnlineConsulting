@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using OnlineConsulting.Data;
 using OnlineConsulting.Enums;
 using OnlineConsulting.Models.Entities;
@@ -15,10 +16,15 @@ namespace OnlineConsulting.Services.Repositories
     public class ConversationRepository : IConversationRepository
     {
         private readonly ApplicationDbContext _dbContext;
+        private readonly IConfiguration _configuration;
 
-        public ConversationRepository(ApplicationDbContext applicationDbContext)
+        public ConversationRepository(
+            ApplicationDbContext applicationDbContext,
+            IConfiguration configuration
+        )
         {
             _dbContext = applicationDbContext;
+            _configuration = configuration;
         }
 
         public async Task<Conversation> CreateConversationAsync(CreateConversation createConversation)
@@ -46,6 +52,31 @@ namespace OnlineConsulting.Services.Repositories
         {
             conversation.Status = ConversationStatus.DONE;
             conversation.EndDate = DateTime.UtcNow;
+            await _dbContext.SaveChangesAsync();
+        }
+
+        public async Task CloseUnusedConversationsAsync()
+        {
+
+            var inProgressThresholdMin = _configuration.GetValue<int>("Hangfire:closeInProgressConversationThresholdMin");
+            var inNewThresholdMin = _configuration.GetValue<int>("Hangfire:closeNewConversationThresholdMin");
+
+            var inProgressThresholdDate = DateTime.UtcNow.AddMinutes(-inProgressThresholdMin);
+            var newThresholdDate = DateTime.UtcNow.AddMinutes(-inNewThresholdMin);
+
+            var conversationsToClose = await _dbContext.Conversations
+                                        .Where(c => (c.Status == ConversationStatus.IN_PROGRESS &&
+                                                      c.LastMessage.CreateDate < inProgressThresholdDate)
+                                                      ||
+                                                      (c.Status == ConversationStatus.NEW &&
+                                                       c.LastMessage.CreateDate < newThresholdDate)
+                                                ).ToListAsync();
+
+            for (var i = 0; i < conversationsToClose.Count; i++)
+            {
+                conversationsToClose.ElementAt(i).Status = ConversationStatus.DONE;
+            }
+
             await _dbContext.SaveChangesAsync();
         }
 
