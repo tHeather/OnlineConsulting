@@ -1,4 +1,7 @@
-﻿using Microsoft.AspNetCore.SignalR;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.SignalR;
+using OnlineConsulting.Constants;
+using OnlineConsulting.Enums;
 using OnlineConsulting.Models.ValueObjects.Chat;
 using OnlineConsulting.Models.ViewModels.Chat;
 using OnlineConsulting.Services.Repositories.Interfaces;
@@ -69,6 +72,12 @@ namespace OnlineConsulting.Hubs
             var conversationIdGuid = Guid.Parse(conversationId);
             var conversation = await _conversationRepository.GetConversationByIdAsync(conversationIdGuid);
 
+            if (conversation.Status == ConversationStatus.DONE)
+            {
+                await Clients.Group(conversationId).SendAsync("OnConversationAsync");
+                return;
+            }
+
             var isMessageFromClient = !Context.User.Identity.IsAuthenticated;
 
             var createMessage = new CreateMessage
@@ -88,6 +97,17 @@ namespace OnlineConsulting.Hubs
             };
 
             await Clients.Group(conversationId).SendAsync("ReceiveMessageAsync", chatMessageViewModel);
+        }
+
+        [Authorize(Roles = UserRoleValue.CONSULTANT)]
+        public async Task CloseConverationAsync(string conversationId)
+        {
+            var conversationIdGuid = Guid.Parse(conversationId);
+
+            var conversation = await _conversationRepository.GetConversationByIdAsync(conversationIdGuid);
+            await _conversationRepository.CloseConversationAsync(conversation);
+
+            await Clients.Group(conversationId).SendAsync("OnCloseConversationAsync");
         }
 
     }
