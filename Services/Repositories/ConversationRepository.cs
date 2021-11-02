@@ -72,9 +72,9 @@ namespace OnlineConsulting.Services.Repositories
                                                        c.LastMessage.CreateDate < newThresholdDate)
                                                 ).ToListAsync();
 
-            for (var i = 0; i < conversationsToClose.Count; i++)
+            foreach (var conversation in conversationsToClose)
             {
-                conversationsToClose.ElementAt(i).Status = ConversationStatus.DONE;
+                conversation.Status = ConversationStatus.DONE;
             }
 
             await _dbContext.SaveChangesAsync();
