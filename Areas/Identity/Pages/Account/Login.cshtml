@@ -16,7 +16,7 @@
                 </div>
                 <input asp-for="Input.Email" class="form-control p-1 bg-light border-0" />
             </div>
-                <span asp-validation-for="Input.Email" class="text-danger"></span>
+            <span asp-validation-for="Input.Email" class="text-danger"></span>
         </div>
         <div class="form-group w-75">
             <label asp-for="Input.Password" class="text-light"></label>
@@ -28,26 +28,44 @@
                 </div>
                 <input asp-for="Input.Password" class="form-control p-1 bg-light border-0" />
             </div>
-                <span asp-validation-for="Input.Password" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <button type="submit" class="btn btn-warning">Log in</button>
-            </div>
-                <p>
-                    <a id="forgot-password" asp-page="./ForgotPassword">Forgot your password?</a>
-                </p>
-                <p>
-                    <a asp-page="./Register" asp-route-returnUrl="@Model.ReturnUrl">Register as a new user</a>
-                </p>
-                <p>
-                    <a id="resend-confirmation" asp-page="./ResendEmailConfirmation">Resend email confirmation</a>
-                </p>
-
-</form>
+            <span asp-validation-for="Input.Password" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <button type="submit" class="btn btn-warning">Log in</button>
+        </div>
+        <p>
+            <a id="forgot-password" asp-page="./ForgotPassword">Forgot your password?</a>
+        </p>
+        <p>
+            <a asp-page="./Register" asp-route-returnUrl="@Model.ReturnUrl">Register as a new user</a>
+        </p>
+        <p>
+            <a id="resend-confirmation" asp-page="./ResendEmailConfirmation">Resend email confirmation</a>
+        </p>
+    </form>
+    <div 
+         class="spinner-border text-warning loader mx-auto my-5" 
+         style="display:none;height:150px;width:150px;font-size:25px;" 
+         role="status" 
+         id="loader"
+         >
+        <span class="sr-only">Loading...</span>
+    </div>
 </div>
+
+
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+    <script>
+        const form = document.getElementById("account");
+        const loader = document.getElementById("loader");
+
+        form.addEventListener("submit", () => {
+            form.style.display = "none";
+            loader.style.display = "block";
+        });
+    </script>
 }
 
 @section Styles{
