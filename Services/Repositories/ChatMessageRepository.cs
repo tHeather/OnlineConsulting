@@ -22,7 +22,7 @@ namespace OnlineConsulting.Services.Repositories
         {
             var message = new ChatMessage
             {
-                ConversationId = createMessage.Conversation.Id,
+                ConversationId = createMessage.ConversationId,
                 Content = createMessage.Content,
                 CreateDate = DateTime.UtcNow,
                 IsFromClient = createMessage.IsFromClient
@@ -30,7 +30,11 @@ namespace OnlineConsulting.Services.Repositories
 
             _dbContext.ChatMessages.Add(message);
 
-            createMessage.Conversation.LastMessageId = message.Id;
+            var conversation = await _dbContext
+                                       .Conversations
+                                       .FirstOrDefaultAsync(c => c.Id == createMessage.ConversationId);
+
+            conversation.LastMessageId = message.Id;
 
             await _dbContext.SaveChangesAsync();
 

@@ -51,18 +51,17 @@
                     @Model.Path
                 </span>
             </p>
-            <form method="post" asp-controller="Chat" asp-action="ChangeConversationStatus">
-                @{
-                    var conversationId = Model.ConversationId;
-                }
-                <input type="hidden" asp-for=@conversationId />
-                <input type="hidden" name="redirectAction" value="@Model.RedirectAction" />
-                <button class="btn btn-danger mt-5">Close conversation</button>
-            </form>
+            <button 
+               class="btn btn-danger mt-5"
+               id="close-conversation-button"
+             >
+                Close conversation
+            </button>
         </div>
     </div>
 
 </div>
+
 
 @section Styles{
     <link rel="stylesheet" href="~/css/consultantChat.css">
@@ -71,7 +70,10 @@
 @section Scripts {
     <script src="~/js/signalr/dist/browser/signalr.js"></script>
     <partial name="/Views/Shared/Scripts/_UtcToLocal.cshtml" />
-    <script>const conversationId = "@Model.ConversationId"</script>
+    <script>
+        const conversationId = "@Model.ConversationId";
+        const redirectAction = "@Url.ActionLink(Model.RedirectAction, "Chat")";
+    </script>
     <script type="module" src="~/js/consultantChat.js"></script>
     <script>
         $(function () {

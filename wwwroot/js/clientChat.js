@@ -3,6 +3,7 @@ const messageInput = document.getElementById("chat-message-input");
 const messageList = document.getElementById("chat-messages-list");
 const chatIconButton = document.getElementById("chat-icon");
 const chatContent = document.getElementById("chat-content");
+const CONNECTION_ID_STORAGE_NAME = "conversationId";
 
 /* WIDGET */
 const urlSearchParams = new URLSearchParams(window.location.search);
@@ -29,7 +30,7 @@ const textAreaAdjust = () => {
 messageInput.addEventListener("keyup", textAreaAdjust);
 
 /* SIGNALR */
-let conversationId = sessionStorage.getItem("conversationId");
+let conversationId = sessionStorage.getItem(CONNECTION_ID_STORAGE_NAME);
 const connection = new signalR.HubConnectionBuilder()
   .withUrl("/chatHub")
   .withAutomaticReconnect()
@@ -49,6 +50,20 @@ const makeMessageTemplate = ({ createDate, content, isFromClient }) => {
      if (isFromClient) li.classList.add("chat-messages-list__message--client");
     return li;
 }
+
+const appendMessage = (message) => {
+
+    const messageTemplate = makeMessageTemplate(message);
+
+    if (messageList.lastChild) {
+        messageList.lastChild.after(messageTemplate);
+    } else {
+        messageList.appendChild(messageTemplate);
+    }
+
+    messageList.scrollTo(0, messageList.scrollHeight);
+
+};
 
 const disableControls = (isDisabled) => {
     messageInput.disabled = isDisabled;
@@ -137,7 +152,7 @@ connection.onreconnected(async () => {
 });
 
 connection.on("JoinedTheGroup", (joinToConversationViewModel) => {
-  sessionStorage.setItem("conversationId", joinToConversationViewModel.conversationId);
+  sessionStorage.setItem(CONNECTION_ID_STORAGE_NAME, joinToConversationViewModel.conversationId);
   conversationId = joinToConversationViewModel.conversationId;
   
   const fragment = document.createDocumentFragment();
@@ -152,18 +167,15 @@ connection.on("JoinedTheGroup", (joinToConversationViewModel) => {
    disableControls(false);
 });
 
-connection.on("ReceiveMessageAsync",(message) => {
-    const messageTemplate = makeMessageTemplate(message);
-
-    if (messageList.lastChild) {
-        messageList.lastChild.after(messageTemplate);
-    } else {
-        messageList.appendChild(messageTemplate);
-    }
-   
-    messageList.scrollTo(0, messageList.scrollHeight);
+connection.on("ReceiveMessageAsync", (message) => {
+    appendMessage(message);
 });
 
+connection.on("OnCloseConversationAsync", () => {
+    sessionStorage.removeItem(CONNECTION_ID_STORAGE_NAME);
+    showConnectionStateMessage(`Conversation has been closed. Refresh 
+    page and send a new message to start new conversation.`, "disconnected");
+    });
 
 if (conversationId) await startConnection();
 sendButton.addEventListener("click", handleFormSubmit);

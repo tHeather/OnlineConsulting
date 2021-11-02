@@ -2,6 +2,7 @@
 const messageInput = document.getElementById("chat-message-input");
 const messageList = document.getElementById("chat-messages-list");
 const chatContent = document.getElementById("chat-content");
+const closeConversationButton = document.getElementById("close-conversation-button");
 
 const connection = new signalR.HubConnectionBuilder()
     .withUrl("/chatHub")
@@ -73,6 +74,15 @@ const hideConnectionStateMessage = () => {
     document.querySelector(".chat-connection-message").remove();
 }
 
+const closeConversation = async () => {
+    try {
+        await connection.invoke("CloseConverationAsync", conversationId);
+        window.location.href = redirectAction;
+    } catch (err) {
+        console.error(err);
+    }
+};
+
 connection.onclose(() => {
     showConnectionStateMessage("Disconnected. To connect again, refresh the page. ", "disconnected");
     disableControls(true);
@@ -117,8 +127,12 @@ connection.on("ReceiveMessageAsync", (message) => {
     messageList.scrollTo(0, messageList.scrollHeight);
 });
 
+connection.on("OnCloseConversationAsync", () => {
+    showConnectionStateMessage(`Conversation has been closed.`, "disconnected");
+});
 
 await startConnection();
 sendButton.addEventListener("click", handleFormSubmit);
 messageInput.addEventListener("keydown", handleFormSubmit);
+closeConversationButton.addEventListener("click", closeConversation);
 

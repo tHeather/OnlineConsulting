@@ -1,4 +1,7 @@
-﻿using Microsoft.AspNetCore.SignalR;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.SignalR;
+using OnlineConsulting.Constants;
+using OnlineConsulting.Enums;
 using OnlineConsulting.Models.ValueObjects.Chat;
 using OnlineConsulting.Models.ViewModels.Chat;
 using OnlineConsulting.Services.Repositories.Interfaces;
@@ -32,7 +35,7 @@ namespace OnlineConsulting.Hubs
             var createMessage = new CreateMessage
             {
                 Content = createConversationViewModel.FirstMessage,
-                Conversation = conversation,
+                ConversationId = conversation.Id,
                 IsFromClient = true
             };
 
@@ -69,12 +72,18 @@ namespace OnlineConsulting.Hubs
             var conversationIdGuid = Guid.Parse(conversationId);
             var conversation = await _conversationRepository.GetConversationByIdAsync(conversationIdGuid);
 
+            if (conversation.Status == ConversationStatus.DONE)
+            {
+                await Clients.Group(conversationId).SendAsync("OnCloseConversationAsync");
+                return;
+            }
+
             var isMessageFromClient = !Context.User.Identity.IsAuthenticated;
 
             var createMessage = new CreateMessage
             {
                 Content = message,
-                Conversation = conversation,
+                ConversationId = conversation.Id,
                 IsFromClient = isMessageFromClient
             };
 
@@ -89,5 +98,17 @@ namespace OnlineConsulting.Hubs
 
             await Clients.Group(conversationId).SendAsync("ReceiveMessageAsync", chatMessageViewModel);
         }
+
+        [Authorize(Roles = UserRoleValue.CONSULTANT)]
+        public async Task CloseConverationAsync(string conversationId)
+        {
+            var conversationIdGuid = Guid.Parse(conversationId);
+
+            var conversation = await _conversationRepository.GetConversationByIdAsync(conversationIdGuid);
+            await _conversationRepository.CloseConversationAsync(conversation);
+
+            await Clients.Group(conversationId).SendAsync("OnCloseConversationAsync");
+        }
+
     }
 }

@@ -11,7 +11,6 @@ using OnlineConsulting.Models.ViewModels.Chat;
 using OnlineConsulting.Models.ViewModels.Modals;
 using OnlineConsulting.Services.Repositories.Interfaces;
 using OnlineConsulting.Tools;
-using System;
 using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -127,16 +126,6 @@ namespace OnlineConsulting.Controllers
                                                                                 PAGE_SIZE);
 
             return View("InProgressConversationList", conversationsInProgressPaginated);
-        }
-
-        [Authorize(Roles = UserRoleValue.CONSULTANT)]
-        [HttpPost("change-conversation-status")]
-        public async Task<IActionResult> ChangeConversationStatus(Guid conversationId, string redirectAction)
-        {
-            var conversation = await _conversationRepository.GetConversationByIdAsync(conversationId);
-            await _conversationRepository.CloseConversationAsync(conversation);
-
-            return RedirectToAction(redirectAction);
         }
 
     }

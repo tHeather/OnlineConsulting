@@ -1,3 +1,4 @@
+using Hangfire;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
@@ -7,13 +8,16 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using OnlineConsulting.Constants;
 using OnlineConsulting.Data;
+using OnlineConsulting.Filters;
 using OnlineConsulting.Hubs;
+using OnlineConsulting.Jobs;
 using OnlineConsulting.Models.Entities;
 using OnlineConsulting.Services;
 using OnlineConsulting.Services.Interfaces;
 using OnlineConsulting.Services.Repositories;
 using OnlineConsulting.Services.Repositories.Interfaces;
 using SendGrid.Extensions.DependencyInjection;
+using StudyOnlineServer.Config;
 using System;
 
 namespace OnlineConsulting
@@ -67,6 +71,7 @@ namespace OnlineConsulting
                 options.ApiKey = Configuration[Parameters.SENDGRID_API_KEY];
             });
 
+            services.AddHangfire(Configuration);
 
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IConversationRepository, ConversationRepository>();
@@ -100,6 +105,11 @@ namespace OnlineConsulting
             app.UseAuthentication();
             app.UseAuthorization();
 
+            app.UseHangfireDashboard("/hangfire", new DashboardOptions
+            {
+                Authorization = new[] { new HangfireAuthorizationFilter() },
+            });
+
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllerRoute(
@@ -108,7 +118,11 @@ namespace OnlineConsulting
 
                 endpoints.MapRazorPages();
                 endpoints.MapHub<ChatHub>("/chatHub");
+                endpoints.MapHangfireDashboard();
             });
+
+            HangfireJobScheduler.ScheduleRecuringJobs();
+
         }
     }
 }
