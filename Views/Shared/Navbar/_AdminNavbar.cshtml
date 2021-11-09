@@ -55,3 +55,22 @@
         </li>
     </ul>
 </li>
+<li class="nav-item">
+    <a class="nav-link nav-collapse-btn text-light"
+       data-toggle="collapse"
+       data-target="#Users"
+       aria-controls="Users"
+       aria-expanded="false">
+        <i class="fas fa-users fa-lg text-warning"></i>
+        <span class="nav-collapse-btn-text ">Users</span>
+    </a>
+    <ul class="nav-second-level collapse" id="Users" data-parent="#navAccordion">
+        <li class="nav-item">
+            <a class="nav-link text-light"
+               asp-controller="User"
+               asp-action="EmployerList">
+                Employer list
+            </a>
+        </li>
+    </ul>
+</li>

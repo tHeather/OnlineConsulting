@@ -1,0 +1,45 @@
+﻿@model OnlineConsulting.Models.ViewModels.Users.EmployerListViewModel;
+@using OnlineConsulting.Models.ViewModels.Pagination;
+
+<div class="p-1 p-xl-5">
+    <h1 class="text-light pb-3 pt-3 pt-xl-0">Employer List</h1>
+    <div class="table-responsive rounded mb-2">
+        <table class="table ">
+            <thead class="bg-light ">
+                <tr>
+                    <th scope="col" class="text-dark">First name </th>
+                    <th scope="col" class="text-dark">Surname</th>
+                    <th scope="col" class="text-dark">E-mail</th>
+                    <th scope="col" class="text-dark">Email confirmed</th>
+                    <th scope="col" class="text-dark">Lockout end</th>
+                    <th scope="col" class="text-dark">Subscription end</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var employer in Model.Employers)
+                {
+                <tr class="bg-dark">
+                    <td class="text-light">@employer.User.FirstName</td>
+                    <td class="text-light">@employer.User.Surname</td>
+                    <td class="text-light">@employer.User.Email</td>
+                    <td class="text-light">@employer.User.EmailConfirmed</td>
+                    <td class="text-light">@employer.User.LockoutEnd</td>
+                    <td class="text-light">@employer.Subscription.EndDate</td>
+                </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    @await Html.PartialAsync(
+    "/Views/Shared/Pagination/_Pagination.cshtml",
+    new PaginationViewModel
+    {
+        PageIndex = Model.Employers.PageIndex,
+        TotalPages = Model.Employers.TotalPages,
+        HasPreviousPage = Model.Employers.HasPreviousPage,
+        HasNextPage = Model.Employers.HasNextPage,
+        SurroundingIndexes = Model.Employers.GetSurroundingIndexes(2),
+        Action = "EmployerList"
+    })
+</div>

@@ -3,7 +3,7 @@ using Microsoft.Extensions.Options;
 using OnlineConsulting.Constants;
 using OnlineConsulting.Data;
 using OnlineConsulting.Models.Entities;
-using OnlineConsulting.Models.ValueObjects.User;
+using OnlineConsulting.Models.ValueObjects.Users;
 using OnlineConsulting.Models.ViewModels.Consultant;
 using OnlineConsulting.Services.Repositories.Interfaces;
 using OnlineConsulting.Tools;
@@ -42,6 +42,42 @@ namespace OnlineConsulting.Services.Repositories
         public IQueryable<User> GetAllConsultantsForEmployerQuery(string employerId)
         {
             return _userManager.Users.Where(u => u.EmployerId == employerId);
+        }
+
+        public IQueryable<User> GetAllEmployersQuery()
+        {
+
+            return _dbContext.UserRoles
+                                .Join(
+                                        _dbContext.Users,
+                                        role => role.UserId,
+                                        user => user.Id,
+                                        (role, user) =>
+                                        new { User = user,  role.RoleId }
+                                    )
+                                .Join(
+                                        _dbContext.Roles,
+                                        user => user.RoleId,
+                                        role => role.Id,
+                                        (user, role) =>
+                                        new {  user.User, Role = role.Name }
+                                      )
+                                .Where(u => u.Role == UserRoleValue.EMPLOYER)
+                                .Select(u => u.User);
+        }
+
+        public IQueryable<UserWithSubscription> GetUsersWithSubscriptionQuery(IQueryable<User> source)
+        {
+            return _dbContext.Subscriptions.Join(
+                                            source,
+                                            sub => sub.EmployerId,
+                                            user => user.Id,
+                                            (sub, user) => new UserWithSubscription
+                                            {
+                                                User = user,
+                                                Subscription = sub
+                                            }
+                                            );
         }
 
         public async Task<CreateConsultant> CreateConsultantAsync(

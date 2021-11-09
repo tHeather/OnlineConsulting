@@ -5,7 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using OnlineConsulting.Jobs;
 using System;
 
-namespace StudyOnlineServer.Config
+namespace OnlineConsulting.Config
 {
     public static class HangfireConfig
     {
