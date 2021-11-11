@@ -58,5 +58,13 @@ namespace OnlineConsulting.Controllers
                Employer  = employer
             });
         }
+
+        [HttpPost("lock")]
+        public async Task<IActionResult> ChangeAccountLockState(string employerId, bool isLocked)
+        {
+            await _userRepository.LockEmployerWithEmployees(employerId, isLocked);
+
+            return RedirectToAction("EmployerList");
+        }        
     }
 }

@@ -14,6 +14,7 @@
                     <th scope="col" class="text-dark">Is locked out</th>
                     <th scope="col" class="text-dark">Subscription end</th>
                     <th></th>
+                    <th></th>
                 </tr>
             </thead>
             <tbody>
@@ -35,6 +36,22 @@
                         >
                             Show employees
                         </a>
+                    </td>
+                        @{
+                            var lockLabel = employer.User.IsAccountLocked ? "Unlock" : "Lock";
+                            var newLockState = !employer.User.IsAccountLocked;
+                            var lockBtnClass = employer.User.IsAccountLocked ? "btn-success" : "btn-danger";
+                        }
+                    <td>
+                        <form
+                            asp-controller="User"
+                            asp-action="ChangeAccountLockState"
+                            method="post"
+                        >
+                            <input hidden name="employerId" value=@employer.User.Id />
+                            <input hidden name="isLocked" value="@newLockState.ToString()" />
+                            <button class="btn @lockBtnClass">@lockLabel (with sub accounts)</button>
+                        </form>
                     </td>
                 </tr>
                 }

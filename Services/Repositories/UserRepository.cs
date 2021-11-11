@@ -36,12 +36,12 @@ namespace OnlineConsulting.Services.Repositories
 
         public User GetUserById(string id)
         {
-            return _userManager.Users.SingleOrDefault(u => u.Id == id);
+            return _dbContext.Users.SingleOrDefault(u => u.Id == id);
         }
 
         public IQueryable<User> GetAllConsultantsForEmployerQuery(string employerId)
         {
-            return _userManager.Users.Where(u => u.EmployerId == employerId);
+            return _dbContext.Users.Where(u => u.EmployerId == employerId);
         }
 
         public IQueryable<User> GetAllUsersWithRoleQuery(string userRole)
@@ -113,6 +113,18 @@ namespace OnlineConsulting.Services.Repositories
         public async Task<IdentityResult> DeleteConsultant(User user)
         {
             return await _userManager.DeleteAsync(user);
+        }
+
+        public async Task LockEmployerWithEmployees(string employerId, bool isLocked)
+        {
+          var employer = GetUserById(employerId);
+          if (employer == null) return;
+          employer.IsAccountLocked = isLocked;
+
+         var employees = GetAllConsultantsForEmployerQuery(employerId).ToList();
+         employees.ForEach(e => e.IsAccountLocked = isLocked);
+    
+         await _dbContext.SaveChangesAsync();
         }
 
         public async Task<User> CreateEmployerAsync(
