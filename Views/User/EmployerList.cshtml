@@ -26,7 +26,7 @@
                     <td class="text-light">@employer.User.Email</td>
                     <td class="text-light">@employer.User.EmailConfirmed</td>
                     <td class="text-light">@employer.User.IsAccountLocked</td>
-                    <td class="text-light">@employer.Subscription.EndDate</td>
+                    <td class="text-light" data-utc-date="@employer.Subscription.EndDate"></td>
                     <td>
                         <a 
                             asp-controller="User" 
@@ -71,3 +71,7 @@
         Action = "EmployerList"
     })
 </div>
+
+@section Scripts {
+     <partial name="/Views/Shared/Scripts/_UtcToLocal.cshtml" />
+}
