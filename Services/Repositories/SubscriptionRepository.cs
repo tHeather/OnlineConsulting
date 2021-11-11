@@ -30,6 +30,7 @@ namespace OnlineConsulting.Services.Repositories
             var subscription = new Subscription()
             {
                 EmployerId = userId,
+                EndDate = DateTime.UtcNow.AddDays(-1),
             };
 
             _dbContext.Subscriptions.Add(subscription);

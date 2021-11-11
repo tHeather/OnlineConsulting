@@ -13,6 +13,7 @@
                     <th scope="col" class="text-dark">Email confirmed</th>
                     <th scope="col" class="text-dark">Lockout end</th>
                     <th scope="col" class="text-dark">Subscription end</th>
+                    <th></th>
                 </tr>
             </thead>
             <tbody>
@@ -25,6 +26,16 @@
                     <td class="text-light">@employer.User.EmailConfirmed</td>
                     <td class="text-light">@employer.User.LockoutEnd</td>
                     <td class="text-light">@employer.Subscription.EndDate</td>
+                    <td>
+                        <a 
+                            asp-controller="User" 
+                            asp-action="EmployeeList" 
+                            asp-route-employerId="@employer.User.Id" 
+                            class="btn btn-info"                       
+                        >
+                            Show employees
+                        </a>
+                    </td>
                 </tr>
                 }
             </tbody>

@@ -11,7 +11,7 @@ namespace OnlineConsulting.Services.Repositories.Interfaces
     {
         public User GetUserById(string id);
         public IQueryable<User> GetAllConsultantsForEmployerQuery(string employerId);
-        public IQueryable<User> GetAllEmployersQuery();
+        public IQueryable<User> GetAllUsersWithRoleQuery(string userRole);
         public Task<CreateConsultant> CreateConsultantAsync(AddConsultantViewModel addConsultantViewModel, string employerId);
 
         public Task<IdentityResult> DeleteConsultant(User user);

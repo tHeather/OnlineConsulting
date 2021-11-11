@@ -44,7 +44,7 @@ namespace OnlineConsulting.Services.Repositories
             return _userManager.Users.Where(u => u.EmployerId == employerId);
         }
 
-        public IQueryable<User> GetAllEmployersQuery()
+        public IQueryable<User> GetAllUsersWithRoleQuery(string userRole)
         {
 
             return _dbContext.UserRoles
@@ -62,7 +62,7 @@ namespace OnlineConsulting.Services.Repositories
                                         (user, role) =>
                                         new {  user.User, Role = role.Name }
                                       )
-                                .Where(u => u.Role == UserRoleValue.EMPLOYER)
+                                .Where(u => u.Role ==userRole)
                                 .Select(u => u.User);
         }
 
