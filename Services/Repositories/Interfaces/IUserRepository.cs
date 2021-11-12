@@ -10,6 +10,7 @@ namespace OnlineConsulting.Services.Repositories.Interfaces
     public interface IUserRepository
     {
         public User GetUserById(string id);
+        public IQueryable<User> GetUserByEmailQuery(string email);
         public IQueryable<User> GetAllConsultantsForEmployerQuery(string employerId);
         public IQueryable<User> GetAllUsersWithRoleQuery(string userRole);
         public Task<CreateConsultant> CreateConsultantAsync(AddConsultantViewModel addConsultantViewModel, string employerId);

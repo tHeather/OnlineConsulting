@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using OnlineConsulting.Constants;
 using OnlineConsulting.Models.Entities;
@@ -14,12 +15,17 @@ namespace OnlineConsulting.Controllers
     [Route("users")]
     public class UserController : Controller
     {
+        private readonly UserManager<User> _userManager;
         private readonly IUserRepository _userRepository;
         private const int PAGE_SIZE = 10;
 
-        public UserController(IUserRepository userRepository)
+        public UserController(
+            IUserRepository userRepository,
+            UserManager<User> userManager
+            )
         {
             _userRepository = userRepository;
+            _userManager = userManager;
         }
 
         [Route("employer-list")]
@@ -56,6 +62,45 @@ namespace OnlineConsulting.Controllers
             {
                Employees = employeesList,
                Employer  = employer
+            });
+        }
+
+        [HttpGet("search")]
+        public async Task<IActionResult> FindUser(string email)
+        {
+            if (email == null) return RedirectToAction("EmployerList");
+
+            var user = await _userManager.FindByEmailAsync(email);
+
+            if (user == null) return View("EmployerList", new EmployerListViewModel());
+
+            var isAdmin = await _userManager.IsInRoleAsync(user, UserRoleValue.ADMIN);
+
+            if (isAdmin) return View("EmployerList", new EmployerListViewModel());
+
+            var userByEmailQuery = _userRepository.GetUserByEmailQuery(email);
+
+            if (user.EmployerId == null)
+            {
+                var userWithSubscriptionQuery = _userRepository
+                                                    .GetUsersWithSubscriptionQuery(userByEmailQuery);
+
+                var employers = await PaginatedList<UserWithSubscription>.CreateAsync(
+                                                            userWithSubscriptionQuery, 1, PAGE_SIZE);
+
+                return View("EmployerList", new EmployerListViewModel
+                {
+                    Employers = employers
+                });
+            }
+
+            var employees = await PaginatedList<User>.CreateAsync(userByEmailQuery, 1, PAGE_SIZE);
+            var employer = await _userManager.FindByIdAsync(user.EmployerId);
+
+            return View("EmployeeList",new EmployeeListViewModel()
+            {
+                Employees = employees,
+                Employer = employer
             });
         }
 

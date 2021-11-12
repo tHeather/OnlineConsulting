@@ -39,6 +39,11 @@ namespace OnlineConsulting.Services.Repositories
             return _dbContext.Users.SingleOrDefault(u => u.Id == id);
         }
 
+        public IQueryable<User> GetUserByEmailQuery(string email)
+        {
+            return _dbContext.Users.Where(u => u.Email == email);
+        }
+
         public IQueryable<User> GetAllConsultantsForEmployerQuery(string employerId)
         {
             return _dbContext.Users.Where(u => u.EmployerId == employerId);
@@ -188,6 +193,5 @@ namespace OnlineConsulting.Services.Repositories
 
             };
         }
-
     }
 }
