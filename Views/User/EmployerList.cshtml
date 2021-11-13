@@ -1,0 +1,102 @@
+﻿@model OnlineConsulting.Models.ViewModels.Users.EmployerListViewModel;
+@using OnlineConsulting.Models.ViewModels.Pagination;
+
+<div class="p-1 p-xl-5">
+    <h1 class="text-light pb-3 pt-3 pt-xl-0">Employer List</h1>
+    <form
+        asp-controller="User"
+        asp-action="FindUser"
+        method="get"
+        class="d-flex align-items-center my-4"
+    >
+        <label for="email" class=" text-light mb-0" >E-mail</label>
+        <input name="email" class="rounded p-1 bg-light border-0 mx-2" />
+        <button class="btn btn-warning" >Search</button>
+    </form>
+    <div class="table-responsive rounded mb-2">
+        <table class="table ">
+            <thead class="bg-light ">
+                <tr>
+                    <th scope="col" class="text-dark">First name </th>
+                    <th scope="col" class="text-dark">Surname</th>
+                    <th scope="col" class="text-dark">E-mail</th>
+                    <th scope="col" class="text-dark">Email confirmed</th>
+                    <th scope="col" class="text-dark">Is locked out</th>
+                    <th scope="col" class="text-dark">Subscription end</th>
+                    <th></th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @if(Model.Employers == null || Model.Employers.Count < 1)
+                {
+                 <tr>
+                     <td
+                        class="text-light text-center py-5"
+                        colspan="8"
+                     >
+                     No found users that met the given criteria.
+                    </td>
+                 </tr>   
+                }else{
+                    @foreach (var employer in Model.Employers)
+                    {
+                    <tr class="bg-dark">
+                        <td class="text-light">@employer.User.FirstName</td>
+                        <td class="text-light">@employer.User.Surname</td>
+                        <td class="text-light">@employer.User.Email</td>
+                        <td class="text-light">@employer.User.EmailConfirmed</td>
+                        <td class="text-light">@employer.User.IsAccountLocked</td>
+                        <td class="text-light" data-utc-date="@employer.Subscription.EndDate"></td>
+                        <td>
+                            <a 
+                                asp-controller="User" 
+                                asp-action="EmployeeList" 
+                                asp-route-employerId="@employer.User.Id" 
+                                class="btn btn-info"                       
+                            >
+                                Show employees
+                            </a>
+                        </td>
+                            @{
+                                var lockLabel = employer.User.IsAccountLocked ? "Unlock" : "Lock";
+                                var newLockState = !employer.User.IsAccountLocked;
+                                var lockBtnClass = employer.User.IsAccountLocked ? "btn-success" : "btn-danger";
+                            }
+                        <td>
+                            <form
+                                asp-controller="User"
+                                asp-action="ChangeAccountLockState"
+                                method="post"
+                            >
+                                <input hidden name="employerId" value=@employer.User.Id />
+                                <input hidden name="isLocked" value="@newLockState.ToString()" />
+                                <button class="btn @lockBtnClass">@lockLabel (with sub accounts)</button>
+                            </form>
+                        </td>
+                    </tr>
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+
+    @if (Model.Employers != null)
+    {
+        @await Html.PartialAsync(
+        "/Views/Shared/Pagination/_Pagination.cshtml",
+        new PaginationViewModel
+        {
+            PageIndex = Model.Employers.PageIndex,
+            TotalPages = Model.Employers.TotalPages,
+            HasPreviousPage = Model.Employers.HasPreviousPage,
+            HasNextPage = Model.Employers.HasNextPage,
+            SurroundingIndexes = Model.Employers.GetSurroundingIndexes(2),
+            Action = "EmployerList"
+        })
+    }
+</div>
+
+@section Scripts {
+     <partial name="/Views/Shared/Scripts/_UtcToLocal.cshtml" />
+}

@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace OnlineConsulting.Models.ValueObjects.User
+namespace OnlineConsulting.Models.ValueObjects.Users
 {
     public class ResetPasswordResult
     {

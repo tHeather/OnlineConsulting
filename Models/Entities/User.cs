@@ -15,5 +15,8 @@ namespace OnlineConsulting.Models.Entities
         [StringLength(60, MinimumLength = 1)]
         public string Surname { get; set; }
 
+        [Required]
+        public bool IsAccountLocked { get; set; }
+
     }
 }

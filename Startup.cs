@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using OnlineConsulting.Config;
 using OnlineConsulting.Constants;
 using OnlineConsulting.Data;
 using OnlineConsulting.Filters;
@@ -17,7 +18,6 @@ using OnlineConsulting.Services.Interfaces;
 using OnlineConsulting.Services.Repositories;
 using OnlineConsulting.Services.Repositories.Interfaces;
 using SendGrid.Extensions.DependencyInjection;
-using StudyOnlineServer.Config;
 using System;
 
 namespace OnlineConsulting

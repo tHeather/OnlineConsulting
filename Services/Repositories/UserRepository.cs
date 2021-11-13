@@ -3,7 +3,7 @@ using Microsoft.Extensions.Options;
 using OnlineConsulting.Constants;
 using OnlineConsulting.Data;
 using OnlineConsulting.Models.Entities;
-using OnlineConsulting.Models.ValueObjects.User;
+using OnlineConsulting.Models.ValueObjects.Users;
 using OnlineConsulting.Models.ViewModels.Consultant;
 using OnlineConsulting.Services.Repositories.Interfaces;
 using OnlineConsulting.Tools;
@@ -36,12 +36,53 @@ namespace OnlineConsulting.Services.Repositories
 
         public User GetUserById(string id)
         {
-            return _userManager.Users.SingleOrDefault(u => u.Id == id);
+            return _dbContext.Users.SingleOrDefault(u => u.Id == id);
+        }
+
+        public IQueryable<User> GetUserByEmailQuery(string email)
+        {
+            return _dbContext.Users.Where(u => u.Email == email);
         }
 
         public IQueryable<User> GetAllConsultantsForEmployerQuery(string employerId)
         {
-            return _userManager.Users.Where(u => u.EmployerId == employerId);
+            return _dbContext.Users.Where(u => u.EmployerId == employerId);
+        }
+
+        public IQueryable<User> GetAllUsersWithRoleQuery(string userRole)
+        {
+
+            return _dbContext.UserRoles
+                                .Join(
+                                        _dbContext.Users,
+                                        role => role.UserId,
+                                        user => user.Id,
+                                        (role, user) =>
+                                        new { User = user,  role.RoleId }
+                                    )
+                                .Join(
+                                        _dbContext.Roles,
+                                        user => user.RoleId,
+                                        role => role.Id,
+                                        (user, role) =>
+                                        new {  user.User, Role = role.Name }
+                                      )
+                                .Where(u => u.Role ==userRole)
+                                .Select(u => u.User);
+        }
+
+        public IQueryable<UserWithSubscription> GetUsersWithSubscriptionQuery(IQueryable<User> source)
+        {
+            return _dbContext.Subscriptions.Join(
+                                            source,
+                                            sub => sub.EmployerId,
+                                            user => user.Id,
+                                            (sub, user) => new UserWithSubscription
+                                            {
+                                                User = user,
+                                                Subscription = sub
+                                            }
+                                            );
         }
 
         public async Task<CreateConsultant> CreateConsultantAsync(
@@ -74,9 +115,21 @@ namespace OnlineConsulting.Services.Repositories
             return new CreateConsultant { IdentityResult = result, GeneratedPassword = generatedPassword };
         }
 
-        public async Task<IdentityResult> DeleteConsultant(User user)
+        public async Task<IdentityResult> DeleteConsultantAsync(User user)
         {
             return await _userManager.DeleteAsync(user);
+        }
+
+        public async Task LockEmployerWithEmployeesAsync(string employerId, bool isLocked)
+        {
+          var employer = GetUserById(employerId);
+          if (employer == null) return;
+          employer.IsAccountLocked = isLocked;
+
+         var employees = GetAllConsultantsForEmployerQuery(employerId).ToList();
+         employees.ForEach(e => e.IsAccountLocked = isLocked);
+    
+         await _dbContext.SaveChangesAsync();
         }
 
         public async Task<User> CreateEmployerAsync(
@@ -140,6 +193,5 @@ namespace OnlineConsulting.Services.Repositories
 
             };
         }
-
     }
 }
