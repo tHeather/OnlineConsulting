@@ -107,7 +107,7 @@ namespace OnlineConsulting.Controllers
         [HttpPost("lock")]
         public async Task<IActionResult> ChangeAccountLockState(string employerId, bool isLocked)
         {
-            await _userRepository.LockEmployerWithEmployees(employerId, isLocked);
+            await _userRepository.LockEmployerWithEmployeesAsync(employerId, isLocked);
 
             return RedirectToAction("EmployerList");
         }        

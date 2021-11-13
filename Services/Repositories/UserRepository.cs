@@ -115,12 +115,12 @@ namespace OnlineConsulting.Services.Repositories
             return new CreateConsultant { IdentityResult = result, GeneratedPassword = generatedPassword };
         }
 
-        public async Task<IdentityResult> DeleteConsultant(User user)
+        public async Task<IdentityResult> DeleteConsultantAsync(User user)
         {
             return await _userManager.DeleteAsync(user);
         }
 
-        public async Task LockEmployerWithEmployees(string employerId, bool isLocked)
+        public async Task LockEmployerWithEmployeesAsync(string employerId, bool isLocked)
         {
           var employer = GetUserById(employerId);
           if (employer == null) return;

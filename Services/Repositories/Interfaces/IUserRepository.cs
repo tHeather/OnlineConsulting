@@ -14,8 +14,8 @@ namespace OnlineConsulting.Services.Repositories.Interfaces
         public IQueryable<User> GetAllConsultantsForEmployerQuery(string employerId);
         public IQueryable<User> GetAllUsersWithRoleQuery(string userRole);
         public Task<CreateConsultant> CreateConsultantAsync(AddConsultantViewModel addConsultantViewModel, string employerId);
-        public Task LockEmployerWithEmployees(string employerId, bool isLocked);
-        public Task<IdentityResult> DeleteConsultant(User user);
+        public Task LockEmployerWithEmployeesAsync(string employerId, bool isLocked);
+        public Task<IdentityResult> DeleteConsultantAsync(User user);
         public Task<User> CreateEmployerAsync(string email, string firstName, string surname, string password);
         public Task<ResetPasswordResult> RestUserPasswordAsync(string userId, string password);
         public IQueryable<UserWithSubscription> GetUsersWithSubscriptionQuery(IQueryable<User> source);

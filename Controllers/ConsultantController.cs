@@ -104,7 +104,7 @@ namespace OnlineConsulting.Controllers
                 ModalType = ModalStyles.ERROR
             });
 
-            var result = await _userRepository.DeleteConsultant(user);
+            var result = await _userRepository.DeleteConsultantAsync(user);
 
             if (!result.Succeeded) RedirectToAction("GetAllConsultants", new ModalViewModel
             {
