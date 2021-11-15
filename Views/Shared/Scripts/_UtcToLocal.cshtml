@@ -3,6 +3,7 @@
     const convertUtcToLocalDate = () => {
         const dateTags = document.querySelectorAll("[data-utc-date]");
         dateTags.forEach(dateTag => {
+            if(!dateTag.dataset.utcDate) return;
             dateTag.innerText = dayjs
                 .utc(dateTag.dataset.utcDate, 'DD-MM-YYYY HH:mm')
                 .local().format('DD-MM-YYYY HH:mm');

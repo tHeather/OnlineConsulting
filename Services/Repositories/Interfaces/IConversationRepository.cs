@@ -18,5 +18,6 @@ namespace OnlineConsulting.Services.Repositories.Interfaces
         public IQueryable<Conversation> GetInProgressConversationsForConsultantQuery(string consultantId);
         public Task<ConversationStatistics> GetConversationsStatistics(ConversationStatisticsParams conversationStatisticsParams);
         public Task CloseUnusedConversationsAsync();
+        public IQueryable<Conversation> GetConversationsQuery(ConversationFilters filters);
     }
 }

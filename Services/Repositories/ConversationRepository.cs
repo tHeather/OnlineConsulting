@@ -43,6 +43,39 @@ namespace OnlineConsulting.Services.Repositories
             return conversation;
         }
 
+        public IQueryable<Conversation> GetConversationsQuery(ConversationFilters filters)
+        {
+            IQueryable<Conversation> query = _dbContext.Conversations
+                                                            .Include(c => c.Consultant);
+
+            if (filters.Status != null)
+            {
+                query = query.Where(c => c.Status == filters.Status);
+            }
+
+            if (filters.StartDateUtc != null)
+            {
+                query = query.Where(c => c.CreateDate >= filters.StartDateUtc);
+            }
+
+            if (filters.EndDateUtc != null)
+            {
+                query = query.Where(c => c.CreateDate <= filters.EndDateUtc);
+            }
+
+            if (filters.Host != null)
+            {
+                query = query.Where(c => c.Host == filters.Host);
+            }
+
+            if (filters.ConsultantEmail != null)
+            {
+                query = query.Where(c => c.Consultant.Email == filters.ConsultantEmail);
+            }
+
+            return query;
+        }
+
         public Task<Conversation> GetConversationByIdAsync(Guid id)
         {
             return _dbContext.Conversations.SingleOrDefaultAsync(c => c.Id == id);

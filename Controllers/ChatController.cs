@@ -12,6 +12,7 @@ using OnlineConsulting.Models.ViewModels.Modals;
 using OnlineConsulting.Services.Repositories.Interfaces;
 using OnlineConsulting.Tools;
 using System.Collections.Generic;
+using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
@@ -126,6 +127,22 @@ namespace OnlineConsulting.Controllers
                                                                                 PAGE_SIZE);
 
             return View("InProgressConversationList", conversationsInProgressPaginated);
+        }
+
+
+        [Authorize(Roles = UserRoleValue.CONSULTANT + "," + UserRoleValue.EMPLOYER)]
+        [HttpGet("conversation-list")]
+        public async Task<IActionResult> ConversationList(ConversationFilters fliter ,int pageIndex = 1)
+        {
+            var conversationsQuery = _conversationRepository.GetConversationsQuery(fliter);
+
+            var conversationsPaginated = await PaginatedList<Conversation>.CreateAsync(
+                                                                             conversationsQuery,
+                                                                             pageIndex,
+                                                                             PAGE_SIZE);
+            return View(new ConversationsListViewModel() {
+                Conversations = conversationsPaginated
+            });
         }
 
     }
