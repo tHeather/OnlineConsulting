@@ -1,5 +1,7 @@
 ﻿@using OnlineConsulting.Enums
+@using OnlineConsulting.Models.ValueObjects.Chat
 @using OnlineConsulting.Models.ViewModels.Pagination
+@using OnlineConsulting.Tools
 @model OnlineConsulting.Models.ViewModels.Chat.ConversationsListViewModel;
 
 <div class="p-1 p-xl-5">
@@ -11,7 +13,12 @@
 
     <div class="collapse mb-3" id="collapseFilters">
         <div class="card card-body bg-dark">
-            <form id="FiltersForm">
+            <form  
+                 asp-controller="Chat"
+                 asp-action="ConversationList"
+                 method="get"
+                 id="FiltersForm"
+            >
 
                 <div class="d-flex  flex-column">
                     <label for="StartDate"
@@ -20,7 +27,9 @@
                     </label>
                     <input name="StartDate"
                            type="date" id="StartDate"
-                           class="rounded p-1 bg-light border-0 mt-2" />
+                           class="rounded p-1 bg-light border-0 mt-2"
+                           value="@Model.Filters.StartDateUtc?.ToString("yyyy-MM-dd")"
+                    />
                     <input hidden name="StartDateUtc"  />
                 </div>
 
@@ -32,8 +41,10 @@
                     <input name="EndDate"
                            type="date"
                            id="EndDate"
-                           class="rounded p-1 bg-light border-0 mt-2" />
-                           <input hidden name="EndDateUtc"  />
+                           class="rounded p-1 bg-light border-0 mt-2" 
+                           value="@Model.Filters.EndDateUtc?.ToString("yyyy-MM-dd")"
+                    />
+                    <input hidden name="EndDateUtc"  />
                 </div>
 
                 <div class="d-flex  flex-column mt-3">
@@ -44,7 +55,9 @@
                     <select id="Status"
                             name="Status"
                             asp-items="Html.GetEnumSelectList<ConversationStatus>()"
-                            class="rounded p-1 bg-light border-0 mt-2">
+                            asp-for="@Model.Filters.Status"
+                            class="rounded p-1 bg-light border-0 mt-2"
+                    >
                         <option value="">All</option>
                     </select>
                 </div>
@@ -57,6 +70,7 @@
                     <input type="text"
                            name="ConsultantEmail"
                            id="ConsultantEmail"
+                           value="@Model.Filters.ConsultantEmail"
                            class="rounded p-1 bg-light border-0 mt-2" />
                 </div>
 
@@ -68,7 +82,9 @@
                     <input type="text"
                            name="Host"
                            id="Host"
-                           class="rounded p-1 bg-light border-0 mt-2" />
+                           class="rounded p-1 bg-light border-0 mt-2"
+                           value="@Model.Filters.Host"
+                           />
                 </div>
 
                 <button class="btn btn-warning mt-3">Search</button>
@@ -126,7 +142,8 @@
             HasPreviousPage = Model.Conversations.HasPreviousPage,
             HasNextPage = Model.Conversations.HasNextPage,
             SurroundingIndexes = Model.Conversations.GetSurroundingIndexes(2),
-            Action = "ConversationList"
+            Action = "ConversationList",
+            RouteData = ObjectToDictionary.ToDictionary(Model.Filters)
         })
 </div>
 
