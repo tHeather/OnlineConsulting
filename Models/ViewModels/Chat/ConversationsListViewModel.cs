@@ -8,5 +8,6 @@ namespace OnlineConsulting.Models.ViewModels.Chat
     {
         public PaginatedList<Conversation> Conversations { get; set; }
         public ConversationFilters Filters { get; set; }
+        public bool IsAscending { get; set; }
     }
 }

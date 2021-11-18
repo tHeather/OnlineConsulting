@@ -12,6 +12,7 @@ using OnlineConsulting.Models.ViewModels.Modals;
 using OnlineConsulting.Services.Repositories.Interfaces;
 using OnlineConsulting.Tools;
 using System.Collections.Generic;
+using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
@@ -132,9 +133,12 @@ namespace OnlineConsulting.Controllers
         [Authorize(Roles = UserRoleValue.CONSULTANT + "," + UserRoleValue.EMPLOYER)]
         [HttpGet("conversation-list")]
         public async Task<IActionResult> ConversationList(
-            ConversationFilters filters , int pageIndex = 1)
+            ConversationFilters filters, int pageIndex = 1, bool isAscending = false)
         {
             var conversationsQuery = _conversationRepository.GetConversationsQuery(filters);
+
+            conversationsQuery = isAscending ? conversationsQuery.OrderBy(c => c.CreateDate) : 
+                                               conversationsQuery.OrderByDescending(c => c.CreateDate);
 
             var conversationsPaginated = await PaginatedList<Conversation>.CreateAsync(
                                                                              conversationsQuery,
@@ -142,7 +146,8 @@ namespace OnlineConsulting.Controllers
                                                                              PAGE_SIZE);
             return View(new ConversationsListViewModel() {
                 Conversations = conversationsPaginated,
-                Filters = filters
+                Filters = filters,
+                IsAscending = isAscending
             });
         }
 

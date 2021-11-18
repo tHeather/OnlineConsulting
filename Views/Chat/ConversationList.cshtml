@@ -8,7 +8,7 @@
     <h1 class="text-warning pb-3 pt-3 pt-xl-0 text-center text-sm-left">Conversations</h1>
 
     <button class="btn bg-light my-3 " type="button" data-toggle="collapse" data-target="#collapseFilters" aria-expanded="false" aria-controls="collapseFilters">
-        Filters
+     <i class="fas fa-filter"></i> Filters
     </button>
 
     <div class="collapse mb-3" id="collapseFilters">
@@ -92,6 +92,21 @@
             </form>
         </div>
     </div>
+
+    @{
+        var sortingRouteValue = !Model.IsAscending;
+        var sortingLabel = @Model.IsAscending ? "Date ascending" : "Date descending";
+        var sortingIconClass = @Model.IsAscending ? "fa-sort-amount-down-alt" : "fa-sort-amount-up";
+    }
+
+    <a
+        asp-all-route-data=@ObjectToDictionary.ToDictionary(Model.Filters)
+        asp-route-pageIndex=@Model.Conversations.PageIndex
+        asp-route-isAscending=@sortingRouteValue
+        class="btn btn-dark"
+    >
+       <i class="fas @sortingIconClass"></i> @sortingLabel
+    </a>
 
     @if (Model.Conversations.Count > 0)
     {
