@@ -135,10 +135,8 @@ namespace OnlineConsulting.Controllers
         public async Task<IActionResult> ConversationList(
             ConversationFilters filters, int pageIndex = 1, bool isAscending = false)
         {
-            var conversationsQuery = _conversationRepository.GetConversationsQuery(filters);
-
-            conversationsQuery = isAscending ? conversationsQuery.OrderBy(c => c.CreateDate) : 
-                                               conversationsQuery.OrderByDescending(c => c.CreateDate);
+            var conversationsQuery = _conversationRepository
+                                          .GetFilteredAndSortedConversationsQuery(filters, isAscending);
 
             var conversationsPaginated = await PaginatedList<Conversation>.CreateAsync(
                                                                              conversationsQuery,

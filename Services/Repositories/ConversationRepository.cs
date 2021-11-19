@@ -43,7 +43,8 @@ namespace OnlineConsulting.Services.Repositories
             return conversation;
         }
 
-        public IQueryable<Conversation> GetConversationsQuery(ConversationFilters filters)
+        public IQueryable<Conversation> GetFilteredAndSortedConversationsQuery(
+                                            ConversationFilters filters, bool isAscending = false)
         {
             IQueryable<Conversation> query = _dbContext.Conversations
                                                             .Include(c => c.Consultant);
@@ -72,6 +73,9 @@ namespace OnlineConsulting.Services.Repositories
             {
                 query = query.Where(c => c.Consultant.Email == filters.ConsultantEmail);
             }
+
+            query = isAscending ? query.OrderBy(c => c.CreateDate) :
+                                  query.OrderByDescending(c => c.CreateDate);
 
             return query;
         }
