@@ -21,5 +21,7 @@ namespace OnlineConsulting.Services.Repositories.Interfaces
         public Task CloseUnusedConversationsAsync();
         public IQueryable<Conversation> GetFilteredAndSortedConversationsQuery(
                                                     ConversationFilters filters, bool isAscending = false);
+        public Task<IQueryable<Conversation>> GetConversationsForRoleQuery(
+                                                     IQueryable<Conversation> query, string userId);
     }
 }

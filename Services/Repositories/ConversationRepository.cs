@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using OnlineConsulting.Constants;
 using OnlineConsulting.Data;
 using OnlineConsulting.Enums;
 using OnlineConsulting.Models.Entities;
@@ -17,14 +18,39 @@ namespace OnlineConsulting.Services.Repositories
     {
         private readonly ApplicationDbContext _dbContext;
         private readonly IConfiguration _configuration;
+        private readonly IUserRepository _userRepository;
+        private readonly ISubscriptionRepository _subscriptionRepository;
 
         public ConversationRepository(
             ApplicationDbContext applicationDbContext,
-            IConfiguration configuration
+            IConfiguration configuration,
+            IUserRepository userRepository,
+            ISubscriptionRepository subscriptionRepository
         )
         {
             _dbContext = applicationDbContext;
             _configuration = configuration;
+            _userRepository = userRepository;
+            _subscriptionRepository = subscriptionRepository;
+        }
+
+        public async Task<IQueryable<Conversation>> GetConversationsForRoleQuery(
+          IQueryable<Conversation> query , string userId)
+        {
+            var userRole = _userRepository.GetUserRole(userId);
+
+            switch (userRole)
+            {
+                case UserRoleValue.EMPLOYER:
+                    var subscription = await _subscriptionRepository.GetSubscriptionForUserAsync(userId);
+                    query = query.Where(c => c.SubscriptionId == subscription.Id);
+                    break;
+                case UserRoleValue.CONSULTANT:
+                    query = query.Where(c => c.ConsultantId == userId);
+                    break;
+            }
+
+            return query;
         }
 
         public async Task<Conversation> CreateConversationAsync(CreateConversation createConversation)
@@ -34,7 +60,8 @@ namespace OnlineConsulting.Services.Repositories
                 CreateDate = DateTime.UtcNow,
                 Status = ConversationStatus.NEW,
                 Host = createConversation.Host,
-                Path = createConversation.Path
+                Path = createConversation.Path,
+                SubscriptionId = createConversation.SubscriptionId
             };
 
             _dbContext.Conversations.Add(conversation);

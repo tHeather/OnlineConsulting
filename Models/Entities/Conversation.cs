@@ -13,6 +13,7 @@ namespace OnlineConsulting.Models.Entities
         [ForeignKey("LastMessage")]
         public Guid? LastMessageId { get; set; }
         public string ConsultantId { get; set; }
+        public Guid SubscriptionId { get; set; }
         public DateTime CreateDate { get; set; }
         public DateTime? StartDate { get; set; }
         public DateTime? EndDate { get; set; }

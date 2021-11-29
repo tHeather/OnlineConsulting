@@ -2,6 +2,7 @@
 @using OnlineConsulting.Models.ValueObjects.Chat
 @using OnlineConsulting.Models.ViewModels.Pagination
 @using OnlineConsulting.Tools
+@using OnlineConsulting.Constants;
 @model OnlineConsulting.Models.ViewModels.Chat.ConversationsListViewModel;
 
 <div class="p-1 p-xl-5">
@@ -62,18 +63,19 @@
                     </select>
                 </div>
 
-                <div class="d-flex  flex-column mt-3">
-                    <label for="ConsultantEmail"
-                           class="text-light mb-0  mr-2">
-                        Consultant Email
-                    </label>
-                    <input type="text"
-                           name="ConsultantEmail"
-                           id="ConsultantEmail"
-                           value="@Model.Filters.ConsultantEmail"
-                           class="rounded p-1 bg-light border-0 mt-2" />
-                </div>
-
+                @if(Model.UserRole == UserRoleValue.CONSULTANT){
+                    <div class="d-flex  flex-column mt-3">
+                        <label for="ConsultantEmail"
+                               class="text-light mb-0  mr-2">
+                            Consultant Email
+                        </label>
+                        <input type="text"
+                               name="ConsultantEmail"
+                               id="ConsultantEmail"
+                               value="@Model.Filters.ConsultantEmail"
+                               class="rounded p-1 bg-light border-0 mt-2" />
+                    </div>
+                }
                 <div class="d-flex  flex-column mt-3">
                     <label for="Host"
                            class="text-light mb-0  mr-2">

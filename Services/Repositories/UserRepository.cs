@@ -34,6 +34,28 @@ namespace OnlineConsulting.Services.Repositories
             _dbContext = applicationDbContext;
         }
 
+        public User GetEmployerForConsultant(string ConsultantId)
+        {
+            var employerId = _dbContext.Users.Where(u => u.Id == ConsultantId)
+                                             .Select(u => u.EmployerId)
+                                             .SingleOrDefault();
+
+            return GetUserById(employerId);
+        }
+
+        public string GetUserRole(string userId)
+        {
+            return _dbContext.UserRoles
+                    .Where(r => r.UserId == userId)
+                    .Join(
+                            _dbContext.Roles,
+                            userRole => userRole.RoleId,
+                            role => role.Id,
+                            (userRole, role) => role.Name
+                          )
+                    .FirstOrDefault();
+        }
+
         public User GetUserById(string id)
         {
             return _dbContext.Users.SingleOrDefault(u => u.Id == id);

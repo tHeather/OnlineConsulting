@@ -1,8 +1,7 @@
 ﻿@using OnlineConsulting.Constants;
-@model Microsoft.Extensions.Configuration.IConfiguration;
+@model OnlineConsulting.Models.ViewModels.Chat.GetSnippetViewModel;
 
 @{
-    var origin = Model[Parameters.APPLICATION_URL];
     var baseSnippet = @"
     <style>
     .chat-display {
@@ -38,13 +37,14 @@
     };
     chatDisplayTag.setAttribute(
     'src',
-    `APPLICATION_URL/chat/clientchat.html?client=${window.location}`
+    `APPLICATION_URL/chat/clientchat.html?client=${window.location}&sub=SUB_ID`
     );
     window.addEventListener('message', handleMessage, false);
     })();
     </script>";
 
-    var snippet = baseSnippet.Replace("APPLICATION_URL", origin);
+    var snippetWithOrigin = baseSnippet.Replace("APPLICATION_URL", Model.Origin);
+    var snippet = snippetWithOrigin.Replace("SUB_ID", Model.SubscriptionId.ToString());
 }
 
 

@@ -74,3 +74,22 @@
         </li>
     </ul>
 </li>
+<li class="nav-item">
+    <a class="nav-link nav-collapse-btn text-light"
+       data-toggle="collapse"
+       data-target="#Conversations"
+       aria-controls="Conversations"
+       aria-expanded="false">
+        <i class="fas fa-comments fa-lg text-warning"></i>
+        <span class="nav-collapse-btn-text ">Conversations</span>
+    </a>
+    <ul class="nav-second-level collapse" id="Conversations" data-parent="#navAccordion">
+        <li class="nav-item">
+            <a class="nav-link text-light"
+               asp-controller="Chat"
+               asp-action="ConversationList">
+                Conversation List
+            </a>
+        </li>
+    </ul>
+</li>

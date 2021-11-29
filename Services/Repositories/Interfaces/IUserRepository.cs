@@ -9,6 +9,7 @@ namespace OnlineConsulting.Services.Repositories.Interfaces
 {
     public interface IUserRepository
     {
+        public User GetEmployerForConsultant(string ConsultantId);
         public User GetUserById(string id);
         public IQueryable<User> GetUserByEmailQuery(string email);
         public IQueryable<User> GetAllConsultantsForEmployerQuery(string employerId);
@@ -19,5 +20,6 @@ namespace OnlineConsulting.Services.Repositories.Interfaces
         public Task<User> CreateEmployerAsync(string email, string firstName, string surname, string password);
         public Task<ResetPasswordResult> RestUserPasswordAsync(string userId, string password);
         public IQueryable<UserWithSubscription> GetUsersWithSubscriptionQuery(IQueryable<User> source);
+        public string GetUserRole(string userId);
     }
 }
