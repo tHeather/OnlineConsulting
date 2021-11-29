@@ -232,6 +232,8 @@ namespace OnlineConsulting.Services.Repositories
                                                 c.CreateDate < conversationStatisticsParams.EndDate
                                             );
 
+            filterQuery = filterQuery.Where(c => c.SubscriptionId == conversationStatisticsParams.SubscriptionId);
+
             if (conversationStatisticsParams.Domain != null)
                 filterQuery = filterQuery.Where(c => c.Host == conversationStatisticsParams.Domain);
 
