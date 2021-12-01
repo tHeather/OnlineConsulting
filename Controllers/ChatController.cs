@@ -28,22 +28,22 @@ namespace OnlineConsulting.Controllers
         private readonly IConversationRepository _conversationRepository;
         private readonly IConfiguration _configuration;
         private readonly ISubscriptionRepository _subscriptionRepository;
-        private readonly UserManager<User> _userManager;
         private readonly IUserRepository _userRepository;
+        private readonly IChatMessageRepository _chatMessageRepository;
 
         public ChatController(
             IConversationRepository conversationRepository, 
             IConfiguration configuration,
             ISubscriptionRepository subscriptionRepository,
-            UserManager<User> userManager,
-            IUserRepository userRepository
+            IUserRepository userRepository,
+            IChatMessageRepository chatMessageRepository
             )
         {
             _conversationRepository = conversationRepository;
             _configuration = configuration;
             _subscriptionRepository = subscriptionRepository;
-            _userManager = userManager;
             _userRepository = userRepository;
+            _chatMessageRepository = chatMessageRepository;
         }
 
         [Authorize(Roles = UserRoleValue.EMPLOYER)]
@@ -128,7 +128,7 @@ namespace OnlineConsulting.Controllers
             var employer = _userRepository.GetEmployerForConsultant(userId);
 
             conversationsQuery = await _conversationRepository
-                                           .GetConversationsForRoleQuery(conversationsQuery, employer.Id);
+                                           .GetConversationsForRoleQuery(employer.Id, conversationsQuery);
 
             var newConversationsPaginated = await PaginatedList<Conversation>
                                                     .CreateAsync(conversationsQuery, pageIndex,
@@ -170,7 +170,7 @@ namespace OnlineConsulting.Controllers
 
             var userId = User.FindFirst(ClaimTypes.NameIdentifier).Value;
             conversationsQuery = await _conversationRepository
-                                           .GetConversationsForRoleQuery(conversationsQuery, userId);
+                                           .GetConversationsForRoleQuery(userId, conversationsQuery);
 
             var conversationsPaginated = await PaginatedList<Conversation>
                                             .CreateAsync(conversationsQuery, pageIndex, PAGE_SIZE);
@@ -180,6 +180,28 @@ namespace OnlineConsulting.Controllers
                 Filters = filters,
                 IsAscending = isAscending,
                 UserRole = _userRepository.GetUserRole(userId)
+            });
+        }
+
+        [Authorize(Roles = UserRoleValue.CONSULTANT + "," + UserRoleValue.EMPLOYER + "," + UserRoleValue.ADMIN)]
+        [HttpGet("messages")]
+        public async Task<IActionResult> ConversationMessages(Guid id)
+        {
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier).Value;
+            var conversationQuery = await _conversationRepository.GetConversationsForRoleQuery(userId);
+            var conversation = conversationQuery.SingleOrDefault(c => c.Id == id);
+
+            IEnumerable<ChatMessage> messages = null;
+
+            if (conversation != null)
+            {
+                messages = await _chatMessageRepository.GetAllMessagesForConversationById(id);
+            }
+           
+            return View(new ConversationMessagesViewModel()
+            {
+                Conversation = conversation,
+                Messages = messages
             });
         }
 

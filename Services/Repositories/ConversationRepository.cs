@@ -35,8 +35,11 @@ namespace OnlineConsulting.Services.Repositories
         }
 
         public async Task<IQueryable<Conversation>> GetConversationsForRoleQuery(
-          IQueryable<Conversation> query , string userId)
+         string userId, IQueryable<Conversation> query = null )
         {
+
+            if (query == null) query = _dbContext.Conversations;
+
             var userRole = _userRepository.GetUserRole(userId);
 
             switch (userRole)

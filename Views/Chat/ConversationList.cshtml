@@ -123,6 +123,7 @@
                     <th scope="col" class="text-dark">Path</th>
                     <th scope="col" class="text-dark">Status</th>
                     <th scope="col" class="text-dark">Consultant's e-mail</th>
+                    <th></th>
                 </tr>
             </thead>
             <tbody>
@@ -139,6 +140,16 @@
                                 var email = conversation.Consultant != null ? conversation.Consultant.Email : "";
                             }
                             <td class="text-light">@email</td>
+                            <td>
+                                <a
+                                asp-controller="Chat"
+                                asp-action="ConversationMessages"
+                                asp-route-id=@conversation.Id
+                                class="btn btn-dark"
+                                >
+                                    Show messages
+                                </a>
+                            </td>
                         </tr>
                     }
             </tbody>
