@@ -10,5 +10,6 @@ namespace OnlineConsulting.Models.ViewModels.Pagination
         public bool HasNextPage { get; set; }
         public IEnumerable<int> SurroundingIndexes { get; set; }
         public string Action { get; set; }
+        public Dictionary<string,string> RouteData { get; set; }
     }
 }

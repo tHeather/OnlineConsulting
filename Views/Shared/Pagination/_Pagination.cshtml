@@ -11,6 +11,7 @@
             <a class="page-link"
                aria-label="Previous"
                asp-action="@Model.Action"
+               asp-all-route-data="@Model.RouteData"
                asp-route-pageIndex="@(Model.PageIndex - 1)">
                 <span aria-hidden="true">&laquo;</span>
             </a>
@@ -21,6 +22,7 @@
 
             <li class="page-item @activeClass">
                 <a class="page-link "
+                   asp-all-route-data="@Model.RouteData"
                    asp-action="@Model.Action"
                    asp-route-pageIndex="@index">@index</a>
             </li>
@@ -28,6 +30,7 @@
         <li class="page-item  @nextDisabled">
             <a class="page-link"
                aria-label="Next"
+               asp-all-route-data="@Model.RouteData"
                asp-action="@Model.Action"
                asp-route-pageIndex="@(Model.PageIndex + 1)">
                 <span aria-hidden="true">&raquo;</span>

@@ -7,7 +7,7 @@ const CONNECTION_ID_STORAGE_NAME = "conversationId";
 
 /* WIDGET */
 const urlSearchParams = new URLSearchParams(window.location.search);
-const { client } = Object.fromEntries(urlSearchParams.entries());
+const { client, sub } = Object.fromEntries(urlSearchParams.entries());
 
 const handleClick = () => {
   document
@@ -87,7 +87,8 @@ const startConnection = async () => {
             await connection.invoke("CreateConversationAsync", {
                 FirstMessage: messageInput.value,
                 Host: url.hostname,
-                Path: url.pathname
+                Path: url.pathname,
+                SubscriptionId: sub
             });
             clearInput();
         }

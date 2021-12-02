@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using OnlineConsulting.Constants;
 using OnlineConsulting.Data;
 using OnlineConsulting.Enums;
 using OnlineConsulting.Models.Entities;
@@ -17,14 +18,42 @@ namespace OnlineConsulting.Services.Repositories
     {
         private readonly ApplicationDbContext _dbContext;
         private readonly IConfiguration _configuration;
+        private readonly IUserRepository _userRepository;
+        private readonly ISubscriptionRepository _subscriptionRepository;
 
         public ConversationRepository(
             ApplicationDbContext applicationDbContext,
-            IConfiguration configuration
+            IConfiguration configuration,
+            IUserRepository userRepository,
+            ISubscriptionRepository subscriptionRepository
         )
         {
             _dbContext = applicationDbContext;
             _configuration = configuration;
+            _userRepository = userRepository;
+            _subscriptionRepository = subscriptionRepository;
+        }
+
+        public async Task<IQueryable<Conversation>> GetConversationsForRoleQuery(
+         string userId, IQueryable<Conversation> query = null )
+        {
+
+            if (query == null) query = _dbContext.Conversations;
+
+            var userRole = _userRepository.GetUserRole(userId);
+
+            switch (userRole)
+            {
+                case UserRoleValue.EMPLOYER:
+                    var subscription = await _subscriptionRepository.GetSubscriptionForUserAsync(userId);
+                    query = query.Where(c => c.SubscriptionId == subscription.Id);
+                    break;
+                case UserRoleValue.CONSULTANT:
+                    query = query.Where(c => c.ConsultantId == userId);
+                    break;
+            }
+
+            return query;
         }
 
         public async Task<Conversation> CreateConversationAsync(CreateConversation createConversation)
@@ -34,13 +63,51 @@ namespace OnlineConsulting.Services.Repositories
                 CreateDate = DateTime.UtcNow,
                 Status = ConversationStatus.NEW,
                 Host = createConversation.Host,
-                Path = createConversation.Path
+                Path = createConversation.Path,
+                SubscriptionId = createConversation.SubscriptionId
             };
 
             _dbContext.Conversations.Add(conversation);
             await _dbContext.SaveChangesAsync();
 
             return conversation;
+        }
+
+        public IQueryable<Conversation> GetFilteredAndSortedConversationsQuery(
+                                            ConversationFilters filters, bool isAscending = false)
+        {
+            IQueryable<Conversation> query = _dbContext.Conversations
+                                                            .Include(c => c.Consultant);
+
+            if (filters.Status != null)
+            {
+                query = query.Where(c => c.Status == filters.Status);
+            }
+
+            if (filters.StartDateUtc != null)
+            {
+                query = query.Where(c => c.CreateDate >= filters.StartDateUtc);
+            }
+
+            if (filters.EndDateUtc != null)
+            {
+                query = query.Where(c => c.CreateDate <= filters.EndDateUtc);
+            }
+
+            if (filters.Host != null)
+            {
+                query = query.Where(c => c.Host == filters.Host);
+            }
+
+            if (filters.ConsultantEmail != null)
+            {
+                query = query.Where(c => c.Consultant.Email == filters.ConsultantEmail);
+            }
+
+            query = isAscending ? query.OrderBy(c => c.CreateDate) :
+                                  query.OrderByDescending(c => c.CreateDate);
+
+            return query;
         }
 
         public Task<Conversation> GetConversationByIdAsync(Guid id)
@@ -167,6 +234,8 @@ namespace OnlineConsulting.Services.Repositories
                                                 c => c.CreateDate >= conversationStatisticsParams.StartDate &&
                                                 c.CreateDate < conversationStatisticsParams.EndDate
                                             );
+
+            filterQuery = filterQuery.Where(c => c.SubscriptionId == conversationStatisticsParams.SubscriptionId);
 
             if (conversationStatisticsParams.Domain != null)
                 filterQuery = filterQuery.Where(c => c.Host == conversationStatisticsParams.Domain);

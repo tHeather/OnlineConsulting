@@ -1,0 +1,79 @@
+﻿@model OnlineConsulting.Models.ViewModels.Chat.ConversationMessagesViewModel;
+
+<div class="chat-container">
+
+    <div id="chat-content" class="chat-content">
+        <ul id="chat-messages-list" class="chat-messages-list">
+            @if(Model == null)
+            {
+                <li class="text-light" >No messages found</li>
+            }
+            else
+            {
+               @foreach (var message in Model.Messages)
+                {
+
+                var messageClass = message.IsFromClient ? "chat-messages-list__message--client" : "";
+
+                  <li class="chat-messages-list__message @messageClass" >
+                   <div class="chat-messages-list__content" >@message.Content</div>
+                    <div 
+                    class="chat-messages-list__date"
+                    data-utc-date="@message.CreateDate"
+                    >
+                    </div>
+                  </li>
+                } 
+            }
+        </ul>
+    </div>
+
+    <div>
+        <button 
+                class="btn btn-light w-100" 
+                type="button" 
+                id="collapseSideBarBtn" 
+                data-toggle="collapse" 
+                data-target="#collapseSideBar" 
+                aria-expanded="false" 
+                aria-controls="collapseSideBar">
+            Details
+        </button>
+        <div class=" bg-dark shadow-dark p-3 collapse chat-sidebar" id="collapseSideBar">
+            <a class="d-block mb-5 mt-3 text-light"
+               asp-controller="Chat"
+               asp-action="ConversationList">
+                <i class="fas fa-chevron-left text-warning"></i>
+                Back to list
+            </a>
+            <p class="d-flex flex-column align-items-start">
+                <span class="font-weight-bold text-warning">Host:</span>
+                <span class="text-truncate w-100 text-light"
+                      data-toggle="tooltip"
+                      data-placement="top"
+                      title="@Model.Conversation.Host">
+                   @Model.Conversation.Host
+                </span>
+            </p>
+            <p class="d-flex flex-column align-items-start">
+                <span class="font-weight-bold text-warning">Path:</span>
+                <span class="text-truncate w-100 text-light"
+                      data-toggle="tooltip"
+                      data-placement="top"
+                      title="@Model.Conversation.Path">
+                    @Model.Conversation.Path
+                </span>
+            </p>
+        </div>
+    </div>
+
+</div>
+
+@section Styles{
+    <link rel="stylesheet" href="~/css/consultantChat.css">
+}
+
+@section Scripts {
+    <script src="~/js/signalr/dist/browser/signalr.js"></script>
+    <partial name="/Views/Shared/Scripts/_UtcToLocal.cshtml" />
+}

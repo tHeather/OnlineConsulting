@@ -13,10 +13,15 @@ namespace OnlineConsulting.Services.Repositories.Interfaces
         public Task<Conversation> GetConversationByIdAsync(Guid id);
         public Task CloseConversationAsync(Conversation conversation);
         public Task<bool> AssignConsultantToConversation(
-                                Conversation conversation, string consultantId, byte[] rowVersion);
+                                        Conversation conversation, string consultantId, byte[] rowVersion);
         public IQueryable<Conversation> GetNewConversationsQuery();
         public IQueryable<Conversation> GetInProgressConversationsForConsultantQuery(string consultantId);
-        public Task<ConversationStatistics> GetConversationsStatistics(ConversationStatisticsParams conversationStatisticsParams);
+        public Task<ConversationStatistics> GetConversationsStatistics(
+                                                ConversationStatisticsParams conversationStatisticsParams);
         public Task CloseUnusedConversationsAsync();
+        public IQueryable<Conversation> GetFilteredAndSortedConversationsQuery(
+                                                    ConversationFilters filters, bool isAscending = false);
+        public Task<IQueryable<Conversation>> GetConversationsForRoleQuery(
+                                                     string userId, IQueryable<Conversation> query = null);
     }
 }

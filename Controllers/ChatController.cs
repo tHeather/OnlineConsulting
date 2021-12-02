@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using OnlineConsulting.Attributes;
@@ -11,7 +12,9 @@ using OnlineConsulting.Models.ViewModels.Chat;
 using OnlineConsulting.Models.ViewModels.Modals;
 using OnlineConsulting.Services.Repositories.Interfaces;
 using OnlineConsulting.Tools;
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
@@ -24,18 +27,40 @@ namespace OnlineConsulting.Controllers
         const int PAGE_SIZE = 10;
         private readonly IConversationRepository _conversationRepository;
         private readonly IConfiguration _configuration;
+        private readonly ISubscriptionRepository _subscriptionRepository;
+        private readonly IUserRepository _userRepository;
+        private readonly IChatMessageRepository _chatMessageRepository;
 
-        public ChatController(IConversationRepository conversationRepository, IConfiguration configuration)
+        public ChatController(
+            IConversationRepository conversationRepository, 
+            IConfiguration configuration,
+            ISubscriptionRepository subscriptionRepository,
+            IUserRepository userRepository,
+            IChatMessageRepository chatMessageRepository
+            )
         {
             _conversationRepository = conversationRepository;
             _configuration = configuration;
+            _subscriptionRepository = subscriptionRepository;
+            _userRepository = userRepository;
+            _chatMessageRepository = chatMessageRepository;
         }
 
         [Authorize(Roles = UserRoleValue.EMPLOYER)]
         [HttpGet("get-snippet")]
-        public IActionResult GetSnippet()
+        public async Task<IActionResult> GetSnippet()
         {
-            return View(_configuration);
+            var origin = _configuration[Parameters.APPLICATION_URL] ??
+                                    throw new ArgumentNullException(Parameters.APPLICATION_URL);
+
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier).Value;
+            var subscription = await _subscriptionRepository.GetSubscriptionForUserAsync(userId);
+
+            return View(new GetSnippetViewModel()
+            {
+                SubscriptionId = subscription.Id,
+                Origin = origin
+            });
         }
 
         [Authorize(Roles = UserRoleValue.CONSULTANT)]
@@ -94,14 +119,20 @@ namespace OnlineConsulting.Controllers
 
         [Authorize(Roles = UserRoleValue.CONSULTANT)]
         [HttpGet("new-conversation-list")]
-        public async Task<IActionResult> NewConversationList(int pageIndex = 1, ModalViewModel modalViewModel = null)
+        public async Task<IActionResult> NewConversationList(
+            int pageIndex = 1, ModalViewModel modalViewModel = null)
         {
-            var newConversations = _conversationRepository.GetNewConversationsQuery();
+            var conversationsQuery = _conversationRepository.GetNewConversationsQuery();
 
-            var newConversationsPaginated = await PaginatedList<Conversation>.CreateAsync(
-                                                                                newConversations,
-                                                                                pageIndex,
-                                                                                PAGE_SIZE);
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier).Value;
+            var employer = _userRepository.GetEmployerForConsultant(userId);
+
+            conversationsQuery = await _conversationRepository
+                                           .GetConversationsForRoleQuery(employer.Id, conversationsQuery);
+
+            var newConversationsPaginated = await PaginatedList<Conversation>
+                                                    .CreateAsync(conversationsQuery, pageIndex,
+                                                                 PAGE_SIZE);
 
             return View(
                 "NewConversationList",
@@ -118,14 +149,60 @@ namespace OnlineConsulting.Controllers
         public async Task<IActionResult> InProgressConversationList(int pageIndex = 1)
         {
             var consultantId = User.FindFirst(ClaimTypes.NameIdentifier).Value;
-            var conversationsInProgress = _conversationRepository.GetInProgressConversationsForConsultantQuery(consultantId);
+            var conversationsInProgress = _conversationRepository
+                                                .GetInProgressConversationsForConsultantQuery(consultantId);
 
-            var conversationsInProgressPaginated = await PaginatedList<Conversation>.CreateAsync(
-                                                                                conversationsInProgress,
-                                                                                pageIndex,
-                                                                                PAGE_SIZE);
+            var conversationsInProgressPaginated = await PaginatedList<Conversation>
+                                                                       .CreateAsync(conversationsInProgress,
+                                                                                    pageIndex, PAGE_SIZE);
 
             return View("InProgressConversationList", conversationsInProgressPaginated);
+        }
+
+
+        [Authorize(Roles = UserRoleValue.CONSULTANT + "," + UserRoleValue.EMPLOYER + "," + UserRoleValue.ADMIN)]
+        [HttpGet("conversation-list")]
+        public async Task<IActionResult> ConversationList(
+            ConversationFilters filters, int pageIndex = 1, bool isAscending = false)
+        {
+            var conversationsQuery = _conversationRepository
+                                          .GetFilteredAndSortedConversationsQuery(filters, isAscending);
+
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier).Value;
+            conversationsQuery = await _conversationRepository
+                                           .GetConversationsForRoleQuery(userId, conversationsQuery);
+
+            var conversationsPaginated = await PaginatedList<Conversation>
+                                            .CreateAsync(conversationsQuery, pageIndex, PAGE_SIZE);
+
+            return View(new ConversationsListViewModel() {
+                Conversations = conversationsPaginated,
+                Filters = filters,
+                IsAscending = isAscending,
+                UserRole = _userRepository.GetUserRole(userId)
+            });
+        }
+
+        [Authorize(Roles = UserRoleValue.CONSULTANT + "," + UserRoleValue.EMPLOYER + "," + UserRoleValue.ADMIN)]
+        [HttpGet("messages")]
+        public async Task<IActionResult> ConversationMessages(Guid id)
+        {
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier).Value;
+            var conversationQuery = await _conversationRepository.GetConversationsForRoleQuery(userId);
+            var conversation = conversationQuery.SingleOrDefault(c => c.Id == id);
+
+            IEnumerable<ChatMessage> messages = null;
+
+            if (conversation != null)
+            {
+                messages = await _chatMessageRepository.GetAllMessagesForConversationById(id);
+            }
+           
+            return View(new ConversationMessagesViewModel()
+            {
+                Conversation = conversation,
+                Messages = messages
+            });
         }
 
     }

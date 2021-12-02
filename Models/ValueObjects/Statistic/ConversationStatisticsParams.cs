@@ -8,5 +8,6 @@ namespace OnlineConsulting.Models.ValueObjects.Statistic
         public DateTime EndDate { get; set; }
         public string Domain { get; set; }
         public string ConsultantId { get; set; }
+        public Guid SubscriptionId { get; set; }
     }
 }

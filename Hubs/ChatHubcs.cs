@@ -27,7 +27,8 @@ namespace OnlineConsulting.Hubs
             var createConversation = new CreateConversation
             {
                 Host = createConversationViewModel.Host,
-                Path = createConversationViewModel.Path
+                Path = createConversationViewModel.Path,
+                SubscriptionId = createConversationViewModel.SubscriptionId
             };
 
             var conversation = await _conversationRepository.CreateConversationAsync(createConversation);

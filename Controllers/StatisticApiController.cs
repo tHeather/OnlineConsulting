@@ -4,6 +4,7 @@ using OnlineConsulting.Attributes;
 using OnlineConsulting.Constants;
 using OnlineConsulting.Models.ValueObjects.Statistic;
 using OnlineConsulting.Services.Repositories.Interfaces;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace OnlineConsulting.Controllers
@@ -16,10 +17,14 @@ namespace OnlineConsulting.Controllers
     {
 
         private readonly IConversationRepository _conversationRepository;
+        private readonly ISubscriptionRepository _subscriptionRepository;
 
-        public StatisticApiController(IConversationRepository conversationRepository)
+        public StatisticApiController(
+            IConversationRepository conversationRepository,
+            ISubscriptionRepository subscriptionRepository)
         {
             _conversationRepository = conversationRepository;
+            _subscriptionRepository = subscriptionRepository;
         }
 
 
@@ -28,6 +33,10 @@ namespace OnlineConsulting.Controllers
             ConversationStatisticsParams conversationStatisticsParams
             )
         {
+            var employerId = User.FindFirst(ClaimTypes.NameIdentifier).Value;
+            var subscription = await _subscriptionRepository.GetSubscriptionForUserAsync(employerId);
+            conversationStatisticsParams.SubscriptionId = subscription.Id;
+
             return await _conversationRepository.GetConversationsStatistics(conversationStatisticsParams);
         }
     }

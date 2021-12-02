@@ -1,18 +1,25 @@
 ﻿<li class="nav-item">
     <a class="nav-link nav-collapse-btn text-light"
        data-toggle="collapse"
-       data-target="#Statistics"
-       aria-controls="Statistics"
+       data-target="#Conversations"
+       aria-controls="Conversations"
        aria-expanded="false">
-        <i class="fas fa-chart-bar fa-lg text-warning"></i>
-        <span class="nav-collapse-btn-text ">Statistics</span>
+        <i class="fas fa-comments fa-lg text-warning"></i>
+        <span class="nav-collapse-btn-text ">Conversations</span>
     </a>
-    <ul class="nav-second-level collapse" id="Statistics" data-parent="#navAccordion">
+    <ul class="nav-second-level collapse" id="Conversations" data-parent="#navAccordion">
         <li class="nav-item">
             <a class="nav-link text-light"
                asp-controller="Statistic"
                asp-action="GetStatistics">
-                Conversations
+                Statistics
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link text-light"
+               asp-controller="Chat"
+               asp-action="ConversationList">
+                Conversation List
             </a>
         </li>
     </ul>
