@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Options;
 using OnlineConsulting.Attributes;
 using OnlineConsulting.Constants;
@@ -9,10 +10,12 @@ using OnlineConsulting.Models.Constants;
 using OnlineConsulting.Models.Entities;
 using OnlineConsulting.Models.ViewModels.Consultant;
 using OnlineConsulting.Models.ViewModels.Modals;
+using OnlineConsulting.Services.Interfaces;
 using OnlineConsulting.Services.Repositories.Interfaces;
 using OnlineConsulting.Tools;
 using System.Collections.Generic;
 using System.Security.Claims;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace OnlineConsulting.Controllers
@@ -25,14 +28,20 @@ namespace OnlineConsulting.Controllers
     {
         private readonly IUserRepository _userRepository;
         private readonly IOptions<IdentityOptions> _identityOptions;
+        private readonly UserManager<User> _userManager;
+        private readonly ISendgridService _sendgridService;
 
         public ConsultantController(
-            IUserRepository userRepository,
-             IOptions<IdentityOptions> identityOptions
+             IUserRepository userRepository,
+             IOptions<IdentityOptions> identityOptions,
+             UserManager<User> userManager,
+             ISendgridService sendgridService
             )
         {
             _userRepository = userRepository;
             _identityOptions = identityOptions;
+            _userManager = userManager;
+            _sendgridService = sendgridService;
         }
 
         [HttpGet("create")]
@@ -54,6 +63,17 @@ namespace OnlineConsulting.Controllers
 
                 if (createConsultantValueObject.IdentityResult.Succeeded)
                 {
+
+                    var code = await _userManager.GenerateEmailConfirmationTokenAsync(createConsultantValueObject.User);
+                    code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
+                    var callbackUrl = Url.Page(
+                        "/Account/ConfirmEmail",
+                        pageHandler: null,
+                        values: new { area = "Identity", userId = createConsultantValueObject.User.Id, code = code, returnUrl = "/" },
+                        protocol: Request.Scheme);
+
+                    await _sendgridService.SendConfirmEmailAddressLink(createConsultantValueObject.User.Email, callbackUrl);
+
                     ModelState.Clear();
                     return View(new AddConsultantViewModel
                     {

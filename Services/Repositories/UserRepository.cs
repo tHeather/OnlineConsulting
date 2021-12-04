@@ -134,7 +134,11 @@ namespace OnlineConsulting.Services.Repositories
             }
 
 
-            return new CreateConsultant { IdentityResult = result, GeneratedPassword = generatedPassword };
+            return new CreateConsultant { 
+                    IdentityResult = result, 
+                    GeneratedPassword = generatedPassword,
+                    User = user
+            };
         }
 
         public async Task<IdentityResult> DeleteConsultantAsync(User user)
