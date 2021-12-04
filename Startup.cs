@@ -1,6 +1,8 @@
 using Hangfire;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -19,6 +21,7 @@ using OnlineConsulting.Services.Repositories;
 using OnlineConsulting.Services.Repositories.Interfaces;
 using SendGrid.Extensions.DependencyInjection;
 using System;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace OnlineConsulting
 {
@@ -64,6 +67,13 @@ namespace OnlineConsulting
             {
                 options.Conventions.AddAreaPageRoute("Identity", "/Account/Login", "");
             });
+
+            services.ConfigureApplicationCookie(opt =>
+            {
+                opt.AccessDeniedPath = new PathString("/status/403");
+                opt.LoginPath = new PathString("/Identity/Account/Login");
+            });
+
             services.AddSignalR();
 
             services.AddSendGrid(options =>
@@ -93,10 +103,13 @@ namespace OnlineConsulting
             }
             else
             {
-                app.UseExceptionHandler("/Home/Error");
+                app.UseExceptionHandler();
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
+
+            app.UseStatusCodePagesWithRedirects("/status/{0}");
+
             app.UseHttpsRedirection();
             app.UseStaticFiles();
 
