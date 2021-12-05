@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 
 namespace OnlineConsulting.Controllers
 {
+    [ValidateAntiForgeryToken]
     [Route("subscription")]
     public class SubscriptionController : Controller
     {
@@ -19,6 +20,7 @@ namespace OnlineConsulting.Controllers
             _subscriptionTypeRepository = subscriptionTypeRepository;
         }
 
+        [IgnoreAntiforgeryToken]
         [Authorize(Roles = UserRoleValue.ADMIN)]
         [HttpGet("change-price")]
         public IActionResult ChangeSubscriptionPrice(bool isSaved)
@@ -48,7 +50,7 @@ namespace OnlineConsulting.Controllers
             return RedirectToAction("ChangeSubscriptionPrice", new { isSaved = true });
         }
 
-
+        [IgnoreAntiforgeryToken]
         [Authorize(Roles = UserRoleValue.EMPLOYER)]
         [HttpGet("employer/subscription-expired")]
         public IActionResult EmployerSubscriptionExpierd()
@@ -56,6 +58,7 @@ namespace OnlineConsulting.Controllers
             return View("EmployerSubscriptionExpierd");
         }
 
+        [IgnoreAntiforgeryToken]
         [Authorize(Roles = UserRoleValue.CONSULTANT)]
         [HttpGet("consultant/subscription-expired")]
         public IActionResult ConsultantSubscriptionExpierd()

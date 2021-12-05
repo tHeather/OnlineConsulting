@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 
 namespace OnlineConsulting.Controllers
 {
+    [ValidateAntiForgeryToken]
     [Authorize(Roles = UserRoleValue.ADMIN)]
     [Route("users")]
     public class UserController : Controller
@@ -28,7 +29,8 @@ namespace OnlineConsulting.Controllers
             _userManager = userManager;
         }
 
-        [Route("employer-list")]
+        [IgnoreAntiforgeryToken]
+        [HttpGet("employer-list")]
         public async Task<IActionResult> EmployerList(int pageIndex = 1)
         {
             var employersQuery = _userRepository.GetAllUsersWithRoleQuery(UserRoleValue.EMPLOYER);
@@ -46,7 +48,8 @@ namespace OnlineConsulting.Controllers
             });
         }
 
-        [Route("employee-list/{employerId}")]
+        [IgnoreAntiforgeryToken]
+        [HttpGet("employee-list/{employerId}")]
         public async Task<IActionResult> EmployeeList(string employerId, int pageIndex = 1)
         {
             var employer = _userRepository.GetUserById(employerId); 
@@ -65,6 +68,7 @@ namespace OnlineConsulting.Controllers
             });
         }
 
+        [IgnoreAntiforgeryToken]
         [HttpGet("search")]
         public async Task<IActionResult> FindUser(string email)
         {

@@ -32,12 +32,14 @@
                             </a>
                         </td>
                         <td>
-                            <a class="btn btn-secondary"
-                               asp-controller="Consultant"
-                               asp-action="ResetConsultantPassword"
-                               asp-route-id=@consultant.Id>
-                                Reset password
-                            </a>
+                            <form
+                                method="post"
+                                asp-controller="Consultant"
+                                asp-action="ResetConsultantPassword"
+                            >
+                                <input hidden name="id" value="@consultant.Id" />
+                                <button class="btn btn-secondary" >Reset password</button>
+                            </form>
                         </td>
                         <td>
                             <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#Modal-@consultant.Id">
@@ -55,7 +57,8 @@
                                ConfirmAction = "DeleteConsultant",
                                ConfirmText = "Yes",
                                ConfirmParams = new Dictionary<string, string> { { "id", consultant.Id } },
-                               RejectText = "No"
+                               RejectText = "No",
+                               ConfirmHttpVerb ="POST"
                            })
 
                         </td>

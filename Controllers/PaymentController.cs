@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace OnlineConsulting.Controllers
 {
-
+    [ValidateAntiForgeryToken]
     [Route("payment")]
     public class PaymentController : Controller
     {
@@ -37,7 +37,7 @@ namespace OnlineConsulting.Controllers
             _currency = configuration[Parameters.DOTPAY_CURRENCY] ?? throw new ArgumentNullException(_currency);
         }
 
-
+        [IgnoreAntiforgeryToken]
         [Authorize(Roles = UserRoleValue.EMPLOYER)]
         [HttpGet("create")]
         public async Task<IActionResult> PayForSubscription()
@@ -79,6 +79,7 @@ namespace OnlineConsulting.Controllers
             return Redirect(redirectUrl);
         }
 
+        [IgnoreAntiforgeryToken]
         [Authorize(Roles = UserRoleValue.ADMIN)]
         [HttpGet("list")]
         public IActionResult GetPaymentList()

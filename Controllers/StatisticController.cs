@@ -6,6 +6,7 @@ using OnlineConsulting.Services.Repositories.Interfaces;
 
 namespace OnlineConsulting.Controllers
 {
+    [ValidateAntiForgeryToken]
     [TypeFilter(typeof(ValidateSubscriptionAttribute))]
     [Authorize(Roles = UserRoleValue.EMPLOYER)]
     [Route("statistics")]
@@ -18,11 +19,13 @@ namespace OnlineConsulting.Controllers
             _userRepository = userRepository;
         }
 
+        [IgnoreAntiforgeryToken]
         public IActionResult GetStatistics()
         {
             return View();
         }
 
+        [IgnoreAntiforgeryToken]
         [HttpGet("{id}")]
         public IActionResult GetStatisticsForConsultant(string id)
         {

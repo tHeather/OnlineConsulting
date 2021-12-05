@@ -20,6 +20,7 @@ using System.Threading.Tasks;
 
 namespace OnlineConsulting.Controllers
 {
+    [ValidateAntiForgeryToken]
     [TypeFilter(typeof(ValidateSubscriptionAttribute))]
     [Authorize(Roles = UserRoleValue.EMPLOYER)]
     [Route("consultants")]
@@ -44,6 +45,7 @@ namespace OnlineConsulting.Controllers
             _sendgridService = sendgridService;
         }
 
+        [IgnoreAntiforgeryToken]
         [HttpGet("create")]
         public ActionResult AddConsultant()
         {
@@ -51,7 +53,6 @@ namespace OnlineConsulting.Controllers
         }
 
         [HttpPost("create")]
-        [AutoValidateAntiforgeryToken]
         public async Task<ActionResult> AddConsultant(AddConsultantViewModel addConsultantViewModel)
         {
             if (ModelState.IsValid)
@@ -91,6 +92,7 @@ namespace OnlineConsulting.Controllers
             return View(addConsultantViewModel);
         }
 
+        [IgnoreAntiforgeryToken]
         [HttpGet("list")]
         public async Task<ActionResult> GetAllConsultants(int pageIndex = 1, ModalViewModel modalViewModel = null)
         {
@@ -110,7 +112,7 @@ namespace OnlineConsulting.Controllers
                 );
         }
 
-        [HttpGet("delete")]
+        [HttpPost("delete")]
         public async Task<ActionResult> DeleteConsultant(string id)
         {
 
@@ -144,6 +146,7 @@ namespace OnlineConsulting.Controllers
 
         }
 
+        [HttpPost("password-reset")]
         public async Task<IActionResult> ResetConsultantPassword(string id)
         {
             var passwordOptions = _identityOptions.Value.Password;

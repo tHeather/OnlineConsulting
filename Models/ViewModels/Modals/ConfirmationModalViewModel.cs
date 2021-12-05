@@ -10,15 +10,11 @@ namespace OnlineConsulting.Models.ViewModels.Modals
         public string Id { get; set; }
         public string ModalLabel { get; set; }
         public string ModalText { get; set; }
-
+        public string ConfirmHttpVerb { get; set; }
         public string ConfirmController { get; set; }
-
         public string ConfirmAction { get; set; }
-
         public Dictionary<string,string> ConfirmParams { get; set; }
-
         public string ConfirmText { get; set; }
-
         public string  RejectText { get; set; }
     }
 }

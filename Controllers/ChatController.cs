@@ -20,6 +20,7 @@ using System.Threading.Tasks;
 
 namespace OnlineConsulting.Controllers
 {
+    [ValidateAntiForgeryToken]
     [TypeFilter(typeof(ValidateSubscriptionAttribute))]
     [Route("chat")]
     public class ChatController : Controller
@@ -46,6 +47,7 @@ namespace OnlineConsulting.Controllers
             _chatMessageRepository = chatMessageRepository;
         }
 
+        [IgnoreAntiforgeryToken]
         [Authorize(Roles = UserRoleValue.EMPLOYER)]
         [HttpGet("get-snippet")]
         public async Task<IActionResult> GetSnippet()
@@ -117,6 +119,7 @@ namespace OnlineConsulting.Controllers
             });
         }
 
+        [IgnoreAntiforgeryToken]
         [Authorize(Roles = UserRoleValue.CONSULTANT)]
         [HttpGet("new-conversation-list")]
         public async Task<IActionResult> NewConversationList(
@@ -144,6 +147,7 @@ namespace OnlineConsulting.Controllers
                 );
         }
 
+        [IgnoreAntiforgeryToken]
         [Authorize(Roles = UserRoleValue.CONSULTANT)]
         [HttpGet("in-progress-conversation-list")]
         public async Task<IActionResult> InProgressConversationList(int pageIndex = 1)
@@ -159,7 +163,7 @@ namespace OnlineConsulting.Controllers
             return View("InProgressConversationList", conversationsInProgressPaginated);
         }
 
-
+        [IgnoreAntiforgeryToken]
         [Authorize(Roles = UserRoleValue.CONSULTANT + "," + UserRoleValue.EMPLOYER + "," + UserRoleValue.ADMIN)]
         [HttpGet("conversation-list")]
         public async Task<IActionResult> ConversationList(
@@ -183,6 +187,7 @@ namespace OnlineConsulting.Controllers
             });
         }
 
+        [IgnoreAntiforgeryToken]
         [Authorize(Roles = UserRoleValue.CONSULTANT + "," + UserRoleValue.EMPLOYER + "," + UserRoleValue.ADMIN)]
         [HttpGet("messages")]
         public async Task<IActionResult> ConversationMessages(Guid id)
