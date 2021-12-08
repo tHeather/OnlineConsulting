@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using OnlineConsulting.Constants;
 using OnlineConsulting.Models.ViewModels.Payment;
 using OnlineConsulting.Services.Interfaces;
@@ -19,6 +20,7 @@ namespace OnlineConsulting.Controllers
         private readonly IPaymentRepository _paymentRepository;
         private readonly ISubscriptionRepository _subscriptionRepository;
         private readonly ISubscriptionTypeRepository _subscriptionTypeRepository;
+        private readonly ILogger<PaymentController> _logger;
         private readonly string _currency;
 
 
@@ -28,13 +30,15 @@ namespace OnlineConsulting.Controllers
             IPaymentRepository paymentRepository,
             ISubscriptionRepository subscriptionRepository,
             ISubscriptionTypeRepository subscriptionTypeRepository,
-            IConfiguration configuration)
+            IConfiguration configuration,
+            ILogger<PaymentController> logger)
         {
             _dotPayService = dotPayService;
             _paymentRepository = paymentRepository;
             _subscriptionRepository = subscriptionRepository;
             _subscriptionTypeRepository = subscriptionTypeRepository;
             _currency = configuration[Parameters.DOTPAY_CURRENCY] ?? throw new ArgumentNullException(_currency);
+            _logger = logger;
         }
 
         [IgnoreAntiforgeryToken]
@@ -75,6 +79,8 @@ namespace OnlineConsulting.Controllers
             var redirectUrl = _dotPayService.CreatePaymentUri(
                                     payment.Id, subscriptionType.Price, employerEmail, subscriptionType.Name
                                     );
+            
+            _logger.LogInformation("Create payment {paymentId}, redirectUrl: {redirectUrl} ", payment.Id, redirectUrl);
 
             return Redirect(redirectUrl);
         }

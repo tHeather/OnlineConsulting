@@ -20,6 +20,7 @@ using OnlineConsulting.Services.Interfaces;
 using OnlineConsulting.Services.Repositories;
 using OnlineConsulting.Services.Repositories.Interfaces;
 using SendGrid.Extensions.DependencyInjection;
+using Serilog;
 using System;
 using static System.Net.Mime.MediaTypeNames;
 
@@ -112,6 +113,8 @@ namespace OnlineConsulting
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();
+
+            app.UseSerilogRequestLogging();
 
             app.UseRouting();
 

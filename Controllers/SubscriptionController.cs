@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using OnlineConsulting.Constants;
 using OnlineConsulting.Models.Entities;
 using OnlineConsulting.Models.ViewModels.Subscription;
@@ -14,10 +15,15 @@ namespace OnlineConsulting.Controllers
     public class SubscriptionController : Controller
     {
         private readonly ISubscriptionTypeRepository _subscriptionTypeRepository;
+        private readonly ILogger<SubscriptionController> _logger;
 
-        public SubscriptionController(ISubscriptionTypeRepository subscriptionTypeRepository)
+        public SubscriptionController(
+                ISubscriptionTypeRepository subscriptionTypeRepository,
+                ILogger<SubscriptionController> logger
+            )
         {
             _subscriptionTypeRepository = subscriptionTypeRepository;
+            _logger = logger;
         }
 
         [IgnoreAntiforgeryToken]
@@ -46,6 +52,9 @@ namespace OnlineConsulting.Controllers
                     subscription.Id,
                     subscription.Price
                 );
+
+            _logger.LogInformation("Subscription: {subscriptionId} price changed to: {price}",
+                                   subscription.Id, subscription.Price);
 
             return RedirectToAction("ChangeSubscriptionPrice", new { isSaved = true });
         }

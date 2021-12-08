@@ -85,7 +85,8 @@ namespace OnlineConsulting.Areas.Identity.Pages.Account
                 var result = await _signInManager.PasswordSignInAsync(Input.Email, Input.Password, false, lockoutOnFailure: false);
                 if (result.Succeeded)
                 {
-                    _logger.LogInformation("User logged in.");
+                     _logger.LogInformation("User: {userId} logged in.", user.Id);
+
                     var roles = await _userManager.GetRolesAsync(user);
                     return roles[0] switch
                     {
@@ -98,6 +99,7 @@ namespace OnlineConsulting.Areas.Identity.Pages.Account
             }
 
             ModelState.AddModelError(string.Empty, "Invalid login attempt.");
+            _logger.LogInformation("Invalid login attempt. User email: {email}", Input.Email);
             return Page();
         }
     }

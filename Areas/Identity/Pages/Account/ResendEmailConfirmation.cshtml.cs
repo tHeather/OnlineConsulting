@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
+using Microsoft.Extensions.Logging;
 using OnlineConsulting.Models.Entities;
 using OnlineConsulting.Services.Interfaces;
 using System.ComponentModel.DataAnnotations;
@@ -16,14 +17,17 @@ namespace OnlineConsulting.Areas.Identity.Pages.Account
     {
         private readonly UserManager<User> _userManager;
         private readonly ISendgridService _sendgridService;
+        private readonly ILogger<ResendEmailConfirmationModel> _logger;
 
         public ResendEmailConfirmationModel(
             UserManager<User> userManager,
-            ISendgridService sendgridService
+            ISendgridService sendgridService,
+            ILogger<ResendEmailConfirmationModel> logger
             )
         {
             _userManager = userManager;
             _sendgridService = sendgridService;
+            _logger = logger;
         }
 
         [BindProperty]
@@ -53,6 +57,10 @@ namespace OnlineConsulting.Areas.Identity.Pages.Account
             var user = await _userManager.FindByEmailAsync(Input.Email);
             if (user == null)
             {
+                _logger.LogInformation(
+                            "Failed resend verification email attempt. Not found user with email: {email}", 
+                            Input.Email);
+
                 StatusMessage = "Verification email sent. Please check your email.";
                 return Page();
             }
@@ -70,6 +78,8 @@ namespace OnlineConsulting.Areas.Identity.Pages.Account
             await _sendgridService.SendConfirmEmailAddressLink(
                 Input.Email,
                 callbackUrl);
+
+            _logger.LogInformation("Verification email sent. Email: {email} ", Input.Email);
 
             StatusMessage = "Verification email sent. Please check your email.";
             return Page();

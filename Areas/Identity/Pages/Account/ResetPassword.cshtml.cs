@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
+using Microsoft.Extensions.Logging;
 using OnlineConsulting.Models.Entities;
 
 namespace OnlineConsulting.Areas.Identity.Pages.Account
@@ -17,10 +18,12 @@ namespace OnlineConsulting.Areas.Identity.Pages.Account
     public class ResetPasswordModel : PageModel
     {
         private readonly UserManager<User> _userManager;
+        private readonly ILogger<ResetPasswordModel> _logger;
 
-        public ResetPasswordModel(UserManager<User> userManager)
+        public ResetPasswordModel(UserManager<User> userManager, ILogger<ResetPasswordModel> logger)
         {
             _userManager = userManager;
+            _logger = logger;
         }
 
         [BindProperty]
@@ -71,13 +74,14 @@ namespace OnlineConsulting.Areas.Identity.Pages.Account
             var user = await _userManager.FindByEmailAsync(Input.Email);
             if (user == null)
             {
-                // Don't reveal that the user does not exist
+                _logger.LogInformation("Failed password reset attempt. Not found user with email: {email} ", Input.Email);
                 return RedirectToPage("./ResetPasswordConfirmation");
             }
 
             var result = await _userManager.ResetPasswordAsync(user, Input.Code, Input.Password);
             if (result.Succeeded)
             {
+                _logger.LogInformation("Password successfully reseted for user: {userId} ", user.Id);
                 return RedirectToPage("./ResetPasswordConfirmation");
             }
 
@@ -85,6 +89,9 @@ namespace OnlineConsulting.Areas.Identity.Pages.Account
             {
                 ModelState.AddModelError(string.Empty, error.Description);
             }
+
+            _logger.LogInformation("Failed password reset attempt. User: {userId} ", user.Id);
+
             return Page();
         }
     }

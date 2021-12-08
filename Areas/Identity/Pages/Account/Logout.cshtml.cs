@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -30,7 +31,10 @@ namespace OnlineConsulting.Areas.Identity.Pages.Account
         public async Task<IActionResult> OnPost(string returnUrl = null)
         {
             await _signInManager.SignOutAsync();
-            _logger.LogInformation("User logged out.");
+
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier).Value;
+            _logger.LogInformation("User: {userId} logged out.", userId);
+
             if (returnUrl != null)
             {
                 return LocalRedirect(returnUrl);

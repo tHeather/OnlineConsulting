@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using OnlineConsulting.Constants;
 using OnlineConsulting.Models.Entities;
 using OnlineConsulting.Models.ValueObjects.Users;
@@ -17,16 +18,19 @@ namespace OnlineConsulting.Controllers
     public class UserController : Controller
     {
         private readonly UserManager<User> _userManager;
+        private readonly ILogger<UserController> _logger;
         private readonly IUserRepository _userRepository;
         private const int PAGE_SIZE = 10;
 
         public UserController(
             IUserRepository userRepository,
-            UserManager<User> userManager
+            UserManager<User> userManager,
+            ILogger<UserController> logger
             )
         {
             _userRepository = userRepository;
             _userManager = userManager;
+            _logger = logger;
         }
 
         [IgnoreAntiforgeryToken]
@@ -112,6 +116,8 @@ namespace OnlineConsulting.Controllers
         public async Task<IActionResult> ChangeAccountLockState(string employerId, bool isLocked)
         {
             await _userRepository.LockEmployerWithEmployeesAsync(employerId, isLocked);
+
+            _logger.LogInformation("Employer {employerId} locked: {isLocked}.", employerId, isLocked);
 
             return RedirectToAction("EmployerList");
         }        

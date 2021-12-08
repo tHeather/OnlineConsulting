@@ -6,6 +6,7 @@ using Microsoft.Extensions.Logging;
 using OnlineConsulting.Constants;
 using OnlineConsulting.Models.Entities;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace OnlineConsulting.Areas.Identity.Pages.Account.Manage
@@ -79,6 +80,7 @@ namespace OnlineConsulting.Areas.Identity.Pages.Account.Manage
             var user = await _userManager.GetUserAsync(User);
             if (user == null)
             {
+                _logger.LogInformation("Changing password failed. User not found.");
                 return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
             }
 
@@ -89,11 +91,19 @@ namespace OnlineConsulting.Areas.Identity.Pages.Account.Manage
                 {
                     ModelState.AddModelError(string.Empty, error.Description);
                 }
+
+                var errorDescription = string.Join(", ", changePasswordResult.Errors.Select(e => e.Description).ToArray());
+
+                _logger.LogInformation("Changing password failed. User: {userId}. Error description: {errorDescription} ",
+                                        user.Id, errorDescription);
+
                 return Page();
             }
 
             await _signInManager.RefreshSignInAsync(user);
-            _logger.LogInformation("User changed their password successfully.");
+
+            _logger.LogInformation("User: {userId} changed their password successfully.", user.Id);
+
             StatusMessage = "Your password has been changed.";
 
             return RedirectToPage();

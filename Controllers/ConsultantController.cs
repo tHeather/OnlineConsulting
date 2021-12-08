@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.WebUtilities;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OnlineConsulting.Attributes;
 using OnlineConsulting.Constants;
@@ -14,6 +15,7 @@ using OnlineConsulting.Services.Interfaces;
 using OnlineConsulting.Services.Repositories.Interfaces;
 using OnlineConsulting.Tools;
 using System.Collections.Generic;
+using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
@@ -31,18 +33,21 @@ namespace OnlineConsulting.Controllers
         private readonly IOptions<IdentityOptions> _identityOptions;
         private readonly UserManager<User> _userManager;
         private readonly ISendgridService _sendgridService;
+        private readonly ILogger<ConsultantController> _logger;
 
         public ConsultantController(
              IUserRepository userRepository,
              IOptions<IdentityOptions> identityOptions,
              UserManager<User> userManager,
-             ISendgridService sendgridService
+             ISendgridService sendgridService,
+             ILogger<ConsultantController> logger
             )
         {
             _userRepository = userRepository;
             _identityOptions = identityOptions;
             _userManager = userManager;
             _sendgridService = sendgridService;
+            _logger = logger;
         }
 
         [IgnoreAntiforgeryToken]
@@ -75,6 +80,8 @@ namespace OnlineConsulting.Controllers
 
                     await _sendgridService.SendConfirmEmailAddressLink(createConsultantValueObject.User.Email, callbackUrl);
 
+                    _logger.LogInformation("New consultant created. User: {userId}", createConsultantValueObject.User.Id);
+
                     ModelState.Clear();
                     return View(new AddConsultantViewModel
                     {
@@ -87,6 +94,14 @@ namespace OnlineConsulting.Controllers
                 {
                     ModelState.AddModelError("userManager", error.Description);
                 }
+
+                var errorDescription = string.Join(", ", createConsultantValueObject
+                                                                        .IdentityResult
+                                                                        .Errors.Select(e => e.Description).ToArray());
+
+                _logger.LogInformation("New consultant creation failed. User: {email}. Error description: {errorDescription} ",
+                                        addConsultantViewModel.Email, errorDescription);
+
             }
 
             return View(addConsultantViewModel);

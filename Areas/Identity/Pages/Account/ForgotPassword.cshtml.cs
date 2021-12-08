@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
+using Microsoft.Extensions.Logging;
 using OnlineConsulting.Constants;
 using OnlineConsulting.Models.Entities;
 using OnlineConsulting.Services.Interfaces;
@@ -17,11 +18,17 @@ namespace OnlineConsulting.Areas.Identity.Pages.Account
     {
         private readonly UserManager<User> _userManager;
         private readonly ISendgridService _sendgridService;
+        private readonly ILogger<ForgotPasswordModel> _logger;
 
-        public ForgotPasswordModel(UserManager<User> userManager, ISendgridService sendgridService)
+        public ForgotPasswordModel(
+            UserManager<User> userManager, 
+            ISendgridService sendgridService,
+            ILogger<ForgotPasswordModel> logger
+            )
         {
             _userManager = userManager;
             _sendgridService = sendgridService;
+            _logger = logger;
         }
 
         [BindProperty]
@@ -46,6 +53,7 @@ namespace OnlineConsulting.Areas.Identity.Pages.Account
                   !await _userManager.IsInRoleAsync(user, UserRoleValue.EMPLOYER)
                 )
                 {
+                    _logger.LogInformation("Failed sending forgot password email to: {email} ", Input.Email);
                     return RedirectToPage("./ForgotPasswordConfirmation");
                 }
 
@@ -60,6 +68,8 @@ namespace OnlineConsulting.Areas.Identity.Pages.Account
                 await _sendgridService.SendPasswordResetLink(
                                         Input.Email,
                                         callbackUrl);
+
+                _logger.LogInformation("Sent forgot password email. User : {user} ", user.Id);
 
                 return RedirectToPage("./ForgotPasswordConfirmation");
             }

@@ -109,8 +109,9 @@ namespace OnlineConsulting.Areas.Identity.Pages.Account
 
                     await _sendgridService.SendConfirmEmailAddressLink(Input.Email, callbackUrl);
 
-                    return RedirectToPage("RegisterConfirmation", new { email = Input.Email, returnUrl = returnUrl });
+                    _logger.LogInformation("Employer: {userId} successfully created.", employer.Id);
 
+                    return RedirectToPage("RegisterConfirmation", new { email = Input.Email, returnUrl = returnUrl });
                 }
                 else
                 {
